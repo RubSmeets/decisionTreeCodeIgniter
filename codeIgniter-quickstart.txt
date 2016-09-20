@@ -1,0 +1,55 @@
+STEP 1:
+    Go to config/config.php
+    -------
+    base_url -> e.g. http://localhost/crossmos_projects/decisionTree2/
+    index_page -> (rename index.html to index.php as long as there is nog php open and close syntax it will load like normal html)
+    log_treshold -> set to 4 (show all messages)
+    encryption_key -> generate the encryption key online (used for session encryption)
+    sess_cookie_name -> change the name of the coockies that you want to use or provide (store sesion data)
+
+    Go to config/database.php
+    -------
+    username -> to your username
+    pass -> to your password
+    hostname -> ...
+    database -> the database name
+
+    Go to config/autoload.php
+    -------
+    $autoload['helper'] -> load global and frequently used helper packages (e.g. array('url', 'html'))
+
+STEP 2:
+    Create first public controller
+    -------
+    Specify a public controller that provides a landing page where unauthenticated users (everyone)
+    can browse to. The public controller also handles login request coming from the public page.
+
+    see public_homepage.php for more information
+
+STEP 3:
+    Move existing webpages to the views folder
+    -------
+    Copy index.html and rename to index.php
+    do so for other html files as well.
+
+STEP 4:
+    Move existing resources
+    -------
+    Make sure to copy or move your local scripts/css/resources/etc outside of the codeIgniter application
+    folder. This is very important for security!
+
+STEP 5:
+    Change the loading of scripts and markup inside your webpage
+    -------
+    Open index.php and replace the local css loading by:
+    - e.g. <?php echo link_tag('css/decisionTree.css'); ?>
+    replace the loading of script files by:
+    - e.g. <script type="text/javascript" src="<?php echo base_url();?>js/decisionTree.js" ></script>
+    change other relative paths to work with code igniter:
+    - e.g. images -> <img src="<?php echo base_url('img/logos/smartface.png'); ?>" alt="">
+
+STEP 6:
+    First preview
+    -------
+    Test your webpage by browsing to your base url:
+    - e.g. http://localhost/crossmos_projects/decisionTree2/index.php/public_homepage/
