@@ -23,13 +23,26 @@ class PrivateCon extends CI_Controller {
     }
 
     /*
-     * VIEWS
+     * VIEWS (routes)
      * */
-    public function index()    {
+    public function index() {
         $data = array('email' => $this->session->userdata('email'));
         $this->load->view('privateview/index', $data);
     }
 
+    public function contribute() {
+        $data = array('email' => $this->session->userdata('email'));
+        $this->load->view('privateview/contribute', $data);
+    }
+
+    public function compare() {
+        $data = array('email' => $this->session->userdata('email'));
+        $this->load->view('compare', $data);
+    }
+
+    /*
+     * Async calls
+     * */
     public function AJ_logout() {
         $this->session->unset_userdata('userID');
         $this->session->unset_userdata('username');

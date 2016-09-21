@@ -1,10 +1,12 @@
 <?php
 include APPPATH . 'classes/PublicConstants.php';
+include APPPATH . 'classes/FrameworkMarkup.php';
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class PublicCon extends CI_Controller {
 	const CONST_CLIENT_ID = "814864177982-qhde0ik7hkaandtoaaa0515niinslg94.apps.googleusercontent.com";
+	
 	/**
 	 * Index Page for this controller.
 	 *
@@ -79,11 +81,17 @@ class PublicCon extends CI_Controller {
 			// check if user exists
 			$userObj = $this->UserModel->getUserByEmail($user->email, $errmsg);
 			if(is_a($userObj, 'User')) {
-				// Checked if blocked or not
-				// update user
-				$userObj->accessToken = $idtoken;
-				$userObj->visitCount += 1;
-				$retval = $this->UserModel->updateUser($userObj, $errmsg);
+				if($userObj->isBlocked != 0) {
+					$errmsg = "Login failed";
+					$retval = PublicConstants::FAILED;
+					$this->echoResponse($errmsg, $retval);
+					return;
+				} else {
+					// update user token and visit count
+					$userObj->accessToken = $idtoken;
+					$userObj->visitCount += 1;
+					$retval = $this->UserModel->updateUser($userObj, $errmsg);
+				}
 			} else {
 				// create new
 				$retval = $this->UserModel->createUser($user, $idtoken, $errmsg);
@@ -114,6 +122,48 @@ class PublicCon extends CI_Controller {
 		$this->echoResponse($errmsg, $retval);
 	}
 
+	public function AJ_getThumbFrameworks() {
+		// Load database interaction model
+		$this->load->model('FrameworksModel');
+
+		$frameworks = $this->FrameworksModel->getFrameworkListThumbData($errmsg);
+
+		// Custom response for the jQuery datatables
+		$data = array(
+			"frameworks" => $frameworks
+		);
+		echo json_encode($data);
+	}
+
+	public function AJ_getFramework() {
+		$errmsg = "";
+		$retval = PublicConstants::SUCCESS;
+
+		if(isset($_GET["keyword"])) {
+        	$frameworkName = $_GET["keyword"];
+    	} else {
+			$errmsg = "No framework specified";
+			$retval = PublicConstants::FAILED;
+			$this->echoResponse($errmsg, $retval);
+			return;
+		}
+
+		// Load database interaction model
+		$this->load->model('FrameworksModel');
+		$framework = $this->FrameworksModel->getFrameworkByName($frameworkName, $errmsg);
+
+		if(is_object($framework)) {
+			$markupGenerator = new FrameworkMarkup($framework);
+			$resp = $markupGenerator->createFrameworkCompareMarkup();
+		}
+
+		echo json_encode($resp);
+		//echo $this->echoResponse($errmsg, $retval);
+	}
+
+	/*
+	 * Helper functions
+	 * */
 	private function echoResponse($errmsg, $retval) {
 		$data = array(
 			'srvResponseCode' => $retval,
@@ -122,3 +172,4 @@ class PublicCon extends CI_Controller {
 		echo json_encode($data);
 	}
 }
+	

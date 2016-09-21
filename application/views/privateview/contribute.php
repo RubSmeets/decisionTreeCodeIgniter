@@ -22,10 +22,8 @@
                 <h1>We are at contribution page</h1>
                 <p>Compare your favorite mobile development tool with other existing tools out there. Determine which tool is best suited for your needs by filtering the list of tracked tools with your search criteria.</p>
                 <p>
-                    <a class="btn btn-primary btn-lg" href="html/about.html" role="button">Learn more &raquo;</a>
-                    <a id="goToCompareBtn" class="btn btn-primary btn-lg" href="compare" role="button">Compare &raquo;</a>  
-                    <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#contributeLoginModal">Contribute</button>
-                    <button id="socialSignOut" type="button" class="btn btn-danger btn-lg pull-right">Sign out</button>
+                    <a class="btn btn-primary btn-lg" href="<?php echo base_url();?>privateCon/" role="button">Home &raquo;</a>
+                    <?php if(isset($email)) { ?><button id="socialSignOut" type="button" class="btn btn-danger btn-lg pull-right" data-toggle="tooltip" data-placement="top" title="Signed in as: <?php print $email ?>">Sign out</button><?php } ?>
                 </p>
             </div>
         </div>

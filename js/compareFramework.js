@@ -2,9 +2,12 @@
     'use strict';
 
     var CONST = {
+        successCode: 0,
         maxNumbComparisons: 5,
         add: 0,
-        remove: 1
+        remove: 1,
+        backEndBaseURL: "http://localhost/crossmos_projects/decisionTree2/publicCon/",
+        backEndPrivateURL: "http://localhost/crossmos_projects/decisionTree2/privateCon/"
     }
     /* Datatable functionality */
     var DataTable = {
@@ -31,7 +34,7 @@
         initTable: function($frameworkTable) {
             this.frameworkTable = $frameworkTable.DataTable({
                 ajax: {
-                    url: '../php/testThumbFrameworks.php',
+                    url: CONST.backEndBaseURL + 'AJ_getThumbFrameworks',
                     dataSrc: "frameworks"
                 },
                 "columnDefs": [
@@ -219,9 +222,10 @@
         sendRequest: function(data) {
             $.ajax({
                 method: "GET",
-                url: "../php/searchFramework.php?keyword=" + data,
+                url: CONST.backEndBaseURL + "AJ_getFramework",
                 dataType: "json",
-                
+                data: {keyword: data},
+
                 error: this.errorCallback,
                 success: this.succesCallback
             });
@@ -233,6 +237,7 @@
 
         succesCallback: function(data, status, jqXHR) {
             console.log("Successful request");
+            console.log(data);
             CF.addMarkupToPage(data);
             CF.bindEventNewItem();
         },
@@ -285,23 +290,23 @@
             var contents = '<div class="' + columnWidth + ' header-container head' + (frameworkPos+1) + '">' + data.header +	'</div>';
             this.$frameworkHeaderContainer.append(contents);
             // Add tool specification markup
-            contents = '<div class="' + columnWidth + ' no-padding centered body' + (frameworkPos+1) + ' ' + frameworkClass + ' flex-item">' + data.toolTecCon + '</div>';
+            contents = '<div class="' + columnWidth + ' no-padding centered body' + (frameworkPos+1) + ' ' + frameworkClass + ' flex-item">' + data.tool_specification.toolTecCon + '</div>';
             this.$toolTecCon.append(contents);
-            contents = '<div class="' + columnWidth + ' no-padding centered body' + (frameworkPos+1) + ' ' + frameworkClass + ' flex-item">' + data.toolAnnCon + '</div>';
+            contents = '<div class="' + columnWidth + ' no-padding centered body' + (frameworkPos+1) + ' ' + frameworkClass + ' flex-item">' + data.tool_specification.toolAnnCon + '</div>';
             this.$toolAnnCon.append(contents);
-            contents = '<div class="' + columnWidth + ' no-padding centered body' + (frameworkPos+1) + ' ' + frameworkClass + ' flex-item">' + data.toolVerCon + '</div>';
+            contents = '<div class="' + columnWidth + ' no-padding centered body' + (frameworkPos+1) + ' ' + frameworkClass + ' flex-item">' + data.tool_specification.toolVerCon + '</div>';
             this.$toolVerCon.append(contents);
-            contents = '<div class="' + columnWidth + ' no-padding centered body' + (frameworkPos+1) + ' ' + frameworkClass + ' flex-item">' + data.toolPlaCon + '</div>';
+            contents = '<div class="' + columnWidth + ' no-padding centered body' + (frameworkPos+1) + ' ' + frameworkClass + ' flex-item">' + data.tool_specification.toolPlaCon + '</div>';
             this.$toolPlaCon.append(contents);
-            contents = '<div class="' + columnWidth + ' no-padding centered body' + (frameworkPos+1) + ' ' + frameworkClass + ' flex-item">' + data.toolLanCon + '</div>';
+            contents = '<div class="' + columnWidth + ' no-padding centered body' + (frameworkPos+1) + ' ' + frameworkClass + ' flex-item">' + data.tool_specification.toolLanCon + '</div>';
             this.$toolLanCon.append(contents);
-            contents = '<div class="' + columnWidth + ' no-padding centered body' + (frameworkPos+1) + ' ' + frameworkClass + ' flex-item">' + data.toolProCon + '</div>';
+            contents = '<div class="' + columnWidth + ' no-padding centered body' + (frameworkPos+1) + ' ' + frameworkClass + ' flex-item">' + data.tool_specification.toolProCon + '</div>';
             this.$toolProCon.append(contents);
-            contents = '<div class="' + columnWidth + ' no-padding centered body' + (frameworkPos+1) + ' ' + frameworkClass + ' flex-item">' + data.toolLicCon + '</div>';
+            contents = '<div class="' + columnWidth + ' no-padding centered body' + (frameworkPos+1) + ' ' + frameworkClass + ' flex-item">' + data.tool_specification.toolLicCon + '</div>';
             this.$toolLicCon.append(contents);
-            contents = '<div class="' + columnWidth + ' no-padding centered body' + (frameworkPos+1) + ' ' + frameworkClass + ' flex-item">' + data.toolSrcCon + '</div>';
+            contents = '<div class="' + columnWidth + ' no-padding centered body' + (frameworkPos+1) + ' ' + frameworkClass + ' flex-item">' + data.tool_specification.toolSrcCon + '</div>';
             this.$toolSrcCon.append(contents);
-            contents = '<div class="' + columnWidth + ' no-padding centered body' + (frameworkPos+1) + ' ' + frameworkClass + ' flex-item">' + data.toolCostCon + '</div>';
+            contents = '<div class="' + columnWidth + ' no-padding centered body' + (frameworkPos+1) + ' ' + frameworkClass + ' flex-item">' + data.tool_specification.toolCostCon + '</div>';
             this.$toolCostCon.append(contents);
             // -----------------------------
             contents = '<div class="' + columnWidth + ' no-padding centered body' + (frameworkPos+1) + ' ' + frameworkClass + '">' + data.dev_specification + '</div>';

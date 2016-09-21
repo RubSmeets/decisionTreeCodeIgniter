@@ -8,8 +8,9 @@ class User {
 	public $accessToken;
     public $admin;
     public $visitCount;
+	public $isBlocked;
 
-	public function __construct($tmpId, $tmpSocialID, $tmpUsername, $tmpEmail, $tmpAccessToken, $tmpAdmin, $tmpVisitCount) {
+	public function __construct($tmpId, $tmpSocialID, $tmpUsername, $tmpEmail, $tmpAccessToken, $tmpAdmin, $tmpVisitCount, $tmpIsBlocked) {
 		$this->_dbId = $tmpId;
 		$this->socialID = $tmpSocialID;
 		$this->username =  $tmpUsername;
@@ -17,6 +18,7 @@ class User {
 		$this->accessToken = $tmpAccessToken;
         $this->admin = $tmpAdmin;
         $this->visitCount = $tmpVisitCount;
+		$this->isBlocked = $tmpIsBlocked;
 	}
 
 	public function __destruct() {

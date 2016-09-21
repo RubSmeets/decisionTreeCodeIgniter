@@ -136,6 +136,7 @@
                 });
                 that.collapseAll();
             });
+
             // hide bootstrap Alert
             $("[data-hide]").on("click", function(){
                 $(this).closest("." + $(this).attr("data-hide")).hide();
@@ -193,7 +194,7 @@
             var frameworkName = $($frameworkLabel[0]).text();
             var $compareButtons = $('.compare-link');
             var $mainCompareBtn = $('#goToCompareBtn');
-            var href = "html/compare.html?frameworks=";
+            var href = CONST.backEndBaseURL + "compare?frameworks=";
             var compareIndex = 0;
             var i = 0;
 

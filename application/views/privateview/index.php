@@ -28,8 +28,8 @@
         <p>Compare your favorite mobile development tool with other existing tools out there. Determine which tool is best suited for your needs by filtering the list of tracked tools with your search criteria.</p>
         <p>
 			<a class="btn btn-primary btn-lg" href="html/about.html" role="button">Learn more &raquo;</a>
-			<a id="goToCompareBtn" class="btn btn-primary btn-lg" href="compare" role="button">Compare &raquo;</a>  
-			<?php if(isset($email)) { ?><button id="goToContibution" type="button" class="btn btn-info btn-lg" >Start Contributing</button><?php } ?>
+			<a id="goToCompareBtn" class="btn btn-primary btn-lg" href="<?php echo base_url();?>privateCon/compare" role="button">Compare &raquo;</a>  
+			<?php if(isset($email)) { ?><a id="goToContibution" href="<?php echo base_url();?>privateCon/contribute" class="btn btn-info btn-lg" role="button">Start Contributing</a><?php } ?>
 			<?php if(isset($email)) { ?><button id="socialSignOut" type="button" class="btn btn-danger btn-lg pull-right" data-toggle="tooltip" data-placement="top" title="Signed in as: <?php print $email ?>">Sign out</button><?php } ?>
 		</p>
       </div>

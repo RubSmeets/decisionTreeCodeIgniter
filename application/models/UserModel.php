@@ -21,7 +21,8 @@ class UserModel extends CI_Model {
 					$resultData->user_email,
 					$resultData->access_token,
 					$resultData->admin,
-					$resultData->visit_count);
+					$resultData->visit_count,
+					$resultData->blocked);
 			}
 		}
 		$errmsg = "User not found";
