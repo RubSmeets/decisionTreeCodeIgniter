@@ -36,6 +36,7 @@ class FrameworkMarkup {
         "android" => "Android",
         "wup" => "Windows10",
         "windowsphone" => "WindowsPhone",
+        "windowsmobile" => "WindowsMobile",
         "watchos" =>  "Watch OS",
         "tizen" =>  "Tizen",
         "firefoxos" =>  "Firefox OS",
@@ -47,6 +48,9 @@ class FrameworkMarkup {
         "windows" => "Windows",
         "symbian" => "Symbian",
         "webos" => "WebOS",
+        "meego" => "Meego",
+        "maemo" => "Maemo",
+        "kindle" => "Kindle",
 
         "php" => "PHP",
         "basic" =>  "Basic",
@@ -61,6 +65,14 @@ class FrameworkMarkup {
         "cplusplus" => "C++",
         "xml" =>  "XML",
         "visualeditor" => "Visual Editor",
+        "qml" => "QML",
+        "MXML" => "MXML",
+        "python" => "Python",
+        "swift" => "Swift",
+        "objc" => "Objective C",
+        "javame" => "Java ME",
+        "jsx" => "JSX",
+
 
         "cd" => "Corporate Design",
         "widgets" => "Widgets",
@@ -185,18 +197,18 @@ HEADER;
 		$toolSpecMarkup = rtrim($toolSpecMarkup, ", ");
         $headerOrder["toolTecCon"] = $toolSpecMarkup;
         /* Add announced */
-        if($this->frameworkData->announced !== "UNDEF") $toolSpecMarkup = "<div class=\"feature-item\"><span>" . $this->frameworkData->announced . "</span></div>";
+        if($this->frameworkData->announced !== "UNDEF" && $this->frameworkData->announced !== "false") $toolSpecMarkup = "<div class=\"feature-item\"><span>" . $this->frameworkData->announced . "</span></div>";
         else $toolSpecMarkup = "<div class=\"feature-item\"><span>" . $this->FORMAT_KEY[$this->frameworkData->announced] . "</span></div>";
         $headerOrder["toolAnnCon"] = $toolSpecMarkup;
         /* Add version */
-        if($this->frameworkData->framework_current_version !== "UNDEF") $toolSpecMarkup = "<div class=\"feature-item\"><span>" . $this->frameworkData->framework_current_version . "</span></div>";
+        if($this->frameworkData->framework_current_version !== "UNDEF"  && $this->frameworkData->framework_current_version !== "false") $toolSpecMarkup = "<div class=\"feature-item\"><span>" . $this->frameworkData->framework_current_version . "</span></div>";
         else $toolSpecMarkup = "<div class=\"feature-item\"><span>" . $this->FORMAT_KEY[$this->frameworkData->framework_current_version] . "</span></div>";
         $headerOrder["toolVerCon"] = $toolSpecMarkup;
         /* Add platforms */
         $toolSpecMarkup = "<div class=\"feature-item\">";
         $platforms = ["android","ios","blackberry","windowsphone","wup","androidtv","appletv","watchos","bada","firefoxos","kindle","webos","osx","windows","windowsmobile","symbian","tizen","maemo","meego"];
         foreach ($platforms as $item) {
-            if ($this->frameworkData->$item === "true") $toolSpecMarkup .= "<span>" . $this->FORMAT_KEY[$item] . "</span>, ";
+            if ($this->frameworkData->$item !== "UNDEF" && $this->frameworkData->$item !== "false") $toolSpecMarkup .= "<span>" . $this->FORMAT_KEY[$item] . "</span>, ";
         }
         $toolSpecMarkup = rtrim($toolSpecMarkup, ", ");
         $headerOrder["toolPlaCon"] = $toolSpecMarkup;
@@ -204,7 +216,7 @@ HEADER;
         $toolSpecMarkup = "<div class=\"feature-item\">";
         $languages = ["html","csharp","css","basic","cplusplus","java","javame","js","jsx","lua","objc","swift","php","python","ruby","actionscript","MXML","visualeditor","xml","qml"];
         foreach ($languages as $item) {
-            if ($this->frameworkData->$item === "true") $toolSpecMarkup .= "<span>" . $this->FORMAT_KEY[$item] . "</span>, ";
+            if ($this->frameworkData->$item !== "UNDEF" && $this->frameworkData->$item !== "false") $toolSpecMarkup .= "<span>" . $this->FORMAT_KEY[$item] . "</span>, ";
         }
         $toolSpecMarkup = rtrim($toolSpecMarkup, ", ");
         $headerOrder["toolLanCon"] = $toolSpecMarkup;
@@ -212,7 +224,7 @@ HEADER;
         $outputType = ["mobilewebsite","webapp","nativeapp","hybridapp"];
         $toolSpecMarkup = "<ul class=\"feature-item\">";
         foreach ($outputType as $item) {
-            if ($this->frameworkData->$item === "true") $toolSpecMarkup .= "<li>" . $this->FORMAT_KEY[$item] . "</li>";
+            if ($this->frameworkData->$item !== "UNDEF" && $this->frameworkData->$item !== "false") $toolSpecMarkup .= "<li>" . $this->FORMAT_KEY[$item] . "</li>";
         }
         $toolSpecMarkup .= "</ul>";
         $headerOrder["toolProCon"] = $toolSpecMarkup;

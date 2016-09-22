@@ -9,7 +9,7 @@ final class PublicConstants {
     // make this private so no one can make one
     private function __construct(){
         // throw an exception if someone can get in here
-        throw new Exception("Can't get an instance of Errors");
+        throw new Exception("Can't get an instance of PublicConstants");
     }
 }
 

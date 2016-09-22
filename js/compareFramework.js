@@ -237,7 +237,6 @@
 
         succesCallback: function(data, status, jqXHR) {
             console.log("Successful request");
-            console.log(data);
             CF.addMarkupToPage(data);
             CF.bindEventNewItem();
         },
