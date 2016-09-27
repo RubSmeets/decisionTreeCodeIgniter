@@ -1,7 +1,130 @@
+/* **********************************************
+ * General form styling
+ * ********************************************** */ 
 .contribute-options {
     margin-bottom: 20px;
 }
 
+// Edit framework search table ---------------------
+#searchFrameworksTable_filter label {
+    display: block;
+    margin: 0px;
+}
+
+.dataTables_wrapper table thead {
+    display:none;
+}
+.dataTables_wrapper .dataTables_paginate {
+    display:none;
+}
+.dataTables_wrapper table {
+    width: 100%;
+}
+.dataTables_wrapper {
+    border-radius: 6px;
+}
+table.dataTable.no-footer {
+    border: none;
+}
+#searchFrameworksTable_wrapper tr {
+    cursor: pointer;
+}
+#searchFrameworksTable_wrapper .dataTables_empty {
+    background-color: #555;
+    color: #fff;
+    cursor: not-allowed;
+    height: 30px;
+    font-size: 16px;
+    line-height: 30px;
+}
+input.edit-search {
+    display: block;
+    width: 100%;
+    height: 50px;
+    padding: 6px 12px;
+    font-size: 22px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+    -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15;
+}
+.edit-search-feedback {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 2;
+    display: block;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    pointer-events: none;
+}
+#searchFrameworksTable {
+    border: 1px solid #e6e6e6;
+    border-top: none;
+}
+#searchFrameworksTable_wrapper {
+    margin-bottom: 20px;
+}
+// ---------------------------------------------------
+
+// Edit framework search table item ------------------
+#searchFrameworksTable .thumb-framework {
+    height: 40px;
+    width: 40px;
+    background: white;
+    border: 1px solid #e6e6e6;
+    border-radius: 2px;
+    display: block;
+    padding: 2px;
+    margin-right: 10px;
+    float: left;
+}
+
+#searchFrameworksTable .thumb-framework img {
+    height: 34px;
+    max-width: 34px;
+}
+
+#searchFrameworksTable .thumb-title {
+    display: block;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+#searchFrameworksTable .thumb-status.active {
+    color: #9BB831;
+}
+
+#searchFrameworksTable .thumb-add {
+    top: 14px;
+    right: 8px;
+    color: #337ab7;
+}
+// ---------------------------------------------------
+
+// Edit header ---------------------------------------
+#editHeaderWrapper {
+    margin-bottom: 20px;
+}
+h3.edit-header {
+    display: inline-block !important;
+}
+#cancelEdit {
+    margin-top: 15px;
+}
+// ---------------------------------------------------
+
+// Progressbas / navbar ------------------------------
 .progress-bar {
     cursor: pointer;
 }
@@ -23,16 +146,63 @@
 .faulty-step {
     background-color: #d9534f;
 }
-.heading-desc {
-    color: grey;
-}
+// ---------------------------------------------------
+
 .container-step1,
 .container-step2,
 .container-step3,
 .container-step4,
 .container-step5 {
-    min-height: 600px;
+    min-height: 915px;
 }
+
+/* **********************************************
+ * Form step 1 styling
+ * ********************************************** */ 
+
+// styling of checkboxes ------------------------
+label.checkbox-label {
+    display: block;
+    cursor: pointer;
+    padding-left: 5px;
+    line-height: 18px;
+    font-size: small;
+}
+input[type=checkbox] {
+    display:none;
+}
+/* Using 2 :pseudo classes from predefined bootstrap icons*/
+input[type='checkbox'].custom-checkbox + label:before {
+    position: relative;
+    top: 1px;
+    right: 5px;
+    display: inline-block;
+    font-family: 'Glyphicons Halflings';
+    font-style: normal;
+    font-size: 1em;
+}
+input[type='checkbox'].custom-checkbox + label:before {/*unchecked icon*/
+    content: "\e157";
+}
+input[type='checkbox'].custom-checkbox + label:hover:before {/*icon checked on hover*/
+    content: "\e067";
+}
+input[type='checkbox']:checked.custom-checkbox + label:before {/*checked icon*/
+    content: "\e067";
+}
+// ---------------------------------------------------
+
+/* ******************** END FORM STEP 1 ***************** */
+
+
+
+/* **********************************************
+ * Form step 3/4/5 styling
+ * ********************************************** */ 
 .dense-input {
-    margin-bottom: 5px;
+    margin-bottom: 3px;
 }
+.short-input {
+    max-width: 250px;
+}
+/* ******************** END FORM STEP 3/4/5 ***************** */
