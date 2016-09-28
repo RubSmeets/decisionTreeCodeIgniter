@@ -9,6 +9,10 @@
         progressNavOption: 1,
         moveForward: 1,
         moveBack: -1,
+        alertServerSuccess: 0,
+        alertServerFailed: 1,
+        alertServerUnresponsive: 2,
+        alertDelete: 3,
         formatState: [
             "Awaiting Approval",
 		    "Approved"
@@ -17,7 +21,7 @@
         backEndPrivateURL: "http://localhost/crossmos_projects/decisionTree2/privateCon/"
     }
 
-        /* Datatable functionality */
+    /* Datatable functionality */
     var DataTable = {
         initVariables: function() {
             this.frameworkTable = null;
@@ -57,8 +61,7 @@
                                 thumbs = '<span class="thumb-framework"><img src="' + row.thumb_img + '" alt=""/></span> \
 							              <span class="glyphicon glyphicon-pencil pull-right thumb-add"></span> \
 							              <span class="thumb-title">' + data + '</span> \
-							              <span class="thumb-status ' + row.status.toLowerCase() + '">' + row.status + '</span> \
-                                          <span class="thumb-approved">' + CONST.formatState[row.internalState] + '</span>';
+							              <span class="thumb-state ' + CONST.formatState[row.internalState].toLowerCase() + '">' + CONST.formatState[row.internalState] + '</span>';
                                 return thumbs;
                             } else return '';
                         }
@@ -98,6 +101,96 @@
             });
         },
 
+        reloadTable: function() {
+            this.frameworkTable.ajax.reload();
+        }
+
+    }
+    /* Datatable functionality user table */
+    var DataTableUser = {
+        initVariables: function() {
+            this.frameworkTable = null;
+            this.domCache = {};
+        },
+
+        cacheElements: function() {
+            this.domCache.$searchFrameworksTable = $("#searchUserFrameworksTable");
+            this.domCache.$filterFieldContainer = $('#searchUserFrameworksTable_filter');
+            this.domCache.$filterField = $('#searchUserFrameworksTable_filter').find(':input').focus();
+        },
+
+        init: function($frameworkTable) {
+            this.initVariables();
+            this.initTable($frameworkTable);
+            this.cacheElements();
+            this.cleanMarkup();
+            this.bindEvents();
+        },
+
+        initTable: function($frameworkTable) {
+            this.frameworkTable = $frameworkTable.DataTable({
+                ajax: {
+                    url: CONST.backEndPrivateURL + 'AJ_getUserThumbFrameworks',
+                    dataSrc: "frameworks"
+                },
+                "columnDefs": [
+                    { "visible": false, "targets": 1 }  // hide second column
+                ],
+                columns: [
+                    {
+                        data: 'framework',
+                        "type": "html",
+                        render: function (data, type, row) {
+                            if (type ==='display') {
+                                var thumbs = "";
+                                thumbs = '<span class="thumb-framework"><img src="' + row.thumb_img + '" alt=""/></span> \
+							              <span class="glyphicon glyphicon-pencil pull-right thumb-add"></span> \
+                                          <span class="glyphicon glyphicon-remove pull-right thumb-remove"></span> \
+							              <span class="thumb-title">' + data + '</span> \
+							              <span class="thumb-state ' + CONST.formatState[row.internalState].toLowerCase() + '">' + CONST.formatState[row.internalState] + '</span>';
+                                return thumbs;
+                            } else return '';
+                        }
+                    },
+                    {data:'framework'}  //Must provide second column in order for search to work...
+                ],
+                language: {
+                    search: "<i class='glyphicon glyphicon-search edit-search-feedback'></i>",
+                    searchPlaceholder: "Search by framework name...",
+                    zeroRecords: "You have no registered contributions matching the search term. Please select a framework from the approved list and start editing."
+                },
+                "sAutoWidth": false,
+                "scrollY":        "356px",
+                "scrollCollapse": true,
+                "paging":         false,
+                "bInfo": false, // hide showing entries
+            });
+        },
+
+        cleanMarkup: function() {
+            this.domCache.$filterFieldContainer.removeClass('dataTables_filter');
+            this.domCache.$filterFieldContainer.find("input").addClass("edit-search");
+            this.domCache.$searchFrameworksTable.addClass("table table-hover"); //add bootstrap class
+            this.domCache.$searchFrameworksTable.css("width","100%");
+        },
+
+        bindEvents: function() {
+            var that = this;
+
+            this.domCache.$searchFrameworksTable.find('tbody').on('click', 'tr', function () {
+                var data = that.frameworkTable.row( this ).data();
+                main.loadFormData(data);
+            });
+
+            this.domCache.$filterField.on('focus', function() {
+                $(this).select();
+            });
+        },
+
+        reloadTable: function() {
+            this.frameworkTable.ajax.reload();
+        }
+
     }
 
     /* Main contribute functionality */
@@ -107,8 +200,12 @@
             this.filterTerms = [];
             this.comparedItems = [];
             this.domCache = {};
-            this.validForms = [0,0,0,0,1]; //
+            this.validForms = [0,0,0,0,1]; // last form can't be invalid
             this.formSubmitData = [];
+            this.editFrameworkRef = 0;
+            this.editFrameworkName = "";
+            this.editFrameworkId = 0;
+            this.alertFunction = 0; // specifies the function of the alert modal
         },
 
         cacheElements: function() {
@@ -117,10 +214,15 @@
             this.domCache.$frameworkFormWrapper = $('#formWrapper');
             this.domCache.$editHeaderWrapper = $('#editHeaderWrapper');
             this.domCache.$cancelEdit = $('#cancelEdit');
+            this.domCache.$editTitle = $('.edit-header');
+            this.domCache.$removeFramework = $('#removeEdit');
             this.domCache.$goNextAddBtn = $('#goNextStepAdd');
             this.domCache.$goBackAddBtn = $('#goBackStepAdd').hide();
             this.domCache.$formSteps = $('form');
-            this.domCache.$progressSegments = $('.progress-bar');    
+            this.domCache.$progressSegments = $('.progress-bar'); 
+            this.domCache.$alertModal = $('#alertModal');
+            this.domCache.$modalUserInput = $('#modalUserInputWrapper');   
+            this.domCache.$modalUserFeedbackMsg = $('.user-feedback');
         },
 
         init: function() {
@@ -129,6 +231,7 @@
             this.bindEvents();
 
             DataTable.init($('#searchFrameworksTable')); // init before cache to ensure that markup is generated
+            DataTableUser.init($('#searchUserFrameworksTable'));
             this.initTooltip();
         },
         // Mandatory Javascript init of bootstrap tooltip component
@@ -140,6 +243,7 @@
             var that = this;
             
             this.domCache.$contributeOptions.on('change', function() {
+                that.resetForm();
                 if($(this).val() === "add") {
                     that.showAddForm();
                 } else {
@@ -147,9 +251,20 @@
                 }
             });
 
+            // Alert Modal events
+            $('#modalYes').on('click', function() {
+                if(that.alertFunction === CONST.alertDelete) {
+                    that.removeFrameworkData();
+                }
+            });
+
             // Form management events
             this.domCache.$cancelEdit.on('click', function() {
                 that.showEditForm();
+            });
+            this.domCache.$removeFramework.on('click', function() {
+                var msg = "You are about to permanently delete one of your contribution. Do you wish to proceed?";
+                that.showModal(msg, CONST.alertDelete);
             });
 
             // button form nav
@@ -186,7 +301,8 @@
             
             // hide current container
             this.hideCurrentForm();
-
+            // Trigger validation
+            this.triggerSubmitStep(this.addState);
             // go to next
             if(navOption === CONST.buttonNavOption) {
                 if(this.addState === CONST.formSteps && step > 0) {
@@ -230,12 +346,14 @@
             for(i=1; i<(CONST.formSteps+1); i++) {
                 data = data.concat(this.formSubmitData['frmStep'+i]);
             }
+            // Add framework reference to data (only set when editing)
+            data.push({name:"reference", value:this.editFrameworkRef});
 
             $.ajax({
                 method: "POST",
                 url: CONST.backEndPrivateURL + "AJ_addFramework",
                 dataType: "json",
-                data: {framework: data},
+                data: {framework: data, currentEditName:this.editFrameworkName},
 
                 error: this.errorCallback,
                 success: this.succesCallback
@@ -246,13 +364,23 @@
             console.log("Something went wrong with request");
         },
 
-        succesCallback: function(data, status, jqXHR) {
-            main.resetForm();
-            console.log(data);
-            console.log("Successful request");
+        succesCallback: function(response, status, jqXHR) {
+            if(response.hasOwnProperty("srvResponseCode")) {
+                if(response.srvResponseCode !== CONST.successCode) {
+                    main.showModal(("Action not completed. server message: " + response.srvMessage), CONST.alertServerFailed);
+                }
+                main.showModal("Succesfully submitted contribution", CONST.alertServerSuccess);
+                main.resetEditInterface();
+            } else {
+                main.showModal("Server nor responding", CONST.alertServerUnresponsive);
+            }
         },
 
         loadFormData: function(data) {
+            // cache identifier and name for editing purposes (update/delete)
+            this.editFrameworkName = data.framework;
+            this.editFrameworkId = data.framework_id;
+
             $.ajax({
                 method: "GET",
                 url: CONST.backEndPrivateURL + "AJ_getFramework",
@@ -268,7 +396,13 @@
             if(response.hasOwnProperty("srvResponseCode")) {
                 if(response.srvResponseCode === CONST.successCode) {
                     main.updateFrom(response.srvMessage);
+                    main.validateCompleteForm();
+                    main.showEditForm();
+                }else {
+                    main.showModal(("Action not completed. server message: " + response.srvMessage), CONST.alertServerFailed);
                 }
+            } else {
+                main.showModal("Server not responding", CONST.alertServerUnresponsive);
             }
         },
 
@@ -289,7 +423,42 @@
                     }
                 }
             }
-            this.showEditForm();
+            // Store the reference for resubmitting framework data
+            this.editFrameworkRef = frameworkData.reference;
+        },
+
+        removeFrameworkData: function() {
+            $.ajax({
+                method: "POST",
+                url: CONST.backEndPrivateURL + "AJ_removeFrameworkEdit",
+                dataType: "json",
+                data: {name: this.editFrameworkName, identifier: this.editFrameworkId},
+
+                error: this.errorCallback,
+                success: this.removeFrameworkEditCallback
+            });
+        },
+
+        removeFrameworkEditCallback: function(response) {
+            if(response.hasOwnProperty("srvResponseCode")) {
+                if(response.srvResponseCode === CONST.successCode) {
+                    main.showModal("Succesfully removed contribution", CONST.alertServerSuccess);
+                    main.resetEditInterface();
+                } else {
+                    main.showModal(("Action not completed. server message: " + response.srvMessage), CONST.alertServerFailed);
+                }
+            } else {
+                main.showModal("Server not responding", CONST.alertServerUnresponsive);
+            }
+        },
+
+        validateCompleteForm: function() {
+            this.triggerSubmitStep(1);
+            this.triggerSubmitStep(2);
+            this.triggerSubmitStep(3);
+            this.triggerSubmitStep(4);
+            this.triggerSubmitStep(5);
+            this.showNextForm();    // set active the current form step
         },
 
         showAddForm: function() {
@@ -309,8 +478,18 @@
             } else {
                 this.domCache.$frameworkTableWrapper.hide();
                 this.domCache.$editHeaderWrapper.show();
+                if(this.editFrameworkId !== 0) {
+                    this.domCache.$removeFramework.show();
+                } else {
+                    this.domCache.$removeFramework.hide();
+                }
                 this.domCache.$frameworkFormWrapper.show();
             }
+        },
+
+        triggerSubmitStep: function(step) {
+            //trigger submit
+            $('.container-step' + step).trigger('submit', [step]);
         },
 
         hideCurrentForm: function() {
@@ -318,8 +497,6 @@
             $('.container-step' + this.addState).hide();
             //remove validation classes current
             $('.progress-step' + this.addState).removeClass('active-step valid-step faulty-step');
-            //trigger submit
-            $('.container-step' + this.addState).trigger('submit', [this.addState]);
         },
 
         showNextForm: function() {
@@ -331,11 +508,42 @@
             this.figureOutNavBtn();
         },
 
+        showModal: function(message, alertFunction) {
+            this.alertFunction = alertFunction;
+            this.domCache.$modalUserFeedbackMsg.text(message);
+            if(alertFunction === CONST.alertDelete) {
+                this.domCache.$modalUserInput.show();
+            } else {
+                this.domCache.$modalUserInput.hide();
+            }
+            
+            this.domCache.$alertModal.modal('show');
+
+        },
+
+        hideModal: function() {
+            this.domCache.$alertModal.modal('hide');
+        },
+
+        resetEditInterface: function() {
+            this.resetForm();
+            this.showEditForm();
+            DataTableUser.reloadTable(); //update user edits
+            DataTable.reloadTable(); //update approved
+        },
+
         resetForm: function() {
             var i = 0;
             for(i=0; i<this.domCache.$formSteps.length; i++) {
                 this.domCache.$formSteps[i].reset();
             }
+            // reset reference & current framework edit
+            this.editFrameworkRef = 0;
+            this.editFrameworkName = "";
+            this.editFrameworkId = 0;
+            // reset form validation
+            this.validForms = [0,0,0,0,1];
+            $('.progress-step2,.progress-step3,.progress-step4,.progress-step5').removeClass('active-step valid-step faulty-step');
             // show first form
             this.addState = 1;
             this.showNextForm();

@@ -1,11 +1,15 @@
 /* **********************************************
  * General form styling
  * ********************************************** */ 
+.centered {
+    text-align: center;
+}
 .contribute-options {
     margin-bottom: 20px;
 }
 
 // Edit framework search table ---------------------
+#searchUserFrameworksTable_filter label,
 #searchFrameworksTable_filter label {
     display: block;
     margin: 0px;
@@ -26,9 +30,11 @@
 table.dataTable.no-footer {
     border: none;
 }
+#searchUserFrameworksTable_wrapper tr,
 #searchFrameworksTable_wrapper tr {
     cursor: pointer;
 }
+#searchUserFrameworksTable_wrapper .dataTables_empty,
 #searchFrameworksTable_wrapper .dataTables_empty {
     background-color: #555;
     color: #fff;
@@ -42,7 +48,7 @@ input.edit-search {
     width: 100%;
     height: 50px;
     padding: 6px 12px;
-    font-size: 22px;
+    font-size: 18px;
     line-height: 1.42857143;
     color: #555;
     background-color: #fff;
@@ -68,16 +74,19 @@ input.edit-search {
     text-align: center;
     pointer-events: none;
 }
+#searchUserFrameworksTable,
 #searchFrameworksTable {
     border: 1px solid #e6e6e6;
     border-top: none;
 }
+#searchUserFrameworksTable_wrapper,
 #searchFrameworksTable_wrapper {
     margin-bottom: 20px;
 }
 // ---------------------------------------------------
 
 // Edit framework search table item ------------------
+#searchUserFrameworksTable .thumb-framework,
 #searchFrameworksTable .thumb-framework {
     height: 40px;
     width: 40px;
@@ -90,25 +99,34 @@ input.edit-search {
     float: left;
 }
 
+#searchUserFrameworksTable .thumb-framework img,
 #searchFrameworksTable .thumb-framework img {
     height: 34px;
     max-width: 34px;
 }
 
+#searchUserFrameworksTable .thumb-title,
 #searchFrameworksTable .thumb-title {
     display: block;
     font-size: 16px;
     font-weight: 800;
 }
 
-#searchFrameworksTable .thumb-status.active {
+#searchUserFrameworksTable .thumb-state.approved,
+#searchFrameworksTable .thumb-state.approved {
     color: #9BB831;
 }
 
+#searchUserFrameworksTable .thumb-remove,
+#searchUserFrameworksTable .thumb-add,
 #searchFrameworksTable .thumb-add {
     top: 14px;
     right: 8px;
+    margin-left: 8px;
     color: #337ab7;
+}
+#searchUserFrameworksTable .thumb-remove {
+    color: #d9534f;
 }
 // ---------------------------------------------------
 
@@ -119,7 +137,8 @@ input.edit-search {
 h3.edit-header {
     display: inline-block !important;
 }
-#cancelEdit {
+.edit-button {
+    margin-left: 10px;
     margin-top: 15px;
 }
 // ---------------------------------------------------

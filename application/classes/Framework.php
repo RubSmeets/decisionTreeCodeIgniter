@@ -128,7 +128,7 @@ class Framework {
     public $logo_img;
     private $state;
     public $modified_by;
-    private $reference; // foreign key to the modified original framework entry (0 if it is the first)
+    public $reference; // foreign key to the modified original framework entry (0 if it is the first)
 
 	public function __construct($tmpId, $tmpValidate) {
 		$this->_dbId = $tmpId;
@@ -653,11 +653,13 @@ class Framework {
             $this->modified_by = $data;
         }
     }
+    public function reference($data) {
+        $this->reference = $data;
+    }
 
     /* Dummy setters for private props */
     public function framework_id($data) {}
     public function comparison_data_last_update($data) {}
-    public function reference($data) {}
     public function state($data) {}
     /* ------------------------------- */
 

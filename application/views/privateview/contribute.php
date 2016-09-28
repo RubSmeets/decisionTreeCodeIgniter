@@ -22,6 +22,32 @@
     </head>
 
     <body>
+        <!-- MODAL ALERT -->
+        <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xs-4 centered">
+                                <i class="fa fa-check fa-4x descr-icon" aria-hidden="true"></i>
+                            </div>
+                            <div class="col-xs-8">
+                                <span class="user-feedback">Succesfully added a framework</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 centered" id="modalUserInputWrapper" hidden>
+                                <button id="modalYes" class="btn btn-success btn-lg">Yes</button>
+                                <button id="modalNo" class="btn btn-default btn-lg" data-toggle="modal" data-target="#alertModal">No</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- HEADER -->
         <div class="jumbotron">
             <div class="container">
@@ -52,11 +78,21 @@
                     <div id="frameworkForm" class="panel panel-default">
                         <div class="panel-body">
                             <div id="frameworkTableWrapper" hidden>
-                                <table id="searchFrameworksTable"></table>
+                                <div class="col-sm-6">
+                                    <h4>Make changes to an approved framework</h4>
+                                    <table id="searchFrameworksTable"></table>
+                                </div>
+                                <div class="col-sm-6">
+                                    <h4>Make changes to your pending contributions</h4>
+                                    <table id="searchUserFrameworksTable"></table>
+                                </div>
                             </div>
                             <div id="editHeaderWrapper" hidden>
                                 <h3 class="edit-header">You are now editing</h3>
-                                <button id="cancelEdit" class="btn btn-danger btn-lg pull-right"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
+                                <div class="pull-right">
+                                    <button id="removeEdit" class="btn btn-danger btn-lg edit-button"><span class="glyphicon glyphicon-trash"></span> Remove</button>
+                                    <button id="cancelEdit" class="btn btn-warning btn-lg edit-button"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
+                                </div>
                             </div>
                             <div id="formWrapper">
                                 <div class="progress add-progress">
@@ -1528,26 +1564,6 @@
                                             </label>
                                             <label class="radio-inline">
                                                 <input type="radio" id="notificationVia" value="via" name="notification"> Via Plugin
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div class="form-group dense-input">
-                                        <label class="col-xs-4 control-label">Status</label>
-                                        <div class="col-xs-8">
-                                            <label class="radio-inline">
-                                                <input type="radio" id="statusTrue" value="true" name="status"> Yes
-                                            </label>
-                                            <label class="radio-inline">
-                                                <input type="radio" id="statusFalse" value="false" checked name="status"> No
-                                            </label>
-                                            <label class="radio-inline">
-                                                <input type="radio" id="statusPartially" value="partially" name="status"> Partially
-                                            </label>
-                                            <label class="radio-inline">
-                                                <input type="radio" id="statusSoon" value="soon" name="status"> Soon
-                                            </label>
-                                            <label class="radio-inline">
-                                                <input type="radio" id="statusVia" value="via" name="status"> Via Plugin
                                             </label>
                                         </div>
                                     </div>

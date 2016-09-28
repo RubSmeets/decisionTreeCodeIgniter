@@ -65,12 +65,14 @@ class PrivateCon extends CI_Controller {
         $errmsg = "";
         $retval = PublicConstants::SUCCESS;
         $framework = $_POST["framework"];
+        $currentEditName = $_POST["currentEditName"];
 
         // convert to framework class (in class do validation)
         $frameworkObj = new Framework(0, true);
         foreach ($framework as $key) {
             $frameworkObj->$key["name"]($key["value"]);
         }
+        log_message('debug', print_r($frameworkObj,TRUE));
         // Check if we have a valid object
         if($frameworkObj->isInvalidFramework()) {
             $errmsg = "Validation failed";
@@ -94,23 +96,31 @@ class PrivateCon extends CI_Controller {
                 $frameworkObj->modified_by = $userObj->getDbID();
             }
         }
-        // find if framework allready exist (return error message)
+        // find if edited version of framework allready exist for user and update
 		$this->load->model('FrameworksModel');
-		$existingFramework = $this->FrameworksModel->getFrameworkByName($frameworkObj->framework, $errmsg);
+        if(empty($currentEditName)) {
+            $existingFramework = PublicConstants::FAILED;
+        } else {
+		    $existingFramework = $this->FrameworksModel->getEditedFrameworkByName($currentEditName, $userObj->getDbID(), $errmsg);
+        }
 
 		if(is_object($existingFramework)) {
-			$errmsg = "Framework is not added because it already exists. Please choose 'Edit tool' to change the existing framework.";
-            $retval = PublicConstants::FAILED;
-            $this->echoResponse($errmsg,$retval);
-            return;
-		}
-        // add framework to database with correct settings (contributor, approved settings)
-        $retval = $this->FrameworksModel->storeFramework($frameworkObj, $errmsg);
-        if($retval != PublicConstants::SUCCESS) {
-			// Database error
-			$this->echoResponse($errmsg, $retval);
-			return;
-		}
+			// Update exisiting framework entry with new data
+            $retval = $this->FrameworksModel->updateFramework($existingFramework->framework_id, $frameworkObj, $errmsg);
+            if($retval != PublicConstants::SUCCESS) {
+                // Database error
+                $this->echoResponse($errmsg, $retval);
+                return;
+            }
+		} else {
+            // add framework to database with correct settings (contributor, approved settings)
+            $retval = $this->FrameworksModel->storeFramework($frameworkObj, $errmsg);
+            if($retval != PublicConstants::SUCCESS) {
+                // Database error
+                $this->echoResponse($errmsg, $retval);
+                return;
+            }
+        }
         // provide feedback to user
         $errmsg = "Framework is stored and waiting for approval";
         $this->echoResponse($errmsg,$retval);
@@ -135,7 +145,35 @@ class PrivateCon extends CI_Controller {
             }
         }
 
-		$frameworks = $this->FrameworksModel->getPrivateFrameworkListThumbData($userObj->getDbID(),$errmsg);
+		$frameworks = $this->FrameworksModel->getEditFrameworkListThumbData($userObj->getDbID(),$errmsg);
+
+		// Custom response for the jQuery datatables
+		$data = array(
+			"frameworks" => $frameworks
+		);
+		echo json_encode($data);
+	}
+
+    public function AJ_getUserThumbFrameworks() {
+		// Load database interaction model
+		$this->load->model('FrameworksModel');
+
+        // Check if user exists and is not blocked
+        $this->load->library('session');
+        $this->load->model('UserModel');
+        // check if user exists
+        $userEmail = $this->session->email;
+        $userObj = $this->UserModel->getUserByEmail($userEmail, $errmsg);
+        if(is_a($userObj, 'User')) {
+            if($userObj->isBlocked != 0) {
+                $errmsg = "retrieving thumb data for user failed.";
+                $retval = PublicConstants::FAILED;
+                $this->echoResponse($errmsg, $retval);
+                return;
+            }
+        }
+
+		$frameworks = $this->FrameworksModel->getPrivateEditFrameworkListThumbData($userObj->getDbID(),$errmsg);
 
 		// Custom response for the jQuery datatables
 		$data = array(
@@ -186,6 +224,49 @@ class PrivateCon extends CI_Controller {
 
         $this->echoResponse($framework, $retval);
 	}
+
+    public function AJ_removeFrameworkEdit() {
+        $errmsg = "";
+		$retval = PublicConstants::SUCCESS;
+
+		if(isset($_POST["name"]) && isset($_POST["identifier"])) {
+        	$frameworkName = $_POST["name"];
+            $frameworkId = $_POST["identifier"];
+    	} else {
+			$errmsg = "No correct framework data specified";
+			$retval = PublicConstants::FAILED;
+			$this->echoResponse($errmsg, $retval);
+			return;
+		}
+
+        // Check if user exists and is not blocked
+        $this->load->library('session');
+        $this->load->model('UserModel');
+        // check if user exists
+        $userEmail = $this->session->email;
+        $userObj = $this->UserModel->getUserByEmail($userEmail, $errmsg);
+        if(is_a($userObj, 'User')) {
+            if($userObj->isBlocked != 0) {
+                $errmsg = "retrieving data for user failed.";
+                $retval = PublicConstants::FAILED;
+                $this->echoResponse($errmsg, $retval);
+                return;
+            }
+        }
+
+		// Load database interaction model
+		$this->load->model('FrameworksModel');
+		$retval = $this->FrameworksModel->removeFrameworkByNameAndId($frameworkName, $frameworkId, $userObj->getDbID(), $errmsg);
+
+		if($retval != PublicConstants::SUCCESS) {
+			// Database error
+			$this->echoResponse($errmsg, $retval);
+			return;
+		}
+        // provide feedback to user
+        $errmsg = "Framework edit is removed";
+        $this->echoResponse($errmsg,$retval);
+    }
 
     private function echoResponse($errmsg, $retval) {
 		$data = array(

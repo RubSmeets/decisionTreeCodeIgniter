@@ -1,12 +1,14 @@
 <?php
 
 class FrameworkThumbPrivate extends FrameworkThumb {
-	public $internalState;    
+	public $internalState;  
+	public $framework_id;  
 
-	public function __construct($tmpId, $tmpStatus, $tmpFramework, $tmpThumb_img, $tmpInternalState) {
-		parent::__construct($tmpId, $tmpStatus, $tmpFramework, $tmpThumb_img); 
+	public function __construct($tmpId, $tmpFramework, $tmpThumb_img, $tmpInternalState, $tmpFramework_id) {
+		parent::__construct($tmpId, "UNDEF", $tmpFramework, $tmpThumb_img); 
        
-       $this->internalState = $tmpInternalState;
+       	$this->internalState = $tmpInternalState;
+		$this->framework_id = $tmpFramework_id;	// used for deletion
 	}
 
 	public function __destruct() {
