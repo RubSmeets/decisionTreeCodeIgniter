@@ -1,4 +1,8 @@
-
+/*
+ * Resources:
+ * - https://webdesign.tutsplus.com/tutorials/how-to-integrate-no-captcha-recaptcha-in-your-website--cms-23024 (add google captcha to form)
+ * - 
+ */
 (function($, window, document, undefined) {
     'use strict';
 
@@ -147,7 +151,8 @@
 							              <span class="glyphicon glyphicon-pencil pull-right thumb-add"></span> \
                                           <span class="glyphicon glyphicon-remove pull-right thumb-remove"></span> \
 							              <span class="thumb-title">' + data + '</span> \
-							              <span class="thumb-state ' + CONST.formatState[row.internalState].toLowerCase() + '">' + CONST.formatState[row.internalState] + '</span>';
+							              <span class="thumb-state ' + CONST.formatState[row.internalState].toLowerCase() + '">' + CONST.formatState[row.internalState] + '</span> \
+                                          <span class="thumb-time"> - ' + row.time + '</span>';
                                 return thumbs;
                             } else return '';
                         }
@@ -213,6 +218,7 @@
             this.domCache.$frameworkTableWrapper = $('#frameworkTableWrapper');
             this.domCache.$frameworkFormWrapper = $('#formWrapper');
             this.domCache.$editHeaderWrapper = $('#editHeaderWrapper');
+            this.domCache.$updateEdit = $('#updateEdit');
             this.domCache.$cancelEdit = $('#cancelEdit');
             this.domCache.$editTitle = $('.edit-header');
             this.domCache.$removeFramework = $('#removeEdit');
@@ -223,6 +229,9 @@
             this.domCache.$alertModal = $('#alertModal');
             this.domCache.$modalUserInput = $('#modalUserInputWrapper');   
             this.domCache.$modalUserFeedbackMsg = $('.user-feedback');
+            this.domCache.$modalSuccessIcon = $('.alert-icon-success');
+            this.domCache.$modalWarningIcon = $('.alert-icon-warning');
+            this.domCache.$modalErrorIcon = $('.alert-icon-error');
         },
 
         init: function() {
@@ -265,6 +274,14 @@
             this.domCache.$removeFramework.on('click', function() {
                 var msg = "You are about to permanently delete one of your contribution. Do you wish to proceed?";
                 that.showModal(msg, CONST.alertDelete);
+            });
+            this.domCache.$updateEdit.on('click', function() {
+                that.validateCompleteForm();
+                if(that.validForms.indexOf(0) !== -1) {
+                    main.showModal(("Validation of form failed. Please correct the invalid field and retry."), CONST.alertServerFailed);
+                } else {
+                    that.submitData();
+                }
             });
 
             // button form nav
@@ -512,8 +529,19 @@
             this.alertFunction = alertFunction;
             this.domCache.$modalUserFeedbackMsg.text(message);
             if(alertFunction === CONST.alertDelete) {
+                this.domCache.$modalErrorIcon.addClass('hide');
+                this.domCache.$modalSuccessIcon.addClass('hide');
+                this.domCache.$modalWarningIcon.removeClass('hide');
                 this.domCache.$modalUserInput.show();
+            } else if(alertFunction === CONST.alertServerFailed) {
+                this.domCache.$modalErrorIcon.removeClass('hide');
+                this.domCache.$modalSuccessIcon.addClass('hide');
+                this.domCache.$modalWarningIcon.addClass('hide');
+                this.domCache.$modalUserInput.hide();
             } else {
+                this.domCache.$modalErrorIcon.addClass('hide');
+                this.domCache.$modalSuccessIcon.removeClass('hide');
+                this.domCache.$modalWarningIcon.addClass('hide');
                 this.domCache.$modalUserInput.hide();
             }
             

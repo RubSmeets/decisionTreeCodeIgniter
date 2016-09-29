@@ -28,14 +28,17 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">User Feedback</h4>
                     </div>
                     <div class="modal-body">
-                        <div class="row">
-                            <div class="col-xs-4 centered">
-                                <i class="fa fa-check fa-4x descr-icon" aria-hidden="true"></i>
+                        <div class="row flex-col">
+                            <div class="col-xs-3 centered">
+                                <i class="fa fa-check-circle fa-5x alert-icon-success" aria-hidden="true"></i>
+                                <i class="fa fa-exclamation-circle fa-5x alert-icon-warning hide" aria-hidden="true"></i>
+                                <i class="fa fa-times-circle fa-5x alert-icon-error hide" aria-hidden="true"></i>
                             </div>
-                            <div class="col-xs-8">
-                                <span class="user-feedback">Succesfully added a framework</span>
+                            <div class="col-xs-9">
+                                <h4 class="user-feedback">Succesfully added a framework</h4>
                             </div>
                         </div>
                         <div class="row">
@@ -51,8 +54,8 @@
         <!-- HEADER -->
         <div class="jumbotron">
             <div class="container">
-                <h1>We are at contribution page</h1>
-                <p>Compare your favorite mobile development tool with other existing tools out there. Determine which tool is best suited for your needs by filtering the list of tracked tools with your search criteria.</p>
+                <h1>Start contributing in 3... 2... 1... GO!</h1>
+                <p>You can use the contribution options below to either add a new cross-platform tool or edit an existing tool. Follow the form steps to complete your contribution and add them to the approval queue. Additionally, you can make changes to your pending contributions by choosing the editing option.</p>
                 <p>
                     <a class="btn btn-primary btn-lg" href="<?php echo base_url();?>privateCon/" role="button">Home &raquo;</a>
                     <?php if(isset($email)) { ?><button id="socialSignOut" type="button" class="btn btn-danger btn-lg pull-right" data-toggle="tooltip" data-placement="top" title="Signed in as: <?php print $email ?>">Sign out</button><?php } ?>
@@ -79,17 +82,22 @@
                         <div class="panel-body">
                             <div id="frameworkTableWrapper" hidden>
                                 <div class="col-sm-6">
-                                    <h4>Make changes to an approved framework</h4>
+                                    <div class="alert alert-info">
+                                        <strong><i class="fa fa-hand-o-up" aria-hidden="true"></i> Select - </strong>Make changes to an approved framework
+                                    </div>
                                     <table id="searchFrameworksTable"></table>
                                 </div>
                                 <div class="col-sm-6">
-                                    <h4>Make changes to your pending contributions</h4>
+                                    <div class="alert alert-warning">
+                                        <strong><i class="fa fa-hand-o-up" aria-hidden="true"></i> Select - </strong>Make changes to your pending contributions
+                                    </div>
                                     <table id="searchUserFrameworksTable"></table>
                                 </div>
                             </div>
                             <div id="editHeaderWrapper" hidden>
                                 <h3 class="edit-header">You are now editing</h3>
                                 <div class="pull-right">
+                                    <button id="updateEdit" class="btn btn-success btn-lg edit-button"><span class="glyphicon glyphicon-upload"></span> Update</button>
                                     <button id="removeEdit" class="btn btn-danger btn-lg edit-button"><span class="glyphicon glyphicon-trash"></span> Remove</button>
                                     <button id="cancelEdit" class="btn btn-warning btn-lg edit-button"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
                                 </div>

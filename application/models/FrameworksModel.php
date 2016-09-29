@@ -31,7 +31,7 @@ class FrameworksModel extends CI_Model {
     }
     //Get all the frameworks that are approved. format data for jQuery dataTable
     function getEditFrameworkListThumbData($userId, &$errmsg) {
-        $this->db->select('framework_id, framework, logo_img, state');
+        $this->db->select('framework_id, framework, logo_img, state, comparison_data_last_update');
         $this->db->where('state', PublicConstants::STATE_APPROVED);
         $this->db->where('framework_id NOT IN (SELECT f.reference FROM frameworks_v2 AS f WHERE f.modified_by='.$userId.' AND f.state='.PublicConstants::STATE_AWAIT_APPROVAL.')', NULL, FALSE);
         $query = $this->db->get('frameworks_v2');
@@ -44,7 +44,8 @@ class FrameworksModel extends CI_Model {
                     $resultData->framework,
                     (PublicConstants::IMG_PATH . $resultData->logo_img),
                     $resultData->state,
-                    0               
+                    0,
+                    $resultData->comparison_data_last_update       
                 );
                 array_push($frameworks, $frameworkThumbPrivate);
             }
@@ -53,9 +54,9 @@ class FrameworksModel extends CI_Model {
 		$errmsg = "Something went wrong with getting private framework thumbs";
 		return PublicConstants::FAILED;
     }
-    //Get all the frameworks that are approved and belong to the user. format data for jQuery dataTable
+    //Get all the frameworks that are  NOT approved and belong to the user. format data for jQuery dataTable
     function getPrivateEditFrameworkListThumbData($userId, &$errmsg) {
-        $this->db->select('framework_id, framework, logo_img, state');
+        $this->db->select('framework_id, framework, logo_img, state, comparison_data_last_update');
         $this->db->where('state', PublicConstants::STATE_AWAIT_APPROVAL);
         $this->db->where('modified_by', $userId);
         $query = $this->db->get('frameworks_v2');
@@ -68,7 +69,8 @@ class FrameworksModel extends CI_Model {
                     $resultData->framework,
                     (PublicConstants::IMG_PATH . $resultData->logo_img),
                     $resultData->state,
-                    $resultData->framework_id               
+                    $resultData->framework_id,
+                    $resultData->comparison_data_last_update               
                 );
                 array_push($frameworks, $frameworkThumbPrivate);
             }

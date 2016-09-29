@@ -34,7 +34,7 @@
 		<div class="jumbotron">
 			<div class="container">
 				<h1>Mobile Framework Comparison Tool</h1>
-				<p>Compare your favorite mobile development tool with other existing tools out there. Determine which tool is best suited for your needs by filtering the list of tracked tools with your search criteria.</p>
+				<p>Perform a side-by-side detailed comparison of up to 5 of your selected tools. Compare their properties accross multiple categories including: resources, hardware features and support features.</p>
 				<p>
 					<a class="btn btn-primary btn-lg" href="index" role="button">Home &raquo;</a>
 					<?php if(isset($email)) { ?><button id="socialSignOut" type="button" class="btn btn-danger btn-lg pull-right" data-toggle="tooltip" data-placement="top" title="Signed in as: <?php print $email ?>">Sign out</button><?php } ?>
@@ -76,7 +76,7 @@
 						</div>
 						<div class="row flex-col">
 							<div class="col-md-3 no-right-padding">
-								<span class="feature-heading">Announced  <i class="glyphicon glyphicon-question-sign feature-info" data-toggle="tooltip" title="The year the tool got announced in" data-placement="right"></i></span>
+								<span class="feature-heading">Announced  <i class="glyphicon glyphicon-question-sign feature-info" data-toggle="tooltip" title="The year the tool got officially announced" data-placement="right"></i></span>
 							</div>
 							<div id="toolAnnCon" class="col-md-9 no-left-padding flex-col">
 
