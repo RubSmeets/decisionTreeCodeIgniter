@@ -103,7 +103,7 @@ class FrameworkMarkup {
 	}
 
 	public function __destruct() {
-		log_message('debug', "The object " .  __CLASS__ . " was destroyed. ");
+		//log_message('debug', "The object " .  __CLASS__ . " was destroyed. ");
 	}
 
 	public function __toString() {

@@ -22,7 +22,7 @@ class User {
 	}
 
 	public function __destruct() {
-		log_message('debug', "The object " .  __CLASS__ . " was destroyed. " . $this->username);
+		//log_message('debug', "The object " .  __CLASS__ . " was destroyed. " . $this->username);
 	}
 
 	public function __toString() {
