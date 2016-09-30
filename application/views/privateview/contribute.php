@@ -9,6 +9,9 @@
         <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.css">
         <?php echo link_tag('fonts/font-awesome/css/font-awesome.min.css'); ?>
         <?php echo link_tag('css/contribute.css'); ?>
+        <?php if(isset($admin)) { if($admin == 1) {?>
+        <?php echo link_tag('css/contributeAdmin.css'); ?>
+        <?php }} ?>
 
         <!-- Remote scripts -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -18,7 +21,9 @@
         <!-- Local scripts -->
         <script type="text/javascript" src="<?php echo base_url();?>js/private/contribute.js" ></script>
         <script type="text/javascript" src="<?php echo base_url();?>js/extern/validator.min.js" ></script><!-- form plugin -->
-
+        <?php if(isset($admin)) { if($admin == 1) {?>
+            <script type="text/javascript" src="<?php echo base_url();?>js/private/contributeAdmin.js" ></script>
+        <?php }} ?>
     </head>
 
     <body>
@@ -73,6 +78,14 @@
                         <label class="btn btn-default btn-lg">
                             <input type="radio" name="options" id="editExistingRad" autocomplete="off" value="edit"><p class="glyphicon glyphicon-pencil" style="display:block;"></p>Edit existing tool
                         </label>
+                        <?php if(isset($admin)) { if($admin == 1) {?>
+                        <label class="btn btn-default btn-lg">
+                            <input type="radio" name="options" id="userManageRad" autocomplete="off" value="userManage"><p class="glyphicon glyphicon-user" style="display:block;"></p>Manage users
+                        </label>
+                        <label class="btn btn-default btn-lg">
+                            <input type="radio" name="options" id="contributeManageRad" autocomplete="off" value="contributeManage"><p class="glyphicon glyphicon-list" style="display:block;"></p>Manage contributions
+                        </label>
+                        <?php }} ?>
                     </div>
                 </div>
             </div>
@@ -140,7 +153,7 @@
                                     <div class="form-group has-feedback">
                                         <label for="inputToolname" class="col-xs-4 control-label">Tool name (*)</label>
                                         <div class="col-xs-8">
-                                            <input class="form-control" id="inputToolname" name="framework" placeholder="e.g. Phonegap" required/>
+                                            <input class="form-control" id="inputToolname" name="framework" placeholder="e.g. Phonegap" pattern="^[a-zA-Z0-9\-\.\ ]{2,30}$" data-pattern-error="Must be longer than 2 characters and may not contain special characters (execpt: '.','-')" required/>
                                             <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
                                             <div class="help-block with-errors">Specify the cross-platform tool name</div>
                                         </div>
@@ -1711,6 +1724,56 @@
                             </div>
                         </div>
                     </div>
+                    <?php if(isset($admin)) { if($admin == 1) {?>
+                    <div id="userManagement" class="panel panel-default" hidden>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div id="userTableWrapper">
+                                    <div class="col-sm-6">
+                                        <div class="alert alert-info">
+                                            <strong><i class="fa fa-hand-o-up" aria-hidden="true"></i> Select - </strong>Block or select an active user
+                                            <i id="refreshActiveUsers" class="fa fa-refresh pull-right" aria-hidden="true"> Refresh</i>
+                                        </div>
+                                        <table id="activeUsersTable"></table>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="alert alert-warning">
+                                            <strong><i class="fa fa-hand-o-up" aria-hidden="true"></i> Select - </strong>Unblock or select a blocked user
+                                            <i id="refreshBlockedUsers" class="fa fa-refresh pull-right" aria-hidden="true"> Refresh</i>
+                                        </div>
+                                        <table id="blockedUsersTable"></table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div id="userContributionWrapper">
+                                    <div class="col-xs-12">
+                                        <h4>You are viewing all the contributions from user: <h4 id="contributionHeading"></h4></h4>
+                                        <table id="userContributionTable"></table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="contributionManagement" class="panel panel-default" hidden>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div id="contributionTableWrapper">
+                                    <div class="col-xs-12">
+                                        <div class="alert alert-info">
+                                            <strong><i class="fa fa-hand-o-up" aria-hidden="true"></i> Select - </strong>Approve, Adjust or decline a user contribution
+                                            <i id="refreshContributionTable" class="fa fa-refresh pull-right" aria-hidden="true"> Refresh</i>
+                                        </div>
+                                        <table id="contributionTable"></table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <?php }} ?>
                 </div>
             </div>
         </div>

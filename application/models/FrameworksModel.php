@@ -2,6 +2,7 @@
 
 include APPPATH . 'classes/FrameworkThumb.php';
 include APPPATH . 'classes/FrameworkThumbPrivate.php';
+include APPPATH . 'classes/FrameworkThumbAdmin.php';
 
 class FrameworksModel extends CI_Model {
 	
@@ -31,15 +32,17 @@ class FrameworksModel extends CI_Model {
     }
     //Get all the frameworks that are approved. format data for jQuery dataTable
     function getEditFrameworkListThumbData($userId, &$errmsg) {
-        $this->db->select('framework_id, framework, logo_img, state, comparison_data_last_update');
+        $this->db->select('framework_id, framework, logo_img, state, comparison_data_last_update, username');
+        $this->db->from('frameworks_v2');
+        $this->db->join('users', 'frameworks_v2.modified_by = users.id', 'left');
         $this->db->where('state', PublicConstants::STATE_APPROVED);
         $this->db->where('framework_id NOT IN (SELECT f.reference FROM frameworks_v2 AS f WHERE f.modified_by='.$userId.' AND f.state='.PublicConstants::STATE_AWAIT_APPROVAL.')', NULL, FALSE);
-        $query = $this->db->get('frameworks_v2');
+        $query = $this->db->get();
 		
         if($query->num_rows() != 0) {
             $frameworks = array();
 			foreach ($query->result() as $resultData) {
-                $frameworkThumbPrivate = new frameworkThumbPrivate (
+                $frameworkThumbPrivate = new FrameworkThumbPrivate (
                     $resultData->framework_id,
                     $resultData->framework,
                     (PublicConstants::IMG_PATH . $resultData->logo_img),
@@ -47,6 +50,7 @@ class FrameworksModel extends CI_Model {
                     0,
                     $resultData->comparison_data_last_update       
                 );
+                $frameworkThumbPrivate->setUser($resultData->username);
                 array_push($frameworks, $frameworkThumbPrivate);
             }
             return $frameworks;
@@ -64,7 +68,7 @@ class FrameworksModel extends CI_Model {
         if($query->num_rows() != 0) {
             $frameworks = array();
 			foreach ($query->result() as $resultData) {
-                $frameworkThumbPrivate = new frameworkThumbPrivate (
+                $frameworkThumbPrivate = new FrameworkThumbPrivate (
                     $resultData->framework_id,
                     $resultData->framework,
                     (PublicConstants::IMG_PATH . $resultData->logo_img),
@@ -116,7 +120,9 @@ class FrameworksModel extends CI_Model {
     function getPrivateFrameworkByName($name, $state, $userId, $errmsg) {
         $this->db->where('framework', $name);
         $this->db->where('state', $state);
-        $this->db->where('modified_by', $userId);
+        if($state == PublicConstants::STATE_AWAIT_APPROVAL) {
+            $this->db->where('modified_by', $userId);
+        }
         $this->db->limit(1);    //only return one framework
         $query = $this->db->get('frameworks_v2');
 
@@ -134,6 +140,59 @@ class FrameworksModel extends CI_Model {
             }
 		}
 		$errmsg = "Framework not found";
+		return PublicConstants::FAILED;
+    }
+
+    //Get contribution framework data from a specific user_error
+    function getContributionsOfUser($email, &$errmsg) {
+        $this->db->select('framework_id, framework, logo_img, state, comparison_data_last_update');
+        $this->db->where("modified_by = (SELECT u.id FROM users AS u WHERE u.user_email = '" . $email ."')", NULL, FALSE);
+        $query = $this->db->get('frameworks_v2');
+
+        if($query->num_rows() != 0) {
+            $frameworks = array();
+			foreach ($query->result() as $resultData) {
+                $frameworkThumbPrivate = new FrameworkThumbPrivate (
+                    $resultData->framework_id,
+                    $resultData->framework,
+                    (PublicConstants::IMG_PATH . $resultData->logo_img),
+                    $resultData->state,
+                    $resultData->framework_id,
+                    $resultData->comparison_data_last_update               
+                );
+                array_push($frameworks, $frameworkThumbPrivate);
+            }
+            return $frameworks;
+		}
+		$errmsg = "Something went wrong with getting user contributions";
+		return PublicConstants::FAILED;
+    }
+
+    //Get all the frameworks that are approved. format data for jQuery dataTable
+    function getAllPendingContributionThumbs(&$errmsg) {
+        $this->db->select('framework_id, framework, logo_img, comparison_data_last_update, reference, username');
+        $this->db->from('frameworks_v2');
+        $this->db->join('users', 'frameworks_v2.modified_by = users.id', 'left');
+        $this->db->where('state', PublicConstants::STATE_AWAIT_APPROVAL);
+        $query = $this->db->get();
+		
+        if($query->num_rows() != 0) {
+            $frameworks = array();
+			foreach ($query->result() as $resultData) {
+                $frameworkThumbAdmin = new FrameworkThumbAdmin (
+                    $resultData->framework_id,
+                    $resultData->framework,
+                    (PublicConstants::IMG_PATH . $resultData->logo_img),
+                    $resultData->framework_id,
+                    $resultData->comparison_data_last_update,
+                    $resultData->username,
+                    $resultData->reference
+                );
+                array_push($frameworks, $frameworkThumbAdmin);
+            }
+            return $frameworks;
+		}
+		$errmsg = "Something went wrong with getting admin framework thumbs";
 		return PublicConstants::FAILED;
     }
 

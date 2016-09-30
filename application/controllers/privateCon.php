@@ -32,7 +32,7 @@ class PrivateCon extends CI_Controller {
     }
 
     public function contribute() {
-        $data = array('email' => $this->session->userdata('email'));
+        $data = array('email' => $this->session->userdata('email'), 'admin' => $this->session->userdata('admin'));
         $this->load->view('privateview/contribute', $data);
     }
 
@@ -266,6 +266,104 @@ class PrivateCon extends CI_Controller {
         // provide feedback to user
         $errmsg = "Framework edit is removed";
         $this->echoResponse($errmsg,$retval);
+    }
+
+    public function AJ_getThumbUsers() {
+        $errmsg = "";
+		$retval = PublicConstants::SUCCESS;
+        // No need to check if user is blocked because we are admin
+        $this->load->model('UserModel');
+
+        // Get active users
+		$users = $this->UserModel->getActiveUsersThumbs($errmsg);
+
+		// Custom response for the jQuery datatables
+		$data = array(
+			"users" => $users
+		);
+		echo json_encode($data);
+    }
+
+    public function AJ_getThumbBlockedUsers() {
+        $errmsg = "";
+		$retval = PublicConstants::SUCCESS;
+        // No need to check if user is blocked because we are admin
+        $this->load->model('UserModel');
+
+        // Get active users
+		$users = $this->UserModel->getBlockedUsersThumbs($errmsg);
+
+		// Custom response for the jQuery datatables
+		$data = array(
+			"users" => $users
+		);
+		echo json_encode($data);
+    }
+
+    public function AJ_manageUser() {
+        $errmsg = "";
+		$retval = PublicConstants::SUCCESS;
+
+		if(isset($_POST["email"]) && isset($_POST['action'])) {
+        	$email = $_POST["email"];
+            $action = $_POST['action'];
+    	} else {
+			$errmsg = "No correct user data specified";
+			$retval = PublicConstants::FAILED;
+			$this->echoResponse($errmsg, $retval);
+			return;
+		}
+
+        // Block the user by updating entry
+        $this->load->model('UserModel');
+		$retval = $this->UserModel->blockUnblockUserByEmail($email, $action, $errmsg);
+
+		if($retval != PublicConstants::SUCCESS) {
+			// Database error
+			$this->echoResponse($errmsg, $retval);
+			return;
+		}
+        // provide feedback to user
+        if($action == 1) {$errmsg = "User is blocked";}
+        else {$errmsg = "User is unblocked";}
+        $this->echoResponse($errmsg,$retval);
+    }
+
+    public function AJ_getUserContributions() {
+        $errmsg = "";
+		$retval = PublicConstants::SUCCESS;
+
+		if(isset($_GET["email"])) {
+        	$email = $_GET["email"];
+    	} else {
+			$errmsg = "No correct user data specified";
+			$retval = PublicConstants::FAILED;
+			$this->echoResponse($errmsg, $retval);
+			return;
+		}
+
+        $this->load->model('FrameworksModel');
+		$contributions = $this->FrameworksModel->getContributionsOfUser($email, $errmsg);
+
+		// Custom response for the jQuery datatables
+		$data = array(
+			"frameworks" => $contributions
+		);
+		echo json_encode($data);
+    }
+
+    public function AJ_getAllPendingContributions() {
+        $errmsg = "";
+		$retval = PublicConstants::SUCCESS;
+
+        $this->load->model('FrameworksModel');
+		$pendingFrameworks = $this->FrameworksModel->getAllPendingContributionThumbs($errmsg);
+
+		// Custom response for the jQuery datatables
+		$data = array(
+			"frameworks" => $pendingFrameworks
+		);
+		echo json_encode($data);
     }
 
     private function echoResponse($errmsg, $retval) {

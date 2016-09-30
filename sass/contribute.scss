@@ -25,8 +25,8 @@
 .alert-icon-error {
     color: #d9534f;
 }
-.modal .row.flex-col {
-    margin-bottom: 30px;
+.user-feedback {
+    vertical-align: middle;
 }
 // ---------------------------------------------------
 
@@ -37,7 +37,8 @@
     margin: 0px;
 }
 
-.dataTables_wrapper table thead {
+#searchUserFrameworksTable_wrapper.dataTables_wrapper table thead,
+#searchFrameworksTable_wrapper.dataTables_wrapper table thead {
     display:none;
 }
 .dataTables_wrapper .dataTables_paginate {
@@ -150,6 +151,7 @@ input.edit-search {
 #searchUserFrameworksTable .thumb-remove {
     color: #d9534f;
 }
+#searchFrameworksTable .thumb-contributor,
 #searchUserFrameworksTable .thumb-time {
     color: gray;
 }

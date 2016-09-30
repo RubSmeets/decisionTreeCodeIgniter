@@ -65,7 +65,8 @@
                                 thumbs = '<span class="thumb-framework"><img src="' + row.thumb_img + '" alt=""/></span> \
 							              <span class="glyphicon glyphicon-pencil pull-right thumb-add"></span> \
 							              <span class="thumb-title">' + data + '</span> \
-							              <span class="thumb-state ' + CONST.formatState[row.internalState].toLowerCase() + '">' + CONST.formatState[row.internalState] + '</span>';
+							              <span class="thumb-state ' + CONST.formatState[row.internalState].toLowerCase() + '">' + CONST.formatState[row.internalState] + '</span> \
+                                          <span class="thumb-contributor"> - Contributed by ' + row.contributor + '</span>';
                                 return thumbs;
                             } else return '';
                         }
@@ -97,7 +98,9 @@
 
             this.domCache.$searchFrameworksTable.find('tbody').on('click', 'tr', function () {
                 var data = that.frameworkTable.row( this ).data();
-                main.loadFormData(data);
+                if(typeof data !== 'undefined') {
+                    main.loadFormData(data);
+                }
             });
 
             this.domCache.$filterField.on('focus', function() {
@@ -184,7 +187,9 @@
 
             this.domCache.$searchFrameworksTable.find('tbody').on('click', 'tr', function () {
                 var data = that.frameworkTable.row( this ).data();
-                main.loadFormData(data);
+                if(typeof data !== 'undefined') {
+                    main.loadFormData(data);
+                }
             });
 
             this.domCache.$filterField.on('focus', function() {
@@ -214,7 +219,7 @@
         },
 
         cacheElements: function() {
-            this.domCache.$contributeOptions = $('[name="options"]');     
+            this.domCache.$contributeOptions = $('#addNewRad,#editExistingRad');     
             this.domCache.$frameworkTableWrapper = $('#frameworkTableWrapper');
             this.domCache.$frameworkFormWrapper = $('#formWrapper');
             this.domCache.$editHeaderWrapper = $('#editHeaderWrapper');
@@ -299,6 +304,7 @@
 
             //form field validation events
             this.domCache.$formSteps.validator().on('submit', function (e, step) {
+                $('.progress-step' + step).removeClass('active-step valid-step faulty-step');
                 if (e.isDefaultPrevented()) {
                     $('.progress-step' + step).addClass('faulty-step');
                     that.validForms[step-1] = 0;
@@ -475,10 +481,14 @@
             this.triggerSubmitStep(3);
             this.triggerSubmitStep(4);
             this.triggerSubmitStep(5);
+            this.addState = 1;
             this.showNextForm();    // set active the current form step
         },
 
         showAddForm: function() {
+            $('#addNewRad').prop('checked', true);
+            $('#addNewRad').parent().addClass('active');
+            $('#editExistingRad').parent().removeClass('active');
             if(this.domCache.$frameworkTableWrapper.is(":visible") || this.domCache.$editHeaderWrapper.is(":visible")) {
                 this.domCache.$frameworkTableWrapper.hide();
                 this.domCache.$editHeaderWrapper.hide();
@@ -488,6 +498,9 @@
         },
 
         showEditForm: function() {
+            $('#editExistingRad').prop('checked', true);
+            $('#editExistingRad').parent().addClass('active');
+            $('#addNewRad').parent().removeClass('active');
             if(!this.domCache.$frameworkTableWrapper.is(":visible")) {
                 this.domCache.$frameworkTableWrapper.show();
                 this.domCache.$editHeaderWrapper.hide();

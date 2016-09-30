@@ -1,6 +1,7 @@
 <?php
 
 include APPPATH . 'classes/User.php';
+include APPPATH . 'classes/UserThumb.php';
 
 class UserModel extends CI_Model {
 	
@@ -28,6 +29,54 @@ class UserModel extends CI_Model {
 		$errmsg = "User not found";
 		return PublicConstants::FAILED;
     }
+
+	// Get user thumb data for active users
+	function getActiveUsersThumbs(&$errmsg) {
+		$this->db->select('id, user_email, visit_count, date');
+		$this->db->where('admin', 0);
+        $this->db->where('blocked', PublicConstants::USER_NOT_BLOCKED);
+		$query = $this->db->get('users');
+
+        if($query->num_rows() != 0) {
+            $users = array();
+			foreach ($query->result() as $resultData) {
+                $userThumb = new UserThumb (
+					$resultData->id,
+                    $resultData->user_email,
+					$resultData->date,
+                    $resultData->visit_count
+                );
+                array_push($users, $userThumb);
+            }
+            return $users;
+		}
+		$errmsg = "Something went wrong with getting active users thumbs";
+		return PublicConstants::FAILED;
+	}
+
+	// Get user thumb data for blocked users
+	function getBlockedUsersThumbs(&$errmsg) {
+		$this->db->select('id, user_email, visit_count, date');
+		$this->db->where('admin', 0);
+        $this->db->where('blocked', PublicConstants::USER_BLOCKED);
+		$query = $this->db->get('users');
+
+        if($query->num_rows() != 0) {
+            $users = array();
+			foreach ($query->result() as $resultData) {
+                $userThumb = new UserThumb (
+					$resultData->id,
+                    $resultData->user_email,
+					$resultData->date,
+                    $resultData->visit_count
+                );
+                array_push($users, $userThumb);
+            }
+            return $users;
+		}
+		$errmsg = "Something went wrong with getting active users thumbs";
+		return PublicConstants::FAILED;
+	}
 
 	//Store user in database
     function createUser($userData, $accessToken, &$errmsg) {
@@ -59,6 +108,16 @@ class UserModel extends CI_Model {
 		$query = $this->db->update('users', $data);
 
         if(!$query) { $errmsg = "No update of user data: ".$userObj->username; return PublicConstants::FAILED; }
+		else return PublicConstants::SUCCESS;
+	}
+
+	// Block an active user 
+	function blockUnblockUserByEmail($email, $action, &$errmsg) {
+		$this->db->set('blocked', $action);
+		$this->db->where('user_email', $email);
+        $query = $this->db->update('users');
+
+        if(!$query) { $errmsg = "No deletion of user: ".$email; return PublicConstants::FAILED; }
 		else return PublicConstants::SUCCESS;
 	}
 }

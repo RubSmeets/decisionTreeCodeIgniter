@@ -86,9 +86,11 @@
 
             this.$frameworkTable.find('tbody').on('click', 'tr', function () {
                 var data = that.frameworkTable.row( this ).data();
-                CF.addRemoveShownFrameworks(data.framework, CONST.add);
-                CF.sendRequest(data.framework);
-                that.$modalContainer.modal('hide');
+                if(typeof data !== 'undefined') {
+                    CF.addRemoveShownFrameworks(data.framework, CONST.add);
+                    CF.sendRequest(data.framework);
+                    that.$modalContainer.modal('hide');
+                }
             });
 
             this.$filterField.on('focus', function() {
