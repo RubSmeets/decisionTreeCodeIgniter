@@ -353,6 +353,7 @@
                 if(this.validForms.indexOf(0) !== -1) this.domCache.$goNextAddBtn.prop('disabled', true);
                 else this.domCache.$goNextAddBtn.prop('disabled', false);
             } else {
+                this.domCache.$goNextAddBtn.prop('disabled', false);
                 this.domCache.$goNextAddBtn.text('Next \u00bb');
             } 
         },
