@@ -229,7 +229,7 @@
             this.domCache.$removeFramework = $('#removeEdit');
             this.domCache.$goNextAddBtn = $('#goNextStepAdd');
             this.domCache.$goBackAddBtn = $('#goBackStepAdd').hide();
-            this.domCache.$formSteps = $('form');
+            this.domCache.$formSteps = $('form.current-form');
             this.domCache.$progressSegments = $('.progress-bar'); 
             this.domCache.$alertModal = $('#alertModal');
             this.domCache.$modalUserInput = $('#modalUserInputWrapper');   

@@ -3,6 +3,10 @@
 
     var CONST = {
         successCode: 0,
+        buttonNavOption: 0,
+        progressNavOption: 1,
+        moveForward: 1,
+        moveBack: -1,
         blockUser: 1,
         unblockUser: 0,
         alertServerSuccess: 0,
@@ -354,9 +358,9 @@
             var that = this;
 
             this.domCache.$contributionTable.find('tbody').on('click', 'tr', function () {
-                var data = that.frameworkTable.row( this ).data();
+                var data = that.contributionTable.row( this ).data();
                 if(typeof data !== 'undefined') {
-                    //
+                    mainAdmin.loadFormData(data);
                 }
             });
 
@@ -373,6 +377,7 @@
     /* Main Admin contribute functionality */
     var mainAdmin = {
         initVariables: function() {
+            this.addState = 1;
             this.domCache = {};
             this.alertFunction = 0; // specifies the function of the alert modal
         },
@@ -391,6 +396,10 @@
             this.domCache.$modalErrorIcon = $('.alert-icon-error');
             this.domCache.$contributionHeading = $('#contributionHeading');
             this.domCache.$contributionManagement = $('#contributionManagement');
+            this.domCache.$refreshContributionTable = $('#refreshContributionTable');
+            this.domCache.$adminEditHeader = $('#adminEditHeaderWrapper');
+            this.domCache.$formStepsRo = $('form.refered-form');
+            this.domCache.$progressSegments = $('.progress-bar'); 
         },
 
         init: function() {
@@ -416,11 +425,28 @@
                 }
             });
 
+            // button form nav
+            $('#goNextStepAdd').on('click', function() {
+                that.goNavStep(CONST.moveForward, CONST.buttonNavOption);
+            });
+            $('#goBackStepAdd').on('click', function() {
+                that.goNavStep(CONST.moveBack, CONST.buttonNavOption);
+            });
+            //progress bar nav
+            this.domCache.$progressSegments.on('click', function() {
+                var step = $(this).data('myValue');
+                that.goNavStep(step, CONST.progressNavOption);
+            });
+
+            // Refresh handlers
             this.domCache.$refreshActiveUsers.on('click', function() {
                 DataTableActiveUser.reloadTable();
             });
             this.domCache.$refreshBlockedUsers.on('click', function() {
                 DataTableBlockedUser.reloadTable();
+            });
+            this.domCache.$refreshContributionTable.on('click', function() {
+                DataTablePendingContributions.reloadTable();
             });
 
         },
@@ -432,6 +458,26 @@
 
         initContributionTable: function() {
             DataTablePendingContributions.init($('#contributionTable'));
+        },
+
+        goNavStep: function(step, navOption) {
+
+            if(navOption === CONST.progressNavOption && step === this.addState) return; //do nothing
+            
+            // hide current container
+            this.hideCurrentRoForm();
+            // go to next
+            if(navOption === CONST.buttonNavOption) {
+                if(this.addState === CONST.formSteps && step > 0) {
+                    return;
+                } else {
+                    this.addState += step;
+                }
+            } else {
+                this.addState = step;
+            }
+            // Show next container
+            this.showNextRoForm();
         },
 
         banUser: function(user) {
@@ -489,6 +535,113 @@
             }
         },
 
+        loadFormData: function(data) {
+            $.ajax({
+                method: "GET",
+                url: CONST.backEndPrivateURL + "AJ_getAdminFramework",
+                dataType: "json",
+                data: {framework_id: data.framework_id},
+
+                error: this.errorCallback,
+                success: this.loadFormDataCallback
+            });
+        },
+
+        loadFormDataCallback: function(response) {
+            if(response.hasOwnProperty("srvResponseCode")) {
+                if(response.srvResponseCode === CONST.successCode) {
+                   if(response.srvMessage.length === 1) {
+                       // We have a new framework that needs to be reviewed
+                       mainAdmin.updateFrom(response.srvMessage[0]);
+                       mainAdmin.showApproveForm(false);
+                    } else {
+                       // We have an adjusted framework that needs to be reviewed and compared with original [0] == requested [1] == refered original
+                       mainAdmin.updateFrom(response.srvMessage[0]);
+                       mainAdmin.updateReadOnlyForm(response.srvMessage[1], response.srvMessage[0]);
+                       mainAdmin.showApproveForm(true);
+                   }
+                }else {
+                    mainAdmin.showModal(("Action not completed. server message: " + response.srvMessage), CONST.alertServerFailed);
+                }
+            } else {
+                mainAdmin.showModal("Server not responding", CONST.alertServerUnresponsive);
+            }
+        },
+
+        updateFrom: function(frameworkData) {
+            var $el = null;
+            for (var key in frameworkData) {
+                if (frameworkData.hasOwnProperty(key)) {
+                    $el = $(":input[name='" + key + "']");
+                    if($el.length !== 0) {
+                        if($el.is(':radio')) {
+                            $($el).filter(":radio[value='" + frameworkData[key] + "']").prop('checked', true);
+                        } else if($el.is(':checkbox')) {
+                            $($el).filter(":checkbox[value='" + frameworkData[key] + "']").prop('checked', true);
+                        } else {
+                            // text field
+                            $($el).val(frameworkData[key]);
+                        }
+                    }
+                }
+            }
+        },
+
+        updateReadOnlyForm: function(frameworkData, frameworkDataAdj) {
+            var $el = null;
+            var $temp = null;
+            for (var key in frameworkData) {
+                if (frameworkData.hasOwnProperty(key)) {
+                    $el = $(":input[name='" + key + "Ro']");
+                    if($el.length !== 0) {
+                        if($el.is(':radio')) {
+                            $el.parent().addClass('disabled');
+                            $el.prop('disabled', true);
+                            $temp = $($el).filter(":radio[value='" + frameworkData[key] + "']");
+                            $temp.prop('checked', true);
+                            $temp.prop('disabled', false);
+                            $temp.parent().removeClass('disabled');
+                            if(frameworkData[key] !== frameworkDataAdj[key]) {
+                                $($temp).siblings().addClass('highlight-diff');
+                            } else {
+                                $($temp).siblings().removeClass('highlight-diff');
+                            }
+                        } else if($el.is(':checkbox')) {
+                            $($el).filter(":checkbox[value='" + frameworkData[key] + "']").prop('checked', true);
+                            if(frameworkData[key] !== frameworkDataAdj[key]) {
+                                $($el).next().addClass('highlight-diff');
+                            } else {
+                                $($el).next().removeClass('highlight-diff');
+                            }
+                        } else {
+                            // text field
+                            $($el).val(frameworkData[key]);
+                            if(frameworkData[key] !== frameworkDataAdj[key]) {
+                                $($el).addClass('highlight-diff');
+                            } else {
+                                $($el).removeClass('highlight-diff');
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        showApproveForm: function(withComparison) {
+            this.addState = 1;
+            this.domCache.$contributionManagement.hide();
+            this.domCache.$adminEditHeader.show();
+            this.domCache.$frameworkForm.show();
+            if(withComparison) {
+                $('#formCurrent').addClass('col-xs-8');
+                $('#formRefered').show();
+            } else {
+                $('#formCurrent').removeClass('col-xs-8');
+                $('#formRefered').hide();
+            }
+
+        },
+
         showForm: function() {
             this.domCache.$userManagement.hide();
             this.domCache.$contributionManagement.hide();
@@ -528,8 +681,26 @@
             }
             
             this.domCache.$alertModal.modal('show');
+        },
 
+        hideCurrentRoForm: function() {
+            //hide current container
+            $('.container-ro-step' + this.addState).hide();
+        },
+
+        showNextRoForm: function() {
+            $('.container-ro-step' + this.addState).show();
+        },
+
+        resetCurrentForm: function() {
+            var i = 0;
+            for(i=0; i<this.domCache.$formSteps.length; i++) {
+                this.domCache.$formSteps[i].reset();
+            }
+            // reset form validation
+            $('.progress-step2,.progress-step3,.progress-step4,.progress-step5').removeClass('active-step valid-step faulty-step');
         }
+
     }
 
     $( document ).ready(function() {

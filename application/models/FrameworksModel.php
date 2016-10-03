@@ -196,6 +196,45 @@ class FrameworksModel extends CI_Model {
 		return PublicConstants::FAILED;
     }
 
+    //Get framework for approval or decline
+    function getPrivateFrameworkById($frameworkId, &$errmsg) {
+        $this->db->where('framework_id', $frameworkId);
+        $query = $this->db->get('frameworks_v2');
+        $frameworks = array();
+
+        if($query->num_rows() != 0) {
+			foreach ($query->result() as $resultData) {
+                $framework = new Framework($resultData->framework_id, false); //do not validate object
+                foreach($resultData as $key => $value) {
+                    $framework->$key($value);
+                }
+                array_push($frameworks, $framework);
+            }
+		} else {
+            $errmsg = "Framework not found";
+            return PublicConstants::FAILED;
+        }
+
+        // Second query if needed to get orignal refered framework
+        $this->db->where('framework_id', $framework->reference);
+        $query = $this->db->get('frameworks_v2');
+
+        if($query->num_rows() != 0) {
+			foreach ($query->result() as $resultData) {
+                $framework = new Framework($resultData->framework_id, false); //do not validate object
+                foreach($resultData as $key => $value) {
+                    $framework->$key($value);
+                }
+                array_push($frameworks, $framework);
+                return $frameworks;
+            }
+		} else {
+            return $frameworks;
+        }
+        $errmsg = "Framework not found";
+        return PublicConstants::FAILED;
+    }
+
     //Store a new framework in the database
     function storeFramework($frameworkObj, &$errmsg) {
         $query = $this->db->insert('frameworks_v2', $frameworkObj);

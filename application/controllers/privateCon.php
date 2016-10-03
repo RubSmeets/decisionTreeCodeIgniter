@@ -366,6 +366,33 @@ class PrivateCon extends CI_Controller {
 		echo json_encode($data);
     }
 
+    public function AJ_getAdminFramework() {
+		$errmsg = "";
+		$retval = PublicConstants::SUCCESS;
+
+		if(isset($_GET["framework_id"])) {
+        	$frameworkId = $_GET["framework_id"];
+    	} else {
+			$errmsg = "No correct framework data specified";
+			$retval = PublicConstants::FAILED;
+			$this->echoResponse($errmsg, $retval);
+			return;
+		}
+
+		// Load database interaction model
+		$this->load->model('FrameworksModel');
+		$frameworks = $this->FrameworksModel->getPrivateFrameworkById($frameworkId, $errmsg);
+
+		if(!is_a($frameworks[0], 'Framework')) {
+            $errmsg = "retrieving framework for admin failed.";
+            $retval = PublicConstants::FAILED;
+            $this->echoResponse($errmsg, $retval);
+            return;
+		}
+        // NOTE: $frameworks[0] contains requested and $frameworks[1] if set contains refered
+        $this->echoResponse($frameworks, $retval);
+	}
+
     private function echoResponse($errmsg, $retval) {
 		$data = array(
 			'srvResponseCode' => $retval,

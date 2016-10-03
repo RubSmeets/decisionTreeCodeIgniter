@@ -337,10 +337,18 @@ class Framework {
         $this->remoteupdate = $data;
     }
     public function free($data) {
-        $this->free = $data;
+        if($this->_validateObject) {
+            $this->free = $data;
+        } else {
+            $this->free = $this->formatRadioEmpty($data);
+        }
     }
     public function opensource($data) {
-        $this->opensource = $data;
+        if($this->_validateObject) {
+            $this->opensource = $data;
+        } else {
+            $this->opensource = $this->formatRadioEmpty($data);
+        }
     }
     public function repo($data) {
         if($this->_validateObject) {
@@ -350,10 +358,18 @@ class Framework {
         }
     }
     public function trial($data) {
-        $this->trial = $data;
+        if($this->_validateObject) {
+            $this->trial = $data;
+        } else {
+            $this->trial = $this->formatRadioEmpty($data);
+        }
     }
     public function games($data) {
-        $this->games = $data;
+        if($this->_validateObject) {
+            $this->games = $data;
+        } else {
+            $this->games = $this->formatRadioEmpty($data);
+        }
     }
     public function multi_screen($data) {
         $this->multi_screen = $data;
@@ -418,157 +434,361 @@ class Framework {
         }
     }
     public function webtonative($data) {
-        $this->webtonative = $data;
+        if($this->_validateObject) {
+            $this->webtonative = $data;
+        } else {
+            $this->webtonative = $this->formatRadioEmpty($data);
+        }
     }
     public function nativejavascript($data) {
-        $this->nativejavascript = $data;
+        if($this->_validateObject) {
+            $this->nativejavascript = $data;
+        } else {
+            $this->nativejavascript = $this->formatRadioEmpty($data);
+        }
     }
     public function runtime($data) {
-        $this->runtime = $data;
+        if($this->_validateObject) {
+            $this->runtime = $data;
+        } else {
+            $this->runtime = $this->formatRadioEmpty($data);
+        }
     }
     public function javascript_tool($data) {
-        $this->javascript_tool = $data;
+        if($this->_validateObject) {
+            $this->javascript_tool = $data;
+        } else {
+            $this->javascript_tool = $this->formatRadioEmpty($data);
+        }
     }
     public function sourcecode($data) {
-        $this->sourcecode = $data;
+        if($this->_validateObject) {
+            $this->sourcecode = $data;
+        } else {
+            $this->sourcecode = $this->formatRadioEmpty($data);
+        }
     }
     public function appfactory($data) {
-        $this->appfactory = $data;
+        if($this->_validateObject) {
+            $this->appfactory = $data;
+        } else {
+            $this->appfactory = $this->formatRadioEmpty($data);
+        }
     }
     public function mobilewebsite($data) {
-        $this->mobilewebsite = $data;
+        if($this->_validateObject) {
+            $this->mobilewebsite = $data;
+        } else {
+            $this->mobilewebsite = $this->formatRadioEmpty($data);
+        }
     }
     public function webapp($data) {
-        $this->webapp = $data;
+        if($this->_validateObject) {
+            $this->webapp = $data;
+        } else {
+            $this->webapp = $this->formatRadioEmpty($data);
+        }
     }
     public function nativeapp($data) {
-        $this->nativeapp = $data;
+        if($this->_validateObject) {
+            $this->nativeapp = $data;
+        } else {
+            $this->nativeapp = $this->formatRadioEmpty($data);
+        }
     }
     public function hybridapp($data) {
-        $this->hybridapp = $data;
+        if($this->_validateObject) {
+            $this->hybridapp = $data;
+        } else {
+            $this->hybridapp = $this->formatRadioEmpty($data);
+        }
     }
     public function android($data) {
-        $this->android = $data;
+        if($this->_validateObject) {
+            $this->android = $data;
+        } else {
+            $this->android = $this->formatRadioEmpty($data);
+        }
     }
     public function ios($data) {
-        $this->ios = $data;
+        if($this->_validateObject) {
+            $this->ios = $data;
+        } else {
+            $this->ios = $this->formatRadioEmpty($data);
+        }
     }
     public function blackberry($data) {
-        $this->blackberry = $data;
+        if($this->_validateObject) {
+            $this->blackberry = $data;
+        } else {
+            $this->blackberry = $this->formatRadioEmpty($data);
+        }
     }
     public function windowsphone($data) {
-        $this->windowsphone = $data;
+        if($this->_validateObject) {
+            $this->windowsphone = $data;
+        } else {
+            $this->windowsphone = $this->formatRadioEmpty($data);
+        }
     }
     public function wup($data) {
-        $this->wup = $data;
+        if($this->_validateObject) {
+            $this->wup = $data;
+        } else {
+            $this->wup = $this->formatRadioEmpty($data);
+        }
     }
     public function androidtv($data) {
-        $this->androidtv = $data;
+        if($this->_validateObject) {
+            $this->androidtv = $data;
+        } else {
+            $this->androidtv = $this->formatRadioEmpty($data);
+        }
     }
     public function appletv($data) {
-        $this->appletv = $data;
+        if($this->_validateObject) {
+            $this->appletv = $data;
+        } else {
+            $this->appletv = $this->formatRadioEmpty($data);
+        }
     }
     public function watchos($data) {
-        $this->watchos = $data;
+        if($this->_validateObject) {
+            $this->watchos = $data;
+        } else {
+            $this->watchos = $this->formatRadioEmpty($data);
+        }
     }
     public function bada($data) {
-        $this->bada = $data;
+        if($this->_validateObject) {
+            $this->bada = $data;
+        } else {
+            $this->bada = $this->formatRadioEmpty($data);
+        }
     }
     public function firefoxos($data) {
-        $this->firefoxos = $data;
+        if($this->_validateObject) {
+            $this->firefoxos = $data;
+        } else {
+            $this->firefoxos = $this->formatRadioEmpty($data);
+        }
     }
     public function kindle($data) {
-        $this->kindle = $data;
+        if($this->_validateObject) {
+            $this->kindle = $data;
+        } else {
+            $this->kindle = $this->formatRadioEmpty($data);
+        }
     }
     public function webos($data) {
-        $this->webos = $data;
+        if($this->_validateObject) {
+            $this->webos = $data;
+        } else {
+            $this->webos = $this->formatRadioEmpty($data);
+        }
     }
     public function osx($data) {
-        $this->osx = $data;
+        if($this->_validateObject) {
+            $this->osx = $data;
+        } else {
+            $this->osx = $this->formatRadioEmpty($data);
+        }
     }
     public function windows($data) {
-        $this->windows = $data;
+        if($this->_validateObject) {
+            $this->windows = $data;
+        } else {
+            $this->windows = $this->formatRadioEmpty($data);
+        }
     }
     public function windowsmobile($data) {
-        $this->windowsmobile = $data;
+        if($this->_validateObject) {
+            $this->windowsmobile = $data;
+        } else {
+            $this->windowsmobile = $this->formatRadioEmpty($data);
+        }
     }
     public function symbian($data) {
-        $this->symbian = $data;
+        if($this->_validateObject) {
+            $this->symbian = $data;
+        } else {
+            $this->symbian = $this->formatRadioEmpty($data);
+        }
     }
     public function tizen($data) {
-        $this->tizen = $data;
+        if($this->_validateObject) {
+            $this->tizen = $data;
+        } else {
+            $this->tizen = $this->formatRadioEmpty($data);
+        }
     }
     public function maemo($data) {
-        $this->maemo = $data;
+        if($this->_validateObject) {
+            $this->maemo = $data;
+        } else {
+            $this->maemo = $this->formatRadioEmpty($data);
+        }
     }
     public function meego($data) {
-        $this->meego = $data;
+        if($this->_validateObject) {
+            $this->meego = $data;
+        } else {
+            $this->meego = $this->formatRadioEmpty($data);
+        }
     }
     public function html($data) {
-        $this->html = $data;
+        if($this->_validateObject) {
+            $this->html = $data;
+        } else {
+            $this->html = $this->formatRadioEmpty($data);
+        }
     }
     public function csharp($data) {
-        $this->csharp = $data;
+        if($this->_validateObject) {
+            $this->csharp = $data;
+        } else {
+            $this->csharp = $this->formatRadioEmpty($data);
+        }
     }
     public function css($data) {
-        $this->css = $data;
+        if($this->_validateObject) {
+            $this->css = $data;
+        } else {
+            $this->css = $this->formatRadioEmpty($data);
+        }
     }
     public function basic($data) {
-        $this->basic = $data;
+        if($this->_validateObject) {
+            $this->basic = $data;
+        } else {
+            $this->basic = $this->formatRadioEmpty($data);
+        }
     }
     public function cplusplus($data) {
-        $this->cplusplus = $data;
+        if($this->_validateObject) {
+            $this->cplusplus = $data;
+        } else {
+            $this->cplusplus = $this->formatRadioEmpty($data);
+        }
     }
     public function java($data) {
-        $this->java = $data;
+        if($this->_validateObject) {
+            $this->java = $data;
+        } else {
+            $this->java = $this->formatRadioEmpty($data);
+        }
     }
     public function javame($data) {
-        $this->javame = $data;
+        if($this->_validateObject) {
+            $this->javame = $data;
+        } else {
+            $this->javame = $this->formatRadioEmpty($data);
+        }
     }
     public function js($data) {
-        $this->js = $data;
+        if($this->_validateObject) {
+            $this->js = $data;
+        } else {
+            $this->js = $this->formatRadioEmpty($data);
+        }
     }
     public function jsx($data) {
-        $this->jsx = $data;
+        if($this->_validateObject) {
+            $this->jsx = $data;
+        } else {
+            $this->jsx = $this->formatRadioEmpty($data);
+        }
     }
     public function lua($data) {
-        $this->lua = $data;
+        if($this->_validateObject) {
+            $this->lua = $data;
+        } else {
+            $this->lua = $this->formatRadioEmpty($data);
+        }
     }
     public function objc($data) {
-        $this->objc = $data;
+        if($this->_validateObject) {
+            $this->objc = $data;
+        } else {
+            $this->objc = $this->formatRadioEmpty($data);
+        }
     }
     public function swift($data) {
-        $this->swift = $data;
+        if($this->_validateObject) {
+            $this->swift = $data;
+        } else {
+            $this->swift = $this->formatRadioEmpty($data);
+        }
     }
     public function php($data) {
-        $this->php = $data;
+        if($this->_validateObject) {
+            $this->php = $data;
+        } else {
+            $this->php = $this->formatRadioEmpty($data);
+        }
     }
     public function python($data) {
-        $this->python = $data;
+        if($this->_validateObject) {
+            $this->python = $data;
+        } else {
+            $this->python = $this->formatRadioEmpty($data);
+        }
     }
     public function ruby($data) {
-        $this->ruby = $data;
+        if($this->_validateObject) {
+            $this->ruby = $data;
+        } else {
+            $this->ruby = $this->formatRadioEmpty($data);
+        }
     }
     public function actionscript($data) {
-        $this->actionscript = $data;
+        if($this->_validateObject) {
+            $this->actionscript = $data;
+        } else {
+            $this->actionscript = $this->formatRadioEmpty($data);
+        }
     }
     public function uno($data) {
-        $this->uno = $data;
+        if($this->_validateObject) {
+            $this->uno = $data;
+        } else {
+            $this->uno = $this->formatRadioEmpty($data);
+        }
     }
     public function MXML($data) {
-        $this->MXML = $data;
+        if($this->_validateObject) {
+            $this->MXML = $data;
+        } else {
+            $this->MXML = $this->formatRadioEmpty($data);
+        }
     }
     public function visualeditor($data) {
-        $this->visualeditor = $data;
+        if($this->_validateObject) {
+            $this->visualeditor = $data;
+        } else {
+            $this->visualeditor = $this->formatRadioEmpty($data);
+        }
     }
     public function xml($data) {
-        $this->xml = $data;
+        if($this->_validateObject) {
+            $this->xml = $data;
+        } else {
+            $this->xml = $this->formatRadioEmpty($data);
+        }
     }
     public function qml($data) {
-        $this->qml = $data;
+        if($this->_validateObject) {
+            $this->qml = $data;
+        } else {
+            $this->qml = $this->formatRadioEmpty($data);
+        }
     }
     public function UXMarkup($data) {
-        $this->UXMarkup = $data;
+        if($this->_validateObject) {
+            $this->UXMarkup = $data;
+        } else {
+            $this->UXMarkup = $this->formatRadioEmpty($data);
+        }
     }
     public function ads($data) {
         $this->ads = $data;
@@ -693,6 +913,14 @@ class Framework {
     private function formatEmpty($data) {
         if($data === "false" or $data === "UNDEF") {
             return "";
+        } else {
+            return $data;
+        }
+    }
+
+    private function formatRadioEmpty($data) {
+        if($data === "UNDEF") {
+            return "false";
         } else {
             return $data;
         }

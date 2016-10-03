@@ -140,3 +140,59 @@ input.edit-search {
     color: gray;
 }
 // ---------------------------------------------------
+
+// Edit header ---------------------------------------
+#adminEditHeaderWrapper {
+    margin-bottom: 20px;
+}
+h3.adminEdit-header {
+    display: inline-block !important;
+}
+.edit-button {
+    margin-left: 10px;
+    margin-top: 15px;
+}
+// ---------------------------------------------------
+
+// styling of checkboxes ------------------------
+label.checkbox-label-ro {
+    display: block;
+    padding-left: 5px;
+    line-height: 18px;
+    font-size: small;
+}
+input[type=checkbox] {
+    display:none;
+}
+/* Using 2 :pseudo classes from predefined bootstrap icons*/
+input[type='checkbox'].custom-checkbox-ro + label:before {
+    position: relative;
+    top: 1px;
+    right: 5px;
+    display: inline-block;
+    font-family: 'Glyphicons Halflings';
+    font-style: normal;
+    font-size: 1em;
+}
+input[type='checkbox'].custom-checkbox-ro + label:before {/*unchecked icon*/
+    content: "\e157";
+}
+input[type='checkbox']:checked.custom-checkbox-ro + label:before {/*checked icon*/
+    content: "\e067";
+}
+// ---------------------------------------------------
+
+// Classes to align readonly form inputs with normal inputs (dirty solution)
+.adjust-height-sm {
+    min-height: 47px;
+}
+.adjust-height-la {
+    min-height: 62px;
+}
+// ---------------------------------------------------
+
+// Styling of form elements --------------------------
+.highlight-diff {
+    background-color: yellow !important;
+}
+// ---------------------------------------------------
