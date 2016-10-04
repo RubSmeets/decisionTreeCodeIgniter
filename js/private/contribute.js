@@ -17,6 +17,8 @@
         alertServerFailed: 1,
         alertServerUnresponsive: 2,
         alertDelete: 3,
+        editFormInitialState: 0,
+        editFormEditState: 1,
         formatState: [
             "Awaiting Approval",
 		    "Approved"
@@ -261,7 +263,7 @@
                 if($(this).val() === "add") {
                     that.showAddForm();
                 } else {
-                    that.showEditForm();
+                    that.showEditForm(CONST.editFormInitialState);
                 }
             });
 
@@ -274,7 +276,7 @@
 
             // Form management events
             this.domCache.$cancelEdit.on('click', function() {
-                that.showEditForm();
+                that.showEditForm(CONST.editFormInitialState);
             });
             this.domCache.$removeFramework.on('click', function() {
                 var msg = "You are about to permanently delete one of your contribution. Do you wish to proceed?";
@@ -421,7 +423,7 @@
                 if(response.srvResponseCode === CONST.successCode) {
                     main.updateFrom(response.srvMessage);
                     main.validateCompleteForm();
-                    main.showEditForm();
+                    main.showEditForm(CONST.editFormEditState);
                 }else {
                     main.showModal(("Action not completed. server message: " + response.srvMessage), CONST.alertServerFailed);
                 }
@@ -483,6 +485,7 @@
             this.triggerSubmitStep(4);
             this.triggerSubmitStep(5);
             this.addState = 1;
+            this.hideAllForms();
             this.showNextForm();    // set active the current form step
         },
 
@@ -490,19 +493,18 @@
             $('#addNewRad').prop('checked', true);
             $('#addNewRad').parent().addClass('active');
             $('#editExistingRad').parent().removeClass('active');
-            if(this.domCache.$frameworkTableWrapper.is(":visible") || this.domCache.$editHeaderWrapper.is(":visible")) {
-                this.domCache.$frameworkTableWrapper.hide();
-                this.domCache.$editHeaderWrapper.hide();
-                this.resetForm();
-                this.domCache.$frameworkFormWrapper.show();
-            }
+    
+            this.domCache.$frameworkTableWrapper.hide();
+            this.domCache.$editHeaderWrapper.hide();
+            this.resetForm();
+            this.domCache.$frameworkFormWrapper.show();
         },
 
-        showEditForm: function() {
+        showEditForm: function(state) {
             $('#editExistingRad').prop('checked', true);
             $('#editExistingRad').parent().addClass('active');
             $('#addNewRad').parent().removeClass('active');
-            if(!this.domCache.$frameworkTableWrapper.is(":visible")) {
+            if(state === CONST.editFormInitialState) {
                 this.domCache.$frameworkTableWrapper.show();
                 this.domCache.$editHeaderWrapper.hide();
                 this.domCache.$frameworkFormWrapper.hide();
@@ -528,6 +530,14 @@
             $('.container-step' + this.addState).hide();
             //remove validation classes current
             $('.progress-step' + this.addState).removeClass('active-step valid-step faulty-step');
+        },
+
+        hideAllForms: function() {
+            $('.container-step1').hide();
+            $('.container-step2').hide();
+            $('.container-step3').hide();
+            $('.container-step4').hide();
+            $('.container-step5').hide();
         },
 
         showNextForm: function() {
@@ -587,6 +597,7 @@
             this.validForms = [0,0,0,0,1];
             $('.progress-step2,.progress-step3,.progress-step4,.progress-step5').removeClass('active-step valid-step faulty-step');
             // show first form
+            this.hideAllForms();
             this.addState = 1;
             this.showNextForm();
         }

@@ -117,11 +117,11 @@
                             </div>
                             <?php if(isset($admin)) { if($admin == 1) {?>
                             <div id="adminEditHeaderWrapper" hidden>
-                                <h3 class="adminEdit-header">Review the submitted tool</h3>
+                                <h3 class="adminEdit-header">Review</h3>
                                 <div class="pull-right">
-                                    <button id="updateEdit" class="btn btn-success btn-lg edit-button"><span class="glyphicon glyphicon-ok"></span> Approve</button>
-                                    <button id="removeEdit" class="btn btn-danger btn-lg edit-button"><span class="glyphicon glyphicon-remove"></span> Decline</button>
-                                    <button id="cancelEdit" class="btn btn-warning btn-lg edit-button"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
+                                    <button id="approveEntry" class="btn btn-success btn-lg edit-button"><span class="glyphicon glyphicon-ok"></span> Approve</button>
+                                    <button id="declineEntry" class="btn btn-danger btn-lg edit-button"><span class="glyphicon glyphicon-remove"></span> Decline</button>
+                                    <button id="cancelReview" class="btn btn-warning btn-lg edit-button"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
                                 </div>
                             </div>
                             <?php }} ?>
@@ -1757,27 +1757,37 @@
                                             <div class="help-block">The year of official announcement</div>
                                         </div>
                                         <div class="form-group "> 
+                                            <input type='hidden' value='false' name='webtonativeRo'>
                                             <input type="checkbox"  value="true" class="custom-checkbox-ro" name="webtonativeRo"/>
                                             <label class="checkbox-label-ro">Web-to-native wrapper</label>
+                                            <input type='hidden' value='false' name='nativejavascriptRo'>
                                             <input type="checkbox"  value="true" class="custom-checkbox-ro" name="nativejavascriptRo"/>
                                             <label class="checkbox-label-ro">Native Javascript</label>
+                                            <input type='hidden' value='false' name='runtimeRo'>
                                             <input type="checkbox"  value="true" class="custom-checkbox-ro" name="runtimeRo"/>
                                             <label class="checkbox-label-ro">Runtime</label>
+                                            <input type='hidden' value='false' name='javascript_toolRo'>
                                             <input type="checkbox"  value="true" class="custom-checkbox-ro" name="javascript_toolRo"/>
                                             <label class="checkbox-label-ro">JavaScript framework/library/toolkit</label>
+                                            <input type='hidden' value='false' name='sourcecodeRo'>
                                             <input type="checkbox"  value="true" class="custom-checkbox-ro" name="sourcecodeRo"/>
                                             <label class="checkbox-label-ro">Source-code translator</label>
+                                            <input type='hidden' value='false' name='appfactoryRo'>
                                             <input type="checkbox"  value="true" class="custom-checkbox-ro" name="appfactoryRo"/>
                                             <label class="checkbox-label-ro">Appfactory</label>
                                             <div class="help-block">Select multiple if applicable (e.g. runtime + source-code translator). Select none if you do not know.</div>
                                         </div>
                                         <div class="form-group">
+                                            <input type='hidden' value='false' name='mobilewebsiteRo'>
                                             <input type="checkbox"  value="true" class="custom-checkbox-ro" name="mobilewebsiteRo"/>
                                             <label class="checkbox-label-ro">Mobile website</label>
+                                            <input type='hidden' value='false' name='webappRo'>
                                             <input type="checkbox"  value="true" class="custom-checkbox-ro" name="webappRo"/>
                                             <label class="checkbox-label-ro">Web application</label>
+                                            <input type='hidden' value='false' name='nativeappRo'>
                                             <input type="checkbox"  value="true" class="custom-checkbox-ro" name="nativeappRo"/>
                                             <label class="checkbox-label-ro">Native application</label>
+                                            <input type='hidden' value='false' name='hybridappRo'>
                                             <input type="checkbox"  value="true" class="custom-checkbox-ro" name="hybridappRo"/>
                                             <label class="checkbox-label-ro">Hybrid application</label>
                                             <div class="help-block">Select multiple if applicable (e.g. web app + website + hybrid app).</div>

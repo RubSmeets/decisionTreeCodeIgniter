@@ -5,6 +5,8 @@
         successCode: 0,
         buttonNavOption: 0,
         progressNavOption: 1,
+        contributionInitialState: 0,
+        contributionReviewState: 1,
         moveForward: 1,
         moveBack: -1,
         blockUser: 1,
@@ -360,6 +362,7 @@
             this.domCache.$contributionTable.find('tbody').on('click', 'tr', function () {
                 var data = that.contributionTable.row( this ).data();
                 if(typeof data !== 'undefined') {
+                    mainAdmin.updateAdminHeader(data);
                     mainAdmin.loadFormData(data);
                 }
             });
@@ -400,6 +403,7 @@
             this.domCache.$adminEditHeader = $('#adminEditHeaderWrapper');
             this.domCache.$formStepsRo = $('form.refered-form');
             this.domCache.$progressSegments = $('.progress-bar'); 
+            this.domCache.$adminReviewTitle = $('.adminEdit-header');
         },
 
         init: function() {
@@ -419,10 +423,15 @@
                     that.showUserManagement();
                 } else if($(this).val() === "contributeManage") {
                     that.initContributionTable();
-                    that.showContributionManagement();
+                    that.showContributionManagement(CONST.contributionInitialState, false);
                 } else {
                     that.showForm();
                 }
+            });
+
+            // Admin approve header buttons
+            $('#cancelReview').on('click', function() {
+                that.showContributionManagement(CONST.contributionInitialState, false);
             });
 
             // button form nav
@@ -464,8 +473,8 @@
 
             if(navOption === CONST.progressNavOption && step === this.addState) return; //do nothing
             
-            // hide current container
-            this.hideCurrentRoForm();
+            // hide all containers
+            this.hideAllRoForms();
             // go to next
             if(navOption === CONST.buttonNavOption) {
                 if(this.addState === CONST.formSteps && step > 0) {
@@ -553,12 +562,14 @@
                    if(response.srvMessage.length === 1) {
                        // We have a new framework that needs to be reviewed
                        mainAdmin.updateFrom(response.srvMessage[0]);
-                       mainAdmin.showApproveForm(false);
+                       mainAdmin.validateCompleteForm();
+                       mainAdmin.showContributionManagement(CONST.contributionReviewState, false);
                     } else {
                        // We have an adjusted framework that needs to be reviewed and compared with original [0] == requested [1] == refered original
                        mainAdmin.updateFrom(response.srvMessage[0]);
+                       mainAdmin.validateCompleteForm();
                        mainAdmin.updateReadOnlyForm(response.srvMessage[1], response.srvMessage[0]);
-                       mainAdmin.showApproveForm(true);
+                       mainAdmin.showContributionManagement(CONST.contributionReviewState, true);
                    }
                 }else {
                     mainAdmin.showModal(("Action not completed. server message: " + response.srvMessage), CONST.alertServerFailed);
@@ -577,6 +588,7 @@
                         if($el.is(':radio')) {
                             $($el).filter(":radio[value='" + frameworkData[key] + "']").prop('checked', true);
                         } else if($el.is(':checkbox')) {
+                            $el.prop('checked', false);
                             $($el).filter(":checkbox[value='" + frameworkData[key] + "']").prop('checked', true);
                         } else {
                             // text field
@@ -597,21 +609,21 @@
                         if($el.is(':radio')) {
                             $el.parent().addClass('disabled');
                             $el.prop('disabled', true);
+                            $($el).siblings().removeClass('highlight-diff');
                             $temp = $($el).filter(":radio[value='" + frameworkData[key] + "']");
                             $temp.prop('checked', true);
                             $temp.prop('disabled', false);
                             $temp.parent().removeClass('disabled');
                             if(frameworkData[key] !== frameworkDataAdj[key]) {
                                 $($temp).siblings().addClass('highlight-diff');
-                            } else {
-                                $($temp).siblings().removeClass('highlight-diff');
                             }
                         } else if($el.is(':checkbox')) {
+                            $el.prop('checked', false);
                             $($el).filter(":checkbox[value='" + frameworkData[key] + "']").prop('checked', true);
                             if(frameworkData[key] !== frameworkDataAdj[key]) {
-                                $($el).next().addClass('highlight-diff');
+                                $($el).next('label').addClass('highlight-diff');
                             } else {
-                                $($el).next().removeClass('highlight-diff');
+                                $($el).next('label').removeClass('highlight-diff');
                             }
                         } else {
                             // text field
@@ -627,11 +639,29 @@
             }
         },
 
+        updateAdminHeader: function(data) {
+            this.domCache.$adminReviewTitle.text('Reviewing ' + data.framework + ' by ' + data.contributor);
+        },
+        
+        validateCompleteForm: function() {
+            this.triggerSubmitStep(1);
+            this.triggerSubmitStep(2);
+            this.triggerSubmitStep(3);
+            this.triggerSubmitStep(4);
+            this.triggerSubmitStep(5);
+            this.hideAllRoForms();
+            this.resetProgressbar();
+            this.showNextRoForm();    // set active the current form step
+        },
+
+        triggerSubmitStep: function(step) {
+            //trigger submit
+            $('.container-step' + step).trigger('submit', [step]);
+        },
+        
         showApproveForm: function(withComparison) {
-            this.addState = 1;
-            this.domCache.$contributionManagement.hide();
             this.domCache.$adminEditHeader.show();
-            this.domCache.$frameworkForm.show();
+            this.showFrameworkForm();
             if(withComparison) {
                 $('#formCurrent').addClass('col-xs-8');
                 $('#formRefered').show();
@@ -639,25 +669,49 @@
                 $('#formCurrent').removeClass('col-xs-8');
                 $('#formRefered').hide();
             }
+        },
 
+        hideApproveForm: function() {
+            $('#formCurrent').removeClass('col-xs-8');
+            $('#formRefered').hide();
+            this.domCache.$adminEditHeader.hide();
+        },
+
+        hideContributionManagement: function() {
+            this.hideApproveForm();
+            this.domCache.$contributionManagement.hide();
+        },
+
+        showFrameworkForm: function() {
+            $('#editHeaderWrapper').hide();
+            $('#frameworkTableWrapper').hide();
+            $('#formWrapper').show();
+            $('#formCurrent').show();
         },
 
         showForm: function() {
             this.domCache.$userManagement.hide();
-            this.domCache.$contributionManagement.hide();
+            this.hideContributionManagement();
             this.domCache.$frameworkForm.show();
         },
 
         showUserManagement: function() {
             this.domCache.$userManagement.show();
             this.domCache.$frameworkForm.hide();
-            this.domCache.$contributionManagement.hide();
+            this.hideContributionManagement();
         },
 
-        showContributionManagement: function() {
+        showContributionManagement: function(state, withComparison) {
             this.domCache.$userManagement.hide();
-            this.domCache.$frameworkForm.hide();
-            this.domCache.$contributionManagement.show();
+            if(state == CONST.contributionInitialState) {
+                this.domCache.$frameworkForm.hide();
+                this.hideApproveForm();
+                this.domCache.$contributionManagement.show();
+            } else {
+                this.domCache.$contributionManagement.hide();
+                this.showApproveForm(withComparison);
+                this.domCache.$frameworkForm.show();
+            }
         },
 
         showModal: function(message, alertFunction) {
@@ -688,8 +742,21 @@
             $('.container-ro-step' + this.addState).hide();
         },
 
+        hideAllRoForms: function() {
+            $('.container-ro-step1').hide();
+            $('.container-ro-step2').hide();
+            $('.container-ro-step3').hide();
+            $('.container-ro-step4').hide();
+            $('.container-ro-step5').hide();
+        },
+
         showNextRoForm: function() {
             $('.container-ro-step' + this.addState).show();
+        },
+
+        resetProgressbar: function() {
+            $('.progress-step' + this.addState).removeClass('active-step valid-step faulty-step');
+            $('.progress-step' + this.addState).addClass('active-step');
         },
 
         resetCurrentForm: function() {
@@ -697,8 +764,6 @@
             for(i=0; i<this.domCache.$formSteps.length; i++) {
                 this.domCache.$formSteps[i].reset();
             }
-            // reset form validation
-            $('.progress-step2,.progress-step3,.progress-step4,.progress-step5').removeClass('active-step valid-step faulty-step');
         }
 
     }
