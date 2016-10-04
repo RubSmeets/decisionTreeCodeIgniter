@@ -7,8 +7,11 @@ final class PublicConstants {
     const STATE_APPROVED = 1;
     const STATE_AWAIT_APPROVAL = 0;
     const STATE_OUTDATED = 2;
+    const STATE_DECLINED = 3;
     const USER_NOT_BLOCKED = 0;
     const USER_BLOCKED = 1;
+    const APPROVE_TOOL = 1;
+    const DECLINE_TOOL = 0;
     const IMG_PATH = "../img/logos/";
 
     // make this private so no one can make one

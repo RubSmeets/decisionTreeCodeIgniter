@@ -72,7 +72,7 @@ class PrivateCon extends CI_Controller {
         foreach ($framework as $key) {
             $frameworkObj->$key["name"]($key["value"]);
         }
-        log_message('debug', print_r($frameworkObj,TRUE));
+        
         // Check if we have a valid object
         if($frameworkObj->isInvalidFramework()) {
             $errmsg = "Validation failed";
@@ -392,6 +392,73 @@ class PrivateCon extends CI_Controller {
         // NOTE: $frameworks[0] contains requested and $frameworks[1] if set contains refered
         $this->echoResponse($frameworks, $retval);
 	}
+
+    public function AJ_submitContribution() {
+        $errmsg = "";
+		$retval = PublicConstants::SUCCESS;
+
+		if(!empty($_POST["toolId"])) {  // should use empty to check here for some reason
+        	$frameworkId = $_POST["toolId"];
+            $framework = $_POST["framework"];
+            $action = $_POST["action"];
+    	} else {
+			$errmsg = "No correct framework data specified";
+			$retval = PublicConstants::FAILED;
+			$this->echoResponse($errmsg, $retval);
+			return;
+		}
+
+        // convert to framework class (in class do validation)
+        $frameworkObj = new Framework($frameworkId, true);
+        foreach ($framework as $key) {
+            $frameworkObj->$key["name"]($key["value"]);
+        }
+
+        // Check if we have a valid object
+        if($frameworkObj->isInvalidFramework()) {
+            $errmsg = "Validation failed";
+            $retval = PublicConstants::FAILED;
+            $this->echoResponse($errmsg,$retval);
+            return;
+        }
+        // Check if user exists and is not blocked
+        $this->load->library('session');
+        $this->load->model('UserModel');
+        // check if user exists
+        $userEmail = $this->session->email;
+        $userObj = $this->UserModel->getUserByEmail($userEmail, $errmsg);
+        if(is_a($userObj, 'User')) {
+            if(!$userObj->admin) {
+                $errmsg = "User is no admin";
+                $retval = PublicConstants::FAILED;
+                $this->echoResponse($errmsg,$retval);
+                return;
+            }
+        }
+        
+		$this->load->model('FrameworksModel');
+		if($action == PublicConstants::APPROVE_TOOL) {
+			// Update exisiting framework entry with new data and approve
+            log_message('debug', print_r($frameworkObj,TRUE));
+            $retval = $this->FrameworksModel->approveFramework($frameworkId, $frameworkObj, $errmsg);
+            if($retval != PublicConstants::SUCCESS) {
+                // Database error
+                $this->echoResponse($errmsg, $retval);
+                return;
+            }
+		} else {
+            // Decline existing contribution
+            $retval = $this->FrameworksModel->declineFramework($frameworkId, $errmsg);
+            if($retval != PublicConstants::SUCCESS) {
+                // Database error
+                $this->echoResponse($errmsg, $retval);
+                return;
+            }
+        }
+        // provide feedback to user
+        $errmsg = "Framework review submission completed succesfull";
+        $this->echoResponse($errmsg,$retval);
+    }
 
     private function echoResponse($errmsg, $retval) {
 		$data = array(

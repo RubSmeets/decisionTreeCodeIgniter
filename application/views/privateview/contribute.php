@@ -19,11 +19,12 @@
         <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.js"></script>
 
         <!-- Local scripts -->
-        <script type="text/javascript" src="<?php echo base_url();?>js/private/contribute.js" ></script>
         <script type="text/javascript" src="<?php echo base_url();?>js/extern/validator.min.js" ></script><!-- form plugin -->
         <?php if(isset($admin)) { if($admin == 1) {?>
             <script type="text/javascript" src="<?php echo base_url();?>js/private/contributeAdmin.js" ></script>
-        <?php }} ?>
+        <?php } else {?>
+            <script type="text/javascript" src="<?php echo base_url();?>js/private/contribute.js" ></script>
+        <?php }}?>
     </head>
 
     <body>

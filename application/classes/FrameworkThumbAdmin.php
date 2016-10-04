@@ -5,13 +5,17 @@ class FrameworkThumbAdmin extends FrameworkThumb {
 	public $time;
 	public $contributor;
     public $type;
+	public $reference;
+	public $modified_by;
 
-	public function __construct($tmpId, $tmpFramework, $tmpThumb_img, $tmpFramework_id, $tmpComparison_data_last_update, $tmpContributor, $tmpType) {
+	public function __construct($tmpId, $tmpFramework, $tmpThumb_img, $tmpFramework_id, $tmpComparison_data_last_update, $tmpContributor, $tmpType, $tmpModified_by) {
 		parent::__construct($tmpId, "UNDEF", $tmpFramework, $tmpThumb_img); 
        
 		$this->framework_id = $tmpFramework_id;	// used for deletion
 		$this->time = $tmpComparison_data_last_update;
 		$this->contributor = $tmpContributor;
+		$this->reference = $tmpType;
+		$this->modified_by = $tmpModified_by;
         if($tmpType == 0) { // reference = 0 if it is a new framework
             $this->type = "New";
         } else {

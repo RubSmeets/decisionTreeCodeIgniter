@@ -170,7 +170,7 @@ class FrameworksModel extends CI_Model {
 
     //Get all the frameworks that are approved. format data for jQuery dataTable
     function getAllPendingContributionThumbs(&$errmsg) {
-        $this->db->select('framework_id, framework, logo_img, comparison_data_last_update, reference, username');
+        $this->db->select('framework_id, framework, logo_img, comparison_data_last_update, modified_by, reference, username');
         $this->db->from('frameworks_v2');
         $this->db->join('users', 'frameworks_v2.modified_by = users.id', 'left');
         $this->db->where('state', PublicConstants::STATE_AWAIT_APPROVAL);
@@ -186,7 +186,8 @@ class FrameworksModel extends CI_Model {
                     $resultData->framework_id,
                     $resultData->comparison_data_last_update,
                     $resultData->username,
-                    $resultData->reference
+                    $resultData->reference,
+                    $resultData->modified_by
                 );
                 array_push($frameworks, $frameworkThumbAdmin);
             }
@@ -250,6 +251,34 @@ class FrameworksModel extends CI_Model {
         $query = $this->db->update('frameworks_v2');
 		
         if(!$query) { $errmsg = "No update of framework: ".$newFrameworkObj->framework; return PublicConstants::FAILED; }
+		else return PublicConstants::SUCCESS;
+    }
+
+    //Approve a contribution 
+    function approveFramework($frameworkId, $frameworkObj, &$errmsg) {
+        $this->db->set($frameworkObj);
+        $this->db->set('state', PublicConstants::STATE_APPROVED);
+        $this->db->where('framework_id', $frameworkId);
+        $query = $this->db->update('frameworks_v2');
+
+        // Set the refered framework state to outdated
+        if($frameworkObj->reference != 0) {
+            $this->db->set('state', PublicConstants::STATE_OUTDATED);
+            $this->db->where('framework_id', $frameworkObj->reference);
+            $query = $this->db->update('frameworks_v2');
+        }
+		
+        if(!$query) { $errmsg = "No update of framework: ".$frameworkObj->framework; return PublicConstants::FAILED; }
+		else return PublicConstants::SUCCESS;
+    }
+
+    //Decline a contribution 
+    function declineFramework($frameworkId, &$errmsg) {
+        $this->db->set('state', PublicConstants::STATE_DECLINED);
+        $this->db->where('framework_id', $frameworkId);
+        $query = $this->db->update('frameworks_v2');
+		
+        if(!$query) { $errmsg = "No update of framework: ".$frameworkObj->framework; return PublicConstants::FAILED; }
 		else return PublicConstants::SUCCESS;
     }
 
