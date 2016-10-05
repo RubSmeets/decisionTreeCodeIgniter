@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"/>
     <?php echo link_tag('fonts/font-awesome/css/font-awesome.min.css'); ?>
 	<?php echo link_tag('css/decisionTree.css'); ?>
-	
+	<?php echo link_tag('css/bootstrap-social.css'); ?>
 
     <!-- Remote scripts -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -48,10 +48,13 @@
 					</table>
 					<div class="row">
 						<div class="col-xs-12 centered">
-							<button id="googleLoginBtn" type="button" class="btn btn-danger google-login-btn" data-onsuccess="onSignIn">
+							<button id="googleLoginBtn" type="button" class="btn btn-social btn-google">
+								<span class="fa fa-google"></span> Sign in with Google
+							</button>
+							<!-- <button id="googleLoginBtn" type="button" class="btn btn-danger google-login-btn" data-onsuccess="onSignIn">
 								<i class="fa fa-google-plus google-login-icon" aria-hidden="true"></i>
 								<span class="google-login-label">Sign in with Google</span>
-							</button>
+							</button> -->
 						</div>
 					</div>
 				</div>
