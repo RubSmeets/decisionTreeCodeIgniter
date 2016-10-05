@@ -166,7 +166,7 @@
                                         <div class="form-group has-feedback">
                                             <label for="inputToolname" class="col-xs-5 control-label">Tool name (*)</label>
                                             <div class="col-xs-7">
-                                                <input class="form-control" id="inputToolname" name="framework" placeholder="e.g. Phonegap" pattern="^[a-zA-Z0-9\-\.\ ]{2,30}$" data-pattern-error="Must be longer than 2 characters and may not contain special characters (execpt: '.','-')" required/>
+                                                <input class="form-control" id="inputToolname" name="framework" placeholder="e.g. Phonegap" pattern="^[a-zA-Z0-9\-\.\ ]{2,30}$" data-pattern-error="Must be longer than 2 characters and may not contain special characters (except: '.','-')" required/>
                                                 <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
                                                 <div class="help-block with-errors">Specify the cross-platform tool name</div>
                                             </div>

@@ -41,17 +41,17 @@
 				</p>
 			</div>
 		</div>
-		<!--------------------------------------------------------->
+		<!-- ------------------------------------------------------ -->
 		<div class="container">
 			<div class="row compare-header">
-				<div class="col-md-3 centered">
+				<div class="col-md-3 centered no-right-padding">
 					<!-- Button trigger modal -->
 					<button type="button" class="btn btn-success add-framework" data-toggle="modal" data-target="#addFrameworkModal">
 						<span class="glyphicon glyphicon-plus add-framework-icon"></span>
 						<span>Add framework</span>
 					</button>
 				</div>
-				<div id="frameworkheader-container" class="col-md-9 no-left-padding">
+				<div id="frameworkheader-container" class="col-md-9 no-left-padding no-right-padding">
 
 				</div>
 			</div>

@@ -266,7 +266,7 @@
             // get current url
             var i = 0;
             var newUrl = window.location.href;
-            if(newUrl.indexOf('?') === -1) {
+            if(newUrl.indexOf('?frameworks') === -1) {
                 newUrl += '?frameworks='
             } else {
                 if(newUrl.indexOf('=') === -1) newUrl += '=';
@@ -344,7 +344,7 @@
             var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
             for(i = 0; i < hashes.length; i++) {
                 hash = hashes[i].split('=');
-                if(hash[0] === "frameworks" && hash.length > 1) {
+                if(hash[0] === "frameworks" && hash[1]) {
                     vars = hash[1].split(';');
                 }
             }

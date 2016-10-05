@@ -74,7 +74,7 @@
 							              <span class="glyphicon glyphicon-pencil pull-right thumb-add"></span> \
 							              <span class="thumb-title">' + data + '</span> \
 							              <span class="thumb-state ' + CONST.formatState[row.internalState].toLowerCase() + '">' + CONST.formatState[row.internalState] + '</span> \
-                                          <span class="thumb-contributor"> - Contributed by ' + row.contributor + '</span>';
+                                          <span class="thumb-contributor"> - Last contribution by ' + row.contributor + '</span>';
                                 return thumbs;
                             } else return '';
                         }
@@ -1290,6 +1290,7 @@
         },
 
         bindEvents: function() {
+            var that = this;
             this.domCache.$socialSignOutBtn.on('click', function() {
                 that.socialSignOut();
             });

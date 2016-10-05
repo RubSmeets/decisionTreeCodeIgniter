@@ -59,3 +59,7 @@ RELEASE:
     - Disable server logs
     - Change Base url
     - setup database on server and change configuration in database.php
+    - In JS files change default path of server
+    - minify JS and HTML: https://htmlcompressor.com/compressor/ and https://jscompress.com/
+    - enable debugging you need to set timezone: http://stackoverflow.com/questions/31309536/how-to-set-time-zone-in-code-igniter
+    - if ci not working after log enable change permissions of log folder and remove existing log file
