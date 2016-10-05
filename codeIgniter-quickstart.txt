@@ -53,3 +53,9 @@ STEP 6:
     -------
     Test your webpage by browsing to your base url:
     - e.g. http://localhost/crossmos_projects/decisionTree2/index.php/public_homepage/
+
+
+RELEASE:
+    - Disable server logs
+    - Change Base url
+    - setup database on server and change configuration in database.php

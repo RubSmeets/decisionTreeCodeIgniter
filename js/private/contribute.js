@@ -606,6 +606,7 @@
     var socialLogin = {
         initVariables: function() {
             this.domCache = {};
+            this.auth2 = null;
         },
 
         cacheElements: function() {
@@ -613,14 +614,21 @@
         },
 
         init: function() {
+            var that = this;
             this.initVariables();
             this.cacheElements();
-            this.bindEvents();
+            //Init the google authentication api
+            gapi.load('auth2', function(){
+                // Retrieve the singleton for the GoogleAuth library and set up the client.
+                that.auth2 = gapi.auth2.init({
+                    client_id: '814864177982-qhde0ik7hkaandtoaaa0515niinslg94.apps.googleusercontent.com',
+                    cookie_policy: 'single_host_origin'
+                });
+                that.bindEvents();
+            });
         },
 
         bindEvents: function() {
-            var that = this;
-
             this.domCache.$socialSignOutBtn.on('click', function() {
                 that.socialSignOut();
             });
@@ -632,12 +640,25 @@
                 method: 'GET',
                 url: CONST.backEndPrivateURL + 'AJ_logout',
                 dataType: "json",
-                success: socialLogin.serverSignoutCallback
+                success: socialLogin.serverSignoutCallback,
+                error: socialLogin.serverSignoutErrorCallback
             });
+        },
+        //NOTE that sign out will not work if you are running from localhost.
+        signOutGoogle: function() {
+            if (this.auth2.isSignedIn.get()) {
+                this.auth2.signOut();
+            }
+        },
+
+        serverSignoutErrorCallback: function() {
+            console.log("log out on server failed, server onreachable");
         },
 
         serverSignoutCallback: function(response) {
             if(response.srvResponseCode === CONST.successCode) {
+                // Log out with google
+                socialLogin.signOutGoogle();
                 // redirect to public part
                 window.location = response.srvMessage;
             }

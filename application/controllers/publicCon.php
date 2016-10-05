@@ -118,7 +118,7 @@ class PublicCon extends CI_Controller {
 		$this->session->set_userdata($userData);
 		
 		// send response redirect to private index page
-		$errmsg = base_url() . "privateCon";
+		$errmsg = base_url() . "PrivateCon/";
 		$this->echoResponse($errmsg, $retval);
 	}
 

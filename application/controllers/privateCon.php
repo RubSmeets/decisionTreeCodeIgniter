@@ -18,7 +18,7 @@ class PrivateCon extends CI_Controller {
         }
         
         if ($this->session->userdata('user_loggedin') != true) {
-            $address = base_url() . "publicCon/";
+            $address = base_url() . "PublicCon/";
             redirect($address,'location');
         }       
     }
@@ -55,7 +55,7 @@ class PrivateCon extends CI_Controller {
         //remove all session data
         session_destroy();
 
-        $errmsg = base_url() . "publicCon/";
+        $errmsg = base_url() . "PublicCon/";
         $retval = PublicConstants::SUCCESS;
         $this->echoResponse($errmsg, $retval);
         //redirect(site_url('public_homepage'),'location');
