@@ -36,3 +36,7 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 
 # ignore minified files
 minified/
+
+# ignore npm files
+node_modules/
+package.json
