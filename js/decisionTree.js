@@ -91,7 +91,6 @@
             this.domCache.frameworks = $(".framework");
             this.domCache.filterContainer = $('.filters');
             this.domCache.msg = $("#msg");
-            this.domCache.msgInfoCompare = $("#msgInfoCompare");
             this.domCache.clearButton = $('.btn-clear');
             this.domCache.compareCheckboxes = $('[type=checkbox].compare-checkbox');
         },
@@ -198,7 +197,11 @@
 
             if($(compareCheckbox).is(':checked')) {
                 if(this.comparedItems.length === (CONST.maxCompared)) {
-                    this.domCache.msgInfoCompare.show();
+                    $("body").overhang({
+                        type: "error",
+                        message: "You can only select up to 5 frameworks for comparison.",
+                        closeConfirm: "true"
+                    });
                     $(compareCheckbox).prop('checked', false);  // clear checkboxe
                     return; // do not update url or push framework
                 }

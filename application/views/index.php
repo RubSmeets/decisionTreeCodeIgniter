@@ -9,6 +9,7 @@
     <?php echo link_tag('fonts/font-awesome/css/font-awesome.min.css'); ?>
 	<?php echo link_tag('css/decisionTree.css'); ?>
 	<?php echo link_tag('css/bootstrap-social.css'); ?>
+	<?php echo link_tag('css/extern/overhang.min.css'); ?>
 
     <!-- Remote scripts -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -17,6 +18,7 @@
 
     <!-- Local scripts -->
 	<script type="text/javascript" src="<?php echo base_url();?>js/decisionTree.js" ></script>
+	<script type="text/javascript" src="<?php echo base_url();?>js/extern/overhang.min.js"></script>	
 
   </head>
 
@@ -281,10 +283,7 @@
               
         </div>
 <div class="col-sm-9">
-<div id="msgInfoCompare" class="alert alert-warning fade in" hidden>
-    <a href="#" class="close" data-hide="alert" aria-label="close">&times;</a>
-    <strong>Info!</strong> You can only select up to 5 frameworks for comparison.
-</div><div class="col-md-4 col-xs-6 framework">
+	<div class="col-md-4 col-xs-6 framework">
     	<div class="thumbnail">
     		<a href="https://www.smartface.io/" target="_blank"><img src="<?php echo base_url('img/logos/smartface.png'); ?>" alt=""></a>		<div class="caption">
     			<h4 class="thumb-caption">Smartface</h4>
