@@ -166,7 +166,8 @@
                                         <div class="form-group has-feedback">
                                             <label for="inputToolname" class="col-xs-5 control-label">Tool name (*)</label>
                                             <div class="col-xs-7">
-                                                <input class="form-control" id="inputToolname" name="framework" placeholder="e.g. Phonegap" pattern="^[a-zA-Z0-9\-\.\ ]{2,30}$" data-pattern-error="Must be longer than 2 characters and may not contain special characters (except: '.','-')" required/>
+                                                <!-- <input class="form-control" id="inputToolname" name="framework" placeholder="e.g. Phonegap" pattern="^[a-zA-Z0-9\-\.\ ]{2,30}$" data-pattern-error="Must be longer than 2 characters and may not contain special characters (except: '.','-')" required/> -->
+                                                <input class="form-control" id="inputToolname" name="framework" placeholder="e.g. Phonegap" required/>
                                                 <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
                                                 <div class="help-block with-errors">Specify the cross-platform tool name</div>
                                             </div>
@@ -348,6 +349,14 @@
                                                 <label class="radio-inline">
                                                     <input type="radio" id="allows_prototypingUndef" value="UNDEF" checked name="allows_prototyping"> Don't know
                                                 </label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group dense-input">        
+                                            <label class="col-xs-5 control-label">Provide a logo for the tool<div class="help-block">Logo format should be ".png"<br/>Smaller than 100kB<br/>Max width and height of 230px and 80px</div></label>
+                                            <div class="col-xs-7">
+                                                <img id="previewLogo" src="<?php echo base_url();?>img/logos/notfound.png" height="80px"/>
+                                                <input type="file" id="logo" />
+                                                <div class="logo-msg help-block"></div>
                                             </div>
                                         </div>
                                     </form>

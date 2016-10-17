@@ -23,6 +23,7 @@
             "Awaiting Approval",
 		    "Approved"
         ],
+		backEndImageURL: "http://localhost/crossmos_projects/decisionTree2/img/logos/",
         backEndBaseURL: "http://localhost/crossmos_projects/decisionTree2/publicCon/",
         backEndPrivateURL: "http://localhost/crossmos_projects/decisionTree2/privateCon/"
     }
@@ -239,6 +240,7 @@
             this.domCache.$modalSuccessIcon = $('.alert-icon-success');
             this.domCache.$modalWarningIcon = $('.alert-icon-warning');
             this.domCache.$modalErrorIcon = $('.alert-icon-error');
+			this.domCache.$logoInput = $('#logo');
         },
 
         init: function() {
@@ -288,6 +290,22 @@
                     main.showModal(("Validation of form failed. Please correct the invalid field and retry."), CONST.alertServerFailed);
                 } else {
                     that.submitData();
+                }
+            });
+
+			// Image preview event
+            this.domCache.$logoInput.on('change', function() {
+                var file = this.files[0];
+                var imagefile = file.type;
+                var match = "image/png";
+                if(!(imagefile == match)) {
+                    $('.logo-msg').html("Please Select A valid Image File: Only png images are allowed");
+                    return;
+                } else {
+                    var reader = new FileReader();
+                    reader.onload = main.previewImageIsLoaded;
+                    reader.readAsDataURL(file);
+                    $('.logo-msg').html("");
                 }
             });
 
@@ -396,9 +414,44 @@
                     main.showModal(("Action not completed. server message: " + response.srvMessage), CONST.alertServerFailed);
                 }
                 main.showModal("Succesfully submitted contribution", CONST.alertServerSuccess);
+				main.uploadLogo(response.srvMessage.framework);
                 main.resetEditInterface();
             } else {
-                main.showModal("Server nor responding", CONST.alertServerUnresponsive);
+                main.showModal("Server not responding", CONST.alertServerUnresponsive);
+            }
+        },
+
+		uploadLogo: function(data) {
+            // Check if input field is set and upload image with ajax
+            var $logoFile = $('#logo');
+            if($logoFile.val()) {
+                var tmpFormData = new FormData();
+                tmpFormData.append("logo", $logoFile[0].files[0]);
+                tmpFormData.append("framework", data);
+
+                $.ajax({
+                    url: CONST.backEndPrivateURL + 'AJ_uploadLogo', // Url to which the request is send
+                    type: "POST",             // Type of request to be send, called as method
+                    mimeType: "multipart/form-data",
+                    data: tmpFormData,        // Data sent to server, a set of key/value pairs (i.e. form fields and values)
+                    contentType: false,       // The content type used when sending data to the server.
+                    cache: false,             // To unable request pages to be cached
+                    processData:false,        // To send DOMDocument or non processed data file it is set to false
+                    success: this.logoUploadComplete,
+                    error: this.errorCallback
+                });
+            }
+        },
+
+        logoUploadComplete: function(msg) {
+            var response = JSON.parse(msg);
+            if(response.hasOwnProperty("srvResponseCode")) {
+                if(response.srvResponseCode !== CONST.successCode) {
+                    main.showModal(("Action not completed. server message: " + response.srvMessage), CONST.alertServerFailed);
+                }
+                DataTableUser.reloadTable();
+            } else {
+                main.showModal("Server not responding", CONST.alertServerUnresponsive);
             }
         },
 
@@ -441,11 +494,14 @@
                         if($el.is(':radio')) {
                             $($el).filter(":radio[value='" + frameworkData[key] + "']").prop('checked', true);
                         } else if($el.is(':checkbox')) {
+							$el.prop('checked', false);
                             $($el).filter(":checkbox[value='" + frameworkData[key] + "']").prop('checked', true);
                         } else {
                             // text field
                             $($el).val(frameworkData[key]);
                         }
+                    } else if(key == "logo_img") {
+                        $('#previewLogo').attr('src', (CONST.backEndImageURL + frameworkData[key]));
                     }
                 }
             }
@@ -567,10 +623,8 @@
                 this.domCache.$modalSuccessIcon.removeClass('hide');
                 this.domCache.$modalWarningIcon.addClass('hide');
                 this.domCache.$modalUserInput.hide();
-            }
-            
+            }            
             this.domCache.$alertModal.modal('show');
-
         },
 
         hideModal: function() {
@@ -589,6 +643,7 @@
             for(i=0; i<this.domCache.$formSteps.length; i++) {
                 this.domCache.$formSteps[i].reset();
             }
+			$('#previewLogo').attr('src', (CONST.backEndImageURL + 'notfound.png'));
             // reset reference & current framework edit
             this.editFrameworkRef = 0;
             this.editFrameworkName = "";
@@ -600,6 +655,15 @@
             this.hideAllForms();
             this.addState = 1;
             this.showNextForm();
+        },
+
+		previewImageIsLoaded: function(e) {
+            $('#previewLogo').attr('src', e.target.result);
+        },
+
+        formatString: function(str) {
+            var temp = str.replace(/[^0-9a-zA-Z]+/g, "");
+            return temp.toLowerCase();
         }
     }
 

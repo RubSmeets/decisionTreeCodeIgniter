@@ -83,6 +83,22 @@ class FrameworksModel extends CI_Model {
 		$errmsg = "Something went wrong with getting private framework thumbs";
 		return PublicConstants::FAILED;
     }
+    //Get frameworkId by name 
+    function getFrameworkIdByName($frameworkName, $state, &$errmsg) {
+        $this->db->select('framework_id');
+        $this->db->where('framework', $frameworkName);
+        $this->db->where('state', $state);
+        $this->db->limit(1);    //only return one framework
+        $query = $this->db->get('frameworks_v2');
+
+        if($query->num_rows() != 0) {
+			foreach ($query->result() as $resultData) {
+                return $resultData->framework_id;
+            }
+		}
+		$errmsg = "Framework not found";
+		return PublicConstants::FAILED;
+    }
     //Get all the data from one specific framework with {name}
     function getFrameworkByName($frameworkName, &$errmsg) {
         $this->db->where('framework', $frameworkName);
@@ -243,7 +259,6 @@ class FrameworksModel extends CI_Model {
         if(!$query) { $errmsg = "No insertion of framework: ".$frameworkObj->framework; return PublicConstants::FAILED; }
 		else return PublicConstants::SUCCESS;
     }
-
     //Update an existing framework in the database
     function updateFramework($framework_id, $newFrameworkObj, &$errmsg) {
         $this->db->set($newFrameworkObj);
@@ -253,7 +268,15 @@ class FrameworksModel extends CI_Model {
         if(!$query) { $errmsg = "No update of framework: ".$newFrameworkObj->framework; return PublicConstants::FAILED; }
 		else return PublicConstants::SUCCESS;
     }
-
+    //Update framework logo
+    function updateFrameworkLogo($framework_id, $logoName, &$errmsg) {
+        $this->db->set('logo_img', $logoName);
+        $this->db->where('framework_id', $framework_id);
+        $query = $this->db->update('frameworks_v2');
+		
+        if(!$query) { $errmsg = "No update of framework logo"; return PublicConstants::FAILED; }
+		else return PublicConstants::SUCCESS;
+    }
     //Approve a contribution 
     function approveFramework($frameworkId, $frameworkObj, &$errmsg) {
         $this->db->set($frameworkObj);

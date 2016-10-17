@@ -236,6 +236,10 @@ input[type='checkbox'].custom-checkbox + label:hover:before {/*icon checked on h
 input[type='checkbox']:checked.custom-checkbox + label:before {/*checked icon*/
     content: "\e067";
 }
+.logo-msg {
+    display: block;
+    color: #d9534f;
+}
 // ---------------------------------------------------
 
 /* ******************** END FORM STEP 1 ***************** */

@@ -106,6 +106,7 @@ class PrivateCon extends CI_Controller {
 
 		if(is_object($existingFramework)) {
 			// Update exisiting framework entry with new data
+            $frameworkObj->logo_img = $existingFramework->logo_img;
             $retval = $this->FrameworksModel->updateFramework($existingFramework->framework_id, $frameworkObj, $errmsg);
             if($retval != PublicConstants::SUCCESS) {
                 // Database error
@@ -122,7 +123,10 @@ class PrivateCon extends CI_Controller {
             }
         }
         // provide feedback to user
-        $errmsg = "Framework is stored and waiting for approval";
+        $errmsg = array(
+            "msg" => "Framework is stored and waiting for approval",
+            "framework" => $frameworkObj->framework
+        );
         $this->echoResponse($errmsg,$retval);
     }
 
@@ -257,6 +261,11 @@ class PrivateCon extends CI_Controller {
 		// Load database interaction model
 		$this->load->model('FrameworksModel');
 		$retval = $this->FrameworksModel->removeFrameworkByNameAndId($frameworkName, $frameworkId, $userObj->getDbID(), $errmsg);
+        // Delete logo if found
+        $logoName = "img/logos/" . PublicConstants::AWAIT_APPROVE_PREFIX . $frameworkId . ".png";
+        if (file_exists($logoName)) {
+            unlink($logoName);
+        }
 
 		if($retval != PublicConstants::SUCCESS) {
 			// Database error
@@ -446,6 +455,20 @@ class PrivateCon extends CI_Controller {
                 $this->echoResponse($errmsg, $retval);
                 return;
             }
+            // Update logo if necessary
+            /*
+            $awaitingLogoName = "img/logos/" . PublicConstants::AWAIT_APPROVE_PREFIX . $frameworkId . ".png";
+            $approvedLogoName = "img/logos/" . $frameworkId . ".png";
+            $outdatedLogoName = "img/logos/" . PublicConstants::OUTDATED_PREFIX . $frameworkId . ".png";
+            if (file_exists($outdatedLogoName)) {
+                unlink($outdatedLogoName);
+            }
+            if (file_exists($approvedLogoName)) {
+                rename($approvedLogoName, $outdatedLogoName);
+            }
+            if (file_exists($awaitingLogoName)) {
+                rename($awaitingLogoName, $approvedLogoName);
+            }*/
 		} else {
             // Decline existing contribution
             $retval = $this->FrameworksModel->declineFramework($frameworkId, $errmsg);
@@ -460,6 +483,53 @@ class PrivateCon extends CI_Controller {
         $this->echoResponse($errmsg,$retval);
     }
 
+    public function AJ_uploadLogo() {
+        $errmsg = "";
+		$retval = PublicConstants::FAILED;
+        if(isset($_FILES["logo"]["type"])) {
+            $validextensions = array("png");
+            $temporary = explode(".", $_FILES["logo"]["name"]);
+            $file_extension = end($temporary);
+            if (($_FILES["logo"]["type"] == "image/png")
+            && ($_FILES["logo"]["size"] < 100000)//Approx. 100kb files can be uploaded.
+            && in_array($file_extension, $validextensions)) {
+                if ($_FILES["logo"]["error"] > 0) {
+                    $errmsg = "Return Code: " . $_FILES["logo"]["error"] . "<br/><br/>";
+                } else {
+                    // Load database interaction model
+		            $this->load->model('FrameworksModel');
+                    // Determine new name of logo [framework_id.png]
+                    $retval = $this->FrameworksModel->getFrameworkIdByName($_POST["framework"], PublicConstants::STATE_AWAIT_APPROVAL, $errmsg);
+                    if($retval == PublicConstants::FAILED) {
+                        // Database error
+                        $this->echoResponse($errmsg, $retval);
+                        return;
+                    }
+                    $logoName = PublicConstants::AWAIT_APPROVE_PREFIX . $retval . ".png";
+                    // Update framework logo 
+                    $retval = $this->FrameworksModel->updateFrameworkLogo($retval, $logoName, $errmsg);
+                    if($retval == PublicConstants::FAILED) {
+                        // Database error
+                        $this->echoResponse($errmsg, $retval);
+                        return;
+                    }
+
+                    $sourcePath = $_FILES['logo']['tmp_name']; // Storing source path of the file in a variable
+                    $targetPath = "img/logos/" . $logoName; // Target path where file is to be stored
+                    move_uploaded_file($sourcePath,$targetPath) ; // Moving Uploaded file
+                        
+                    $errmsg = "Logo upload succesfull";
+                    $retval = PublicConstants::SUCCESS;
+                }
+            } else {
+                $errmsg = "Invalid file Size or Type";
+            }
+        } else {
+           $errmsg = "no file specified";
+        }
+        $this->echoResponse($errmsg,$retval);
+    }
+
     private function echoResponse($errmsg, $retval) {
 		$data = array(
 			'srvResponseCode' => $retval,
@@ -467,5 +537,10 @@ class PrivateCon extends CI_Controller {
 		);
 		echo json_encode($data);
 	}
+
+    private function formatString($str) {
+        $temp = preg_replace('/[^0-9a-zA-Z]+/', '', $str);
+        return strtolower($temp);
+    }
 
 }

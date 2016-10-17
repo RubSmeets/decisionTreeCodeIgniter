@@ -13,6 +13,8 @@ final class PublicConstants {
     const APPROVE_TOOL = 1;
     const DECLINE_TOOL = 0;
     const IMG_PATH = "../img/logos/";
+    const AWAIT_APPROVE_PREFIX = "awaitApprove_";
+    const OUTDATED_PREFIX = "outdated_";
 
     // make this private so no one can make one
     private function __construct(){
