@@ -1883,6 +1883,9 @@
                                                 <input type="radio"  value="UNDEF"  name="allows_prototypingRo"><span> Don't know</span>
                                             </label>
                                         </div>
+                                        <div class="form-group dense-input">        
+                                            <img id="previewLogoRo" height="80px"/>
+                                        </div>
                                     </form>
                                     <form id="frmStep2Ro" role="form" class="form-horizontal container-ro-step2 refered-form" hidden>                               
                                         <h3>Framework resources</h3>

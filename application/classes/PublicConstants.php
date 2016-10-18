@@ -12,9 +12,10 @@ final class PublicConstants {
     const USER_BLOCKED = 1;
     const APPROVE_TOOL = 1;
     const DECLINE_TOOL = 0;
-    const IMG_PATH = "../img/logos/";
+    const IMG_PATH = "img/logos/";
     const AWAIT_APPROVE_PREFIX = "awaitApprove_";
     const OUTDATED_PREFIX = "outdated_";
+    const DEFAULT_LOGO_NAME = "notfound.png";
 
     // make this private so no one can make one
     private function __construct(){

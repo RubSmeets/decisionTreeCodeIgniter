@@ -125,7 +125,8 @@ class Framework {
     public $status;
     public $storage;
     public $vibration;
-    public $logo_img;
+    private $logo_img;
+    public $logo_name;
     private $state;
     public $modified_by;
     public $reference; // foreign key to the modified original framework entry (0 if it is the first)
@@ -246,6 +247,7 @@ class Framework {
         $this->storage = "UNDEF";
         $this->vibration = "UNDEF";
         $this->logo_img = "notfound.png";
+        $this->logo_name = "notfound.png";
         $this->state = 0;
         $this->modified_by = 0;
         $this->reference = 0;
@@ -867,6 +869,9 @@ class Framework {
     }
     public function logo_img($data) {
         $this->logo_img = $data;
+    }
+    public function logo_name($data) {
+        $this->logo_name = $data;
     }
     public function modified_by($data) {
         if($this->_validateObject) {

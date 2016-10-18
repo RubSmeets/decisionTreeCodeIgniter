@@ -836,14 +836,14 @@
                     main.showModal(("Action not completed. server message: " + response.srvMessage), CONST.alertServerFailed);
                 }
                 main.showModal("Succesfully submitted contribution", CONST.alertServerSuccess);
-                main.uploadLogo(response.srvMessage.framework);
+                main.uploadLogo(response.srvMessage.framework, main.logoUploadComplete);
                 main.resetEditInterface();
             } else {
                 main.showModal("Server not responding", CONST.alertServerUnresponsive);
             }
         },
 
-        uploadLogo: function(data) {
+        uploadLogo: function(data, succesCallback) {
             // Check if input field is set and upload image with ajax
             var $logoFile = $('#logo');
             if($logoFile.val()) {
@@ -859,7 +859,7 @@
                     contentType: false,       // The content type used when sending data to the server.
                     cache: false,             // To unable request pages to be cached
                     processData:false,        // To send DOMDocument or non processed data file it is set to false
-                    success: this.logoUploadComplete,
+                    success: succesCallback,
                     error: this.errorCallback
                 });
             }
@@ -872,6 +872,43 @@
                     main.showModal(("Action not completed. server message: " + response.srvMessage), CONST.alertServerFailed);
                 }
                 DataTableUser.reloadTable();
+            } else {
+                main.showModal("Server not responding", CONST.alertServerUnresponsive);
+            }
+        },
+
+        adminUploadLogo: function(data, succesCallback) {
+            // Check if input field is set and upload image with ajax
+            var $logoFile = $('#logo');
+            if($logoFile.val()) {
+                var tmpFormData = new FormData();
+                tmpFormData.append("logo", $logoFile[0].files[0]);
+                tmpFormData.append("framework_id", data);
+
+                $.ajax({
+                    url: CONST.backEndPrivateURL + 'AJ_adminUploadLogo', // Url to which the request is send
+                    type: "POST",             // Type of request to be send, called as method
+                    mimeType: "multipart/form-data",
+                    data: tmpFormData,        // Data sent to server, a set of key/value pairs (i.e. form fields and values)
+                    contentType: false,       // The content type used when sending data to the server.
+                    cache: false,             // To unable request pages to be cached
+                    processData:false,        // To send DOMDocument or non processed data file it is set to false
+                    success: succesCallback,
+                    error: this.errorCallback
+                });
+                return true;
+            }
+            return false;
+        },
+
+        adminLogoUploadComplete: function(msg) {
+            var response = JSON.parse(msg);
+            if(response.hasOwnProperty("srvResponseCode")) {
+                if(response.srvResponseCode !== CONST.successCode) {
+                    main.showModal(("Action not completed. server message: " + response.srvMessage), CONST.alertServerFailed);
+                    return;
+                }
+                main.submitReviewData(CONST.approve); // proceed with approval process
             } else {
                 main.showModal("Server not responding", CONST.alertServerUnresponsive);
             }
@@ -922,7 +959,7 @@
                             // text field
                             $($el).val(frameworkData[key]);
                         }
-                    } else if(key == "logo_img") {
+                    } else if(key == "logo_name") {
                         $('#previewLogo').attr('src', (CONST.backEndImageURL + frameworkData[key]));
                     }
                 }
@@ -966,6 +1003,8 @@
                                 $($el).removeClass('highlight-diff');
                             }
                         }
+                    } else if(key == "logo_name") {
+                        $('#previewLogoRo').attr('src', (CONST.backEndImageURL + frameworkData[key]));
                     }
                 }
             }
@@ -1051,7 +1090,6 @@
             this.reviewFrameworkId = data.framework_id;
             this.reviewFrameworkRef = data.reference;
             this.reviewModifiedBy = data.modified_by;
-
             $.ajax({
                 method: "GET",
                 url: CONST.backEndPrivateURL + "AJ_getAdminFramework",
@@ -1087,6 +1125,18 @@
         },
 
         submitReview: function(action) {
+            if (action === CONST.approve) {
+                /* first upload image if needed (to ensure that the latest image is available if admin has modified it)
+                 * after image is updated we go through with approval proccess. If no image is modified the framework is
+                 * instantly approved. */
+                if(this.adminUploadLogo(this.reviewFrameworkId, this.adminLogoUploadComplete)) {
+                    return;
+                }
+            } 
+            this.submitReviewData(action);
+        },
+
+        submitReviewData: function(action) {
             var data = [];
             var i = 0;
             for(i=1; i<(CONST.formSteps+1); i++) {
@@ -1095,7 +1145,7 @@
             // Add review data
             data.push({name:"reference", value:this.reviewFrameworkRef});
             data.push({name:"modified_by", value:this.reviewModifiedBy});
-            
+
             $.ajax({
                 method: "POST",
                 url: CONST.backEndPrivateURL + "AJ_submitContribution",
@@ -1307,6 +1357,7 @@
                 this.domCache.$formSteps[i].reset();
             }
             $('#previewLogo').attr('src', (CONST.backEndImageURL + 'notfound.png'));
+            $('.logo-msg').html("");
             // reset reference & current framework edit
             this.editFrameworkRef = 0;
             this.editFrameworkName = "";

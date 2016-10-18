@@ -414,14 +414,14 @@
                     main.showModal(("Action not completed. server message: " + response.srvMessage), CONST.alertServerFailed);
                 }
                 main.showModal("Succesfully submitted contribution", CONST.alertServerSuccess);
-				main.uploadLogo(response.srvMessage.framework);
+				main.uploadLogo(response.srvMessage.framework, main.logoUploadComplete);
                 main.resetEditInterface();
             } else {
                 main.showModal("Server not responding", CONST.alertServerUnresponsive);
             }
         },
 
-		uploadLogo: function(data) {
+		uploadLogo: function(data, succesCallback) {
             // Check if input field is set and upload image with ajax
             var $logoFile = $('#logo');
             if($logoFile.val()) {
@@ -437,7 +437,7 @@
                     contentType: false,       // The content type used when sending data to the server.
                     cache: false,             // To unable request pages to be cached
                     processData:false,        // To send DOMDocument or non processed data file it is set to false
-                    success: this.logoUploadComplete,
+                    success: succesCallback,
                     error: this.errorCallback
                 });
             }
@@ -500,7 +500,7 @@
                             // text field
                             $($el).val(frameworkData[key]);
                         }
-                    } else if(key == "logo_img") {
+                    } else if(key == "logo_name") {
                         $('#previewLogo').attr('src', (CONST.backEndImageURL + frameworkData[key]));
                     }
                 }
@@ -644,6 +644,7 @@
                 this.domCache.$formSteps[i].reset();
             }
 			$('#previewLogo').attr('src', (CONST.backEndImageURL + 'notfound.png'));
+            $('.logo-msg').html("");
             // reset reference & current framework edit
             this.editFrameworkRef = 0;
             this.editFrameworkName = "";

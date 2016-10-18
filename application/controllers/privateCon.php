@@ -106,7 +106,7 @@ class PrivateCon extends CI_Controller {
 
 		if(is_object($existingFramework)) {
 			// Update exisiting framework entry with new data
-            $frameworkObj->logo_img = $existingFramework->logo_img;
+            $frameworkObj->logo_name = $existingFramework->logo_name;
             $retval = $this->FrameworksModel->updateFramework($existingFramework->framework_id, $frameworkObj, $errmsg);
             if($retval != PublicConstants::SUCCESS) {
                 // Database error
@@ -260,19 +260,17 @@ class PrivateCon extends CI_Controller {
 
 		// Load database interaction model
 		$this->load->model('FrameworksModel');
-		$retval = $this->FrameworksModel->removeFrameworkByNameAndId($frameworkName, $frameworkId, $userObj->getDbID(), $errmsg);
-        // Delete logo if found
-        $logoName = "img/logos/" . PublicConstants::AWAIT_APPROVE_PREFIX . $frameworkId . ".png";
-        if (file_exists($logoName)) {
-            unlink($logoName);
-        }
-
-		if($retval != PublicConstants::SUCCESS) {
+		$retval = $this->FrameworksModel->removeFrameworkByNameAndId($frameworkName, $frameworkId, $userObj->getDbID(), $errmsg); //returns logo name
+		if($retval == PublicConstants::FAILED) {
 			// Database error
 			$this->echoResponse($errmsg, $retval);
 			return;
 		}
+        // Delete logo if found
+        $this->deleteLogo($retval);
+
         // provide feedback to user
+        $retval = PublicConstants::SUCCESS;
         $errmsg = "Framework edit is removed";
         $this->echoResponse($errmsg,$retval);
     }
@@ -447,28 +445,17 @@ class PrivateCon extends CI_Controller {
         
 		$this->load->model('FrameworksModel');
 		if($action == PublicConstants::APPROVE_TOOL) {
+            // Get exisiting framework logo entry
+            $result = $this->FrameworksModel->getFrameworkLogoById($frameworkId, PublicConstants::STATE_AWAIT_APPROVAL, $errmsg);
+
 			// Update exisiting framework entry with new data and approve
-            log_message('debug', print_r($frameworkObj,TRUE));
+            $frameworkObj->logo_name = $result["logo_name"];
             $retval = $this->FrameworksModel->approveFramework($frameworkId, $frameworkObj, $errmsg);
             if($retval != PublicConstants::SUCCESS) {
                 // Database error
                 $this->echoResponse($errmsg, $retval);
                 return;
             }
-            // Update logo if necessary
-            /*
-            $awaitingLogoName = "img/logos/" . PublicConstants::AWAIT_APPROVE_PREFIX . $frameworkId . ".png";
-            $approvedLogoName = "img/logos/" . $frameworkId . ".png";
-            $outdatedLogoName = "img/logos/" . PublicConstants::OUTDATED_PREFIX . $frameworkId . ".png";
-            if (file_exists($outdatedLogoName)) {
-                unlink($outdatedLogoName);
-            }
-            if (file_exists($approvedLogoName)) {
-                rename($approvedLogoName, $outdatedLogoName);
-            }
-            if (file_exists($awaitingLogoName)) {
-                rename($awaitingLogoName, $approvedLogoName);
-            }*/
 		} else {
             // Decline existing contribution
             $retval = $this->FrameworksModel->declineFramework($frameworkId, $errmsg);
@@ -496,18 +483,37 @@ class PrivateCon extends CI_Controller {
                 if ($_FILES["logo"]["error"] > 0) {
                     $errmsg = "Return Code: " . $_FILES["logo"]["error"] . "<br/><br/>";
                 } else {
+                    // Check if user exists and is not blocked
+                    $this->load->library('session');
+                    $this->load->model('UserModel');
+                    // check if user exists
+                    $userEmail = $this->session->email;
+                    $userObj = $this->UserModel->getUserByEmail($userEmail, $errmsg);
+                    if(is_a($userObj, 'User')) {
+                        if($userObj->isBlocked != 0) {
+                            $errmsg = "retrieving data for user failed.";
+                            $retval = PublicConstants::FAILED;
+                            $this->echoResponse($errmsg, $retval);
+                            return;
+                        }
+                    }
+
                     // Load database interaction model
 		            $this->load->model('FrameworksModel');
                     // Determine new name of logo [framework_id.png]
-                    $retval = $this->FrameworksModel->getFrameworkIdByName($_POST["framework"], PublicConstants::STATE_AWAIT_APPROVAL, $errmsg);
-                    if($retval == PublicConstants::FAILED) {
+                    $retval = $this->FrameworksModel->getFrameworkLogoByName($_POST["framework"], $userObj->getDbID(), PublicConstants::STATE_AWAIT_APPROVAL, $errmsg);
+                    if(!is_array($retval)) {
                         // Database error
                         $this->echoResponse($errmsg, $retval);
                         return;
                     }
-                    $logoName = PublicConstants::AWAIT_APPROVE_PREFIX . $retval . ".png";
+                    // delete old logo
+                    $this->deleteLogo($retval["logo_name"]);
+
+                    $logoName = $retval["id"] . ".png";
+                    $logoNameCB = $retval["id"] . "_" . filemtime($_FILES['logo']['tmp_name']) . ".png"; // cache busted logo name
                     // Update framework logo 
-                    $retval = $this->FrameworksModel->updateFrameworkLogo($retval, $logoName, $errmsg);
+                    $retval = $this->FrameworksModel->updateFrameworkLogo($retval["id"], $logoName, $logoNameCB, $errmsg);
                     if($retval == PublicConstants::FAILED) {
                         // Database error
                         $this->echoResponse($errmsg, $retval);
@@ -515,7 +521,73 @@ class PrivateCon extends CI_Controller {
                     }
 
                     $sourcePath = $_FILES['logo']['tmp_name']; // Storing source path of the file in a variable
-                    $targetPath = "img/logos/" . $logoName; // Target path where file is to be stored
+                    $targetPath = PublicConstants::IMG_PATH . $logoNameCB; // Target path where file is to be stored (cache busted name)
+                    move_uploaded_file($sourcePath,$targetPath) ; // Moving Uploaded file
+                        
+                    $errmsg = "Logo upload succesfull";
+                    $retval = PublicConstants::SUCCESS;
+                }
+            } else {
+                $errmsg = "Invalid file Size or Type";
+            }
+        } else {
+           $errmsg = "no file specified";
+        }
+        $this->echoResponse($errmsg,$retval);
+    }
+
+    public function AJ_adminUploadLogo() {
+        $errmsg = "";
+		$retval = PublicConstants::FAILED;
+        if(isset($_FILES["logo"]["type"])) {
+            $validextensions = array("png");
+            $temporary = explode(".", $_FILES["logo"]["name"]);
+            $file_extension = end($temporary);
+            if (($_FILES["logo"]["type"] == "image/png")
+            && ($_FILES["logo"]["size"] < 100000)//Approx. 100kb files can be uploaded.
+            && in_array($file_extension, $validextensions)) {
+                if ($_FILES["logo"]["error"] > 0) {
+                    $errmsg = "Return Code: " . $_FILES["logo"]["error"] . "<br/><br/>";
+                } else {
+                    // Check if user is admin
+                    $this->load->library('session');
+                    $this->load->model('UserModel');
+
+                    $userEmail = $this->session->email;
+                    $userObj = $this->UserModel->getUserByEmail($userEmail, $errmsg);
+                    if(is_a($userObj, 'User')) {
+                        if(!$userObj->admin) {
+                            $errmsg = "User is no admin";
+                            $retval = PublicConstants::FAILED;
+                            $this->echoResponse($errmsg,$retval);
+                            return;
+                        }
+                    }
+
+                    // Load database interaction model
+		            $this->load->model('FrameworksModel');
+                    // Determine new name of logo [framework_id.png]
+                    $retval = $this->FrameworksModel->getFrameworkLogoById($_POST["framework_id"], PublicConstants::STATE_AWAIT_APPROVAL, $errmsg);
+                    if(!is_array($retval)) {
+                        // Database error
+                        $this->echoResponse($errmsg, $retval);
+                        return;
+                    }
+                    // delete old logo
+                    $this->deleteLogo($retval["logo_name"]);
+
+                    $logoName = $retval["id"] . ".png";
+                    $logoNameCB = $retval["id"] . "_" . filemtime($_FILES['logo']['tmp_name']) . ".png"; // cache busted logo name
+                    // Update framework logo in database
+                    $retval = $this->FrameworksModel->updateFrameworkLogo($retval["id"], $logoName, $logoNameCB, $errmsg);
+                    if($retval == PublicConstants::FAILED) {
+                        // Database error
+                        $this->echoResponse($errmsg, $retval);
+                        return;
+                    }
+
+                    $sourcePath = $_FILES['logo']['tmp_name']; // Storing source path of the file in a variable
+                    $targetPath = PublicConstants::IMG_PATH . $logoNameCB; // Target path where file is to be stored (cache busted name)
                     move_uploaded_file($sourcePath,$targetPath) ; // Moving Uploaded file
                         
                     $errmsg = "Logo upload succesfull";
@@ -541,6 +613,15 @@ class PrivateCon extends CI_Controller {
     private function formatString($str) {
         $temp = preg_replace('/[^0-9a-zA-Z]+/', '', $str);
         return strtolower($temp);
+    }
+
+    private function deleteLogo($logoName) {
+        // Check if logoName equals default logo (if not delete logo)
+        if (strpos($logoName, PublicConstants::DEFAULT_LOGO_NAME) === false) {
+            if (file_exists(PublicConstants::IMG_PATH . $logoName)) {
+                unlink(PublicConstants::IMG_PATH . $logoName);
+            }
+        }
     }
 
 }

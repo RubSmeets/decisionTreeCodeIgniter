@@ -8,7 +8,7 @@ class FrameworksModel extends CI_Model {
 	
     //Get all the frameworks and extract relevant data for listView
     function getFrameworkListThumbData(&$errmsg) {
-        $this->db->select('framework_id, status, framework, logo_img');
+        $this->db->select('framework_id, status, framework, logo_name');
         $query = $this->db->get('frameworks_v2');
 		
         //Open console window in folder application/logs and type: tail -100 log-file to see debug info
@@ -21,7 +21,7 @@ class FrameworksModel extends CI_Model {
                     $resultData->framework_id,
                     $resultData->status,
                     $resultData->framework,
-                    (PublicConstants::IMG_PATH . $resultData->logo_img)               
+                    ("../" . PublicConstants::IMG_PATH . $resultData->logo_name)               
                 );
                 array_push($frameworks, $frameworkThumb);
             }
@@ -32,7 +32,7 @@ class FrameworksModel extends CI_Model {
     }
     //Get all the frameworks that are approved. format data for jQuery dataTable
     function getEditFrameworkListThumbData($userId, &$errmsg) {
-        $this->db->select('framework_id, framework, logo_img, state, comparison_data_last_update, username');
+        $this->db->select('framework_id, framework, logo_name, state, comparison_data_last_update, username');
         $this->db->from('frameworks_v2');
         $this->db->join('users', 'frameworks_v2.modified_by = users.id', 'left');
         $this->db->where('state', PublicConstants::STATE_APPROVED);
@@ -45,7 +45,7 @@ class FrameworksModel extends CI_Model {
                 $frameworkThumbPrivate = new FrameworkThumbPrivate (
                     $resultData->framework_id,
                     $resultData->framework,
-                    (PublicConstants::IMG_PATH . $resultData->logo_img),
+                    ("../" . PublicConstants::IMG_PATH . $resultData->logo_name),
                     $resultData->state,
                     0,
                     $resultData->comparison_data_last_update       
@@ -60,7 +60,7 @@ class FrameworksModel extends CI_Model {
     }
     //Get all the frameworks that are  NOT approved and belong to the user. format data for jQuery dataTable
     function getPrivateEditFrameworkListThumbData($userId, &$errmsg) {
-        $this->db->select('framework_id, framework, logo_img, state, comparison_data_last_update');
+        $this->db->select('framework_id, framework, logo_name, state, comparison_data_last_update');
         $this->db->where('state', PublicConstants::STATE_AWAIT_APPROVAL);
         $this->db->where('modified_by', $userId);
         $query = $this->db->get('frameworks_v2');
@@ -71,7 +71,7 @@ class FrameworksModel extends CI_Model {
                 $frameworkThumbPrivate = new FrameworkThumbPrivate (
                     $resultData->framework_id,
                     $resultData->framework,
-                    (PublicConstants::IMG_PATH . $resultData->logo_img),
+                    ("../" . PublicConstants::IMG_PATH . $resultData->logo_name),
                     $resultData->state,
                     $resultData->framework_id,
                     $resultData->comparison_data_last_update               
@@ -83,17 +83,40 @@ class FrameworksModel extends CI_Model {
 		$errmsg = "Something went wrong with getting private framework thumbs";
 		return PublicConstants::FAILED;
     }
-    //Get frameworkId by name 
-    function getFrameworkIdByName($frameworkName, $state, &$errmsg) {
-        $this->db->select('framework_id');
+    //Get framework logo by name 
+    function getFrameworkLogoByName($frameworkName, $userId, $state, &$errmsg) {
+        $this->db->select('framework_id, logo_name');
         $this->db->where('framework', $frameworkName);
+        $this->db->where('modified_by', $userId);
         $this->db->where('state', $state);
         $this->db->limit(1);    //only return one framework
         $query = $this->db->get('frameworks_v2');
 
         if($query->num_rows() != 0) {
 			foreach ($query->result() as $resultData) {
-                return $resultData->framework_id;
+                return $result = array(
+                    'id' => $resultData->framework_id,
+                    'logo_name' => $resultData->logo_name
+                );
+            }
+		}
+		$errmsg = "Framework not found";
+		return PublicConstants::FAILED;
+    }
+    //Get framework logo by id
+    function getFrameworkLogoById($frameworkid, $state, &$errmsg) {
+        $this->db->select('framework_id, logo_name');
+        $this->db->where('framework_id', $frameworkid);
+        $this->db->where('state', $state);
+        $this->db->limit(1);    //only return one framework
+        $query = $this->db->get('frameworks_v2');
+
+        if($query->num_rows() != 0) {
+			foreach ($query->result() as $resultData) {
+                return $result = array(
+                    'id' => $resultData->framework_id,
+                    'logo_name' => $resultData->logo_name
+                );
             }
 		}
 		$errmsg = "Framework not found";
@@ -161,7 +184,7 @@ class FrameworksModel extends CI_Model {
 
     //Get contribution framework data from a specific user_error
     function getContributionsOfUser($email, &$errmsg) {
-        $this->db->select('framework_id, framework, logo_img, state, comparison_data_last_update');
+        $this->db->select('framework_id, framework, logo_name, state, comparison_data_last_update');
         $this->db->where("modified_by = (SELECT u.id FROM users AS u WHERE u.user_email = '" . $email ."')", NULL, FALSE);
         $query = $this->db->get('frameworks_v2');
 
@@ -171,7 +194,7 @@ class FrameworksModel extends CI_Model {
                 $frameworkThumbPrivate = new FrameworkThumbPrivate (
                     $resultData->framework_id,
                     $resultData->framework,
-                    (PublicConstants::IMG_PATH . $resultData->logo_img),
+                    ("../" . PublicConstants::IMG_PATH . $resultData->logo_name),
                     $resultData->state,
                     $resultData->framework_id,
                     $resultData->comparison_data_last_update               
@@ -186,7 +209,7 @@ class FrameworksModel extends CI_Model {
 
     //Get all the frameworks that are approved. format data for jQuery dataTable
     function getAllPendingContributionThumbs(&$errmsg) {
-        $this->db->select('framework_id, framework, logo_img, comparison_data_last_update, modified_by, reference, username');
+        $this->db->select('framework_id, framework, logo_name, comparison_data_last_update, modified_by, reference, username');
         $this->db->from('frameworks_v2');
         $this->db->join('users', 'frameworks_v2.modified_by = users.id', 'left');
         $this->db->where('state', PublicConstants::STATE_AWAIT_APPROVAL);
@@ -198,7 +221,7 @@ class FrameworksModel extends CI_Model {
                 $frameworkThumbAdmin = new FrameworkThumbAdmin (
                     $resultData->framework_id,
                     $resultData->framework,
-                    (PublicConstants::IMG_PATH . $resultData->logo_img),
+                    ("../" . PublicConstants::IMG_PATH . $resultData->logo_name),
                     $resultData->framework_id,
                     $resultData->comparison_data_last_update,
                     $resultData->username,
@@ -269,8 +292,9 @@ class FrameworksModel extends CI_Model {
 		else return PublicConstants::SUCCESS;
     }
     //Update framework logo
-    function updateFrameworkLogo($framework_id, $logoName, &$errmsg) {
+    function updateFrameworkLogo($framework_id, $logoName, $logoNameCB, &$errmsg) {
         $this->db->set('logo_img', $logoName);
+        $this->db->set('logo_name', $logoNameCB);
         $this->db->where('framework_id', $framework_id);
         $query = $this->db->update('frameworks_v2');
 		
@@ -307,6 +331,22 @@ class FrameworksModel extends CI_Model {
 
     //Remove a framework that is being edited
     function removeFrameworkByNameAndId($frameworkName, $frameworkId, $userId, &$errmsg) {
+        $logoName = "";
+
+        $this->db->select('logo_name');
+        $this->db->where('framework_id', $frameworkId);
+        $this->db->limit(1);    //only return one framework
+        $query = $this->db->get('frameworks_v2');
+
+        if($query->num_rows() != 0) {
+			foreach ($query->result() as $resultData) {
+                $logoName = $resultData->logo_name;
+            }
+		} else {
+            $errmsg = "Framework not found";
+            return PublicConstants::FAILED;
+        }
+        
         $this->db->where('framework', $frameworkName);
         $this->db->where('framework_id', $frameworkId);
         $this->db->where('modified_by', $userId);
@@ -314,7 +354,7 @@ class FrameworksModel extends CI_Model {
         $query = $this->db->delete('frameworks_v2');
 
         if(!$query) { $errmsg = "No deletion of framework: ".$frameworkName; return PublicConstants::FAILED; }
-		else return PublicConstants::SUCCESS;
+		else return $logoName;
     }
 
 }
