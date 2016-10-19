@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"/>
     <?php echo link_tag('fonts/font-awesome/css/font-awesome.min.css'); ?>
 	<?php echo link_tag('css/decisionTree.css'); ?>
-	<?php echo link_tag('css/bootstrap-social.css'); ?>
+	<?php if(!isset($email)) { ?><?php echo link_tag('css/bootstrap-social.css'); ?><?php } ?>
 	<?php echo link_tag('css/extern/overhang.min.css'); ?>
 
     <!-- Remote scripts -->
@@ -17,12 +17,18 @@
 	<script src="https://apis.google.com/js/api:client.js"></script>
 
     <!-- Local scripts -->
-	<script type="text/javascript" src="<?php echo base_url();?>js/decisionTree.js" ></script>
+	<script type="text/javascript" src="<?php echo base_url();?>js/index/decisionTree.js" ></script>
+	<?php if(isset($email)) {?>
+		<script type="text/javascript" src="<?php echo base_url();?>js/index/socialLogout.js" ></script>
+	<?php } else {?>
+		<script type="text/javascript" src="<?php echo base_url();?>js/index/socialLogin.js" ></script>
+	<?php }?>
 	<script type="text/javascript" src="<?php echo base_url();?>js/extern/overhang.min.js"></script>	
 
   </head>
 
   <body>
+  	<?php if(!isset($email)) { ?>
   	<!-- Modal overlay to login for contribution (BEST DEFINED AT TOP)-->
 	<div class="modal fade" id="contributeLoginModal" tabindex="-1" role="dialog" aria-labelledby="contributeLoginLabel">
 		<div class="modal-dialog" role="document">
@@ -63,7 +69,7 @@
 			</div>
 		</div>
 	</div>
-
+	<?php }?>
     <!-- HEADER -->
     <div class="jumbotron">
       <div class="container">
@@ -71,8 +77,14 @@
         <p>Compare your favorite mobile development tool with other existing tools out there. Determine which tool is best suited for your needs by filtering the list of tracked tools with your search criteria.</p>
         <p>
 			<a class="btn btn-primary btn-lg" href="html/about.html" role="button">Learn more &raquo;</a>
+			<?php if(!isset($email)) {?>
 			<a id="goToCompareBtn" class="btn btn-primary btn-lg" href="<?php echo base_url();?>publicCon/compare" role="button">Compare &raquo;</a>  
 			<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#contributeLoginModal">Contribute</button>
+			<?php } else {?>
+			<a id="goToCompareBtn" class="btn btn-primary btn-lg" href="<?php echo base_url();?>privateCon/compare" role="button">Compare &raquo;</a>  
+			<?php if(isset($email)) { ?><a id="goToContibution" href="<?php echo base_url();?>privateCon/contribute" class="btn btn-info btn-lg" role="button">Start Contributing</a><?php } ?>
+			<?php if(isset($email)) { ?><button id="socialSignOut" type="button" class="btn btn-danger btn-lg pull-right" data-toggle="tooltip" data-placement="top" title="Signed in as: <?php print $email ?>">Sign out</button><?php } ?>
+			<?php }?>
 		</p>
       </div>
     </div>
@@ -98,7 +110,7 @@
 			<span class="label label-default nr">5</span>
 		</div>
 	</div><button type="button" class="btn btn-default btn-clear" disabled>
-    	Clear All<span class="glyphicon glyphicon-trash pull-right"/>
+    	Clear All <span class="glyphicon glyphicon-trash pull-right"/>
   	</button>
     <div class="panel-group filter-box">
     	<div class="panel panel-default">

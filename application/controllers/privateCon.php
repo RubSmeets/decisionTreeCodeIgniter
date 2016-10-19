@@ -28,7 +28,7 @@ class PrivateCon extends CI_Controller {
      * */
     public function index() {
         $data = array('email' => $this->session->userdata('email'));
-        $this->load->view('privateview/index', $data);
+        $this->load->view('index', $data);
     }
 
     public function contribute() {
