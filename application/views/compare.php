@@ -36,7 +36,7 @@
 				<h1>Mobile Framework Comparison Tool</h1>
 				<p>Perform a side-by-side detailed comparison of up to 5 of your selected tools. Compare their properties accross multiple categories including: resources, hardware features and support features.</p>
 				<p>
-					<a class="btn btn-primary btn-lg" href="index" role="button">Home &raquo;</a>
+					<a class="btn btn-primary btn-lg" href="<?php echo base_url();?>privateCon/index" role="button">Home &raquo;</a>
 					<?php if(isset($email)) { ?><button id="socialSignOut" type="button" class="btn btn-danger btn-lg pull-right" data-toggle="tooltip" data-placement="top" title="Signed in as: <?php print $email ?>">Sign out</button><?php } ?>
 				</p>
 			</div>
