@@ -61,6 +61,48 @@ class PrivateCon extends CI_Controller {
         //redirect(site_url('public_homepage'),'location');
     }
 
+    public function AJ_frameworkExists() {
+        $errmsg = "";
+        $retval = PublicConstants::SUCCESS;
+        
+        if(isset($_GET["name"])) {
+        	$frameworkName = $_GET["name"];
+    	} else {
+			$errmsg = "No correct name specified";
+			$retval = PublicConstants::FAILED;
+			$this->echoResponse($errmsg, $retval);
+			return;
+		}
+        // Check if user exists and is not blocked
+        $this->load->library('session');
+        $this->load->model('UserModel');
+        // check if user exists
+        $userEmail = $this->session->email;
+        $userObj = $this->UserModel->getUserByEmail($userEmail, $errmsg);
+        if(is_a($userObj, 'User')) {
+            if($userObj->isBlocked != 0) {
+                $errmsg = "failed.";
+                $retval = PublicConstants::FAILED;
+                $this->echoResponse($errmsg, $retval);
+                return;
+            }
+        }
+        // find if edited version of framework allready exist for user and update
+		$this->load->model('FrameworksModel');
+        $existingFramework = $this->FrameworksModel->getFrameworkByName($frameworkName, $errmsg);
+
+        if(is_object($existingFramework)) {
+            $orig = strtolower($existingFramework->framework);
+            $test = strtolower($frameworkName);
+            if($orig === $test) { $unique = "false"; }
+            else { $unique = "true"; }
+        } else {
+            $unique = "true";
+        }
+        $errmsg = array( "msg" => $unique );
+        $this->echoResponse($errmsg,$retval);
+    }
+
     public function AJ_addFramework() {
         $errmsg = "";
         $retval = PublicConstants::SUCCESS;

@@ -218,6 +218,7 @@
             this.editFrameworkRef = 0;
             this.editFrameworkName = "";
             this.editFrameworkId = 0;
+			this.uniqueName = "";
             this.alertFunction = 0; // specifies the function of the alert modal
         },
 
@@ -320,6 +321,46 @@
             this.domCache.$progressSegments.on('click', function() {
                 var step = $(this).data('myValue');
                 that.goNavStep(step, CONST.progressNavOption);
+            });
+			//Add custom validator for framework name
+            $('#frmStep1').validator({
+                custom: {
+                    unique: function(el) {
+                        // is called on every input event
+                        if(!($(el).is(":focus"))) {
+                            if(that.uniqueName === "false") {
+                                that.uniqueName = "";
+                                return "Tool name is allready used. Consider editing an existing framework.";
+                            }
+                        }
+                    }
+                }
+            });
+
+            $('#inputToolname').on('change', function() {
+                var inputLength = $(this).val().length
+                var inputVal = $(this).val().trim();    // no spaces or tabs
+                var specialChars = "";
+                if(inputLength > 2 && inputLength < 30) {
+                    specialChars = inputVal.replace(/[a-z|A-Z|0-9|\-|\.| ]*/g,"");
+                    if(specialChars.length === 0) {
+                        $.ajax({
+                            url: CONST.backEndPrivateURL + "AJ_frameworkExists",
+                            dataType: "json",
+                            data: {name: inputVal},
+                        }).done(function(response) {
+                            if(response.hasOwnProperty("srvResponseCode")) {
+                                main.uniqueName = response.srvMessage.msg;
+                                $('#inputToolname').trigger('input'); // trigger input to force custom validation (does not work with ajax directly)
+                            } else {
+                                console.log("error on server");
+                                main.uniqueName = false;
+                            }
+                        }).fail(function(jqXHR, textStatus) {
+                            that.errorCallback();
+                        });
+                    }
+                }
             });
 
             //form field validation events

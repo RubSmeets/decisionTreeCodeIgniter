@@ -161,13 +161,12 @@
                                     </div>
                                 </div>
                                 <div id="formCurrent">
-                                    <form id="frmStep1" data-toggle="validator" role="form" class="form-horizontal container-step1 current-form">
+                                    <form id="frmStep1" class="form-horizontal container-step1 current-form">
                                         <h3>Add Framework properties</h3>
                                         <div class="form-group has-feedback">
                                             <label for="inputToolname" class="col-xs-5 control-label">Tool name (*)</label>
-                                            <div class="col-xs-7">
-                                                <!-- <input class="form-control" id="inputToolname" name="framework" placeholder="e.g. Phonegap" pattern="^[a-zA-Z0-9\-\.\ ]{2,30}$" data-pattern-error="Must be longer than 2 characters and may not contain special characters (except: '.','-')" required/> -->
-                                                <input class="form-control" id="inputToolname" name="framework" placeholder="e.g. Phonegap" required/>
+                                            <div class="col-xs-7">                                            
+                                                <input class="form-control" id="inputToolname" name="framework" placeholder="e.g. Phonegap" pattern="[a-z|A-Z|0-9|\-|\.| ]{2,30}" data-pattern-error="Must be between 2 and 30 characters and may not contain special characters (except: '.','-')" required data-custom="unique" data-unique="true" />
                                                 <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
                                                 <div class="help-block with-errors">Specify the cross-platform tool name</div>
                                             </div>
