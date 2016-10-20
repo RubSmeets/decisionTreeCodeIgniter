@@ -81,6 +81,7 @@
     /* Mobile framework comparison tool functionality */
     var main = {
         initVariables: function() {
+            this.amountOfFrameworks = $(".framework").length;
             this.filterTerms = [];
             this.comparedItems = [];
             this.domCache = {};
@@ -93,6 +94,7 @@
             this.domCache.msg = $("#msg");
             this.domCache.clearButton = $('.btn-clear');
             this.domCache.compareCheckboxes = $('[type=checkbox].compare-checkbox');
+            this.domCache.$resultAmount = $('.result-amount');
         },
 
         init: function() {
@@ -127,6 +129,7 @@
             });
 
             this.domCache.clearButton.on('click', function() {
+                that.domCache.$resultAmount.text("");
                 that.domCache.checkboxes.each( function() {
                   if( $(this).is(':checked') ) {
                       $(this).prop("checked", false).change();  // Force change event
@@ -183,6 +186,7 @@
                 }
             });
 
+            this.updateResultAmountTag();
             this.nothingLeft();
         },
         // update compare url
@@ -255,6 +259,15 @@
               this.domCache.clearButton.prop('disabled', false);
             } else {
               this.domCache.clearButton.prop('disabled', true);
+            }
+        },
+        // Show the user how many results are shown after filtering
+        updateResultAmountTag: function() {
+            var visible = this.amountOfFrameworks - $('.framework.hid').length;
+            if(visible !== this.amountOfFrameworks) {
+                this.domCache.$resultAmount.text(visible + "/" + this.amountOfFrameworks);
+            } else {
+                this.domCache.$resultAmount.text("");
             }
         },
         // Check if there are frameworks left (if not show a message)

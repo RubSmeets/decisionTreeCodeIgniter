@@ -137,7 +137,7 @@ class FrameworkMarkup {
         $lastUpdate = $this->frameworkData->comparison_data_last_update;
         $linkMarkSt = "";
 		$linkMarkEnd = "";
-		$imgPath = PublicConstants::IMG_PATH;
+		$imgPath = "../" . PublicConstants::IMG_PATH;
 		$pos = strpos($url, "|");
 		if($pos !== false) $urls = explode("|", $url);
 		elseif($url === "UNDEF" or $url === "false") $urls = array("#");

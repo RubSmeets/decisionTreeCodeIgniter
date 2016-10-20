@@ -110,7 +110,7 @@
 			<span class="label label-default nr">5</span>
 		</div>
 	</div><button type="button" class="btn btn-default btn-clear" disabled>
-    	Clear All <span class="glyphicon glyphicon-trash pull-right"/>
+    	Clear All <span class="badge result-amount"></span><span class="glyphicon glyphicon-trash pull-right"/>
   	</button>
     <div class="panel-group filter-box">
     	<div class="panel panel-default">
