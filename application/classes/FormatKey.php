@@ -11,6 +11,11 @@ class FormatKey {
         "partially" =>  "Partially",
         "soon" =>  "Soon",
 
+        "_soon" => "soon supported",
+        "_via" => "supported via plugin or by third party",
+        "_partially" => "only partially supported",
+        "_true" => "fully supported",
+
         "active" => "Active",
         "discontinued" => "Discontinued",
 

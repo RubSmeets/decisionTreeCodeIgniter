@@ -236,7 +236,7 @@ class FrameworkFormat {
         foreach ($data as $key => $value) {
             $feature = $this->formatRadioCheckboxToText($value, $key);
             if(!empty($feature)) {
-                $text .= "<span class=\"feature " . $feature[0] . "\">" . $feature[1] . "</span>";
+                $text .= "<span class=\"feature " . $feature[0] . "\" data-toggle=\"tooltip\" data-delay=\"350\" title=\"" . $feature[1] . " is " . $this->_keyFormatter->formatKey("_" . $value) . "\">" . $feature[1] . "</span>";
             }
         }
         return $text;
@@ -262,9 +262,9 @@ class FrameworkFormat {
             }
 
             if(strlen($value) > 13) { //for overflow animation
-                $text .= "<div class=\"feature-wrap\"><span class=\"feature-license " . $class . "\">" . $value . "</span></div>";
+                $text .= "<div class=\"feature-wrap\" data-toggle=\"tooltip\" data-delay=\"350\" title=\"" . $value . "\"><span class=\"feature-license " . $class . "\">" . $value . "</span></div>";
             } else {
-                $text .= "<span class=\"feature-license " . $class . "\">" . $value . "</span>";
+                $text .= "<span class=\"feature-license " . $class . "\" data-toggle=\"tooltip\" data-delay=\"350\" title=\"" . $value . "\">" . $value . "</span>";
             }
             
         }
