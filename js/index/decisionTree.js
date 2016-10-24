@@ -115,16 +115,16 @@
 
         bindEvents: function() {
             var that = this;
-            this.domCache.checkboxes.on('input change', function() {
+            this.domCache.checkboxes.on('change', function() {
                 that.toggleClearButton();
             });
 
-            this.domCache.compareCheckboxes.on('input change', function() {
+            this.domCache.compareCheckboxes.on('change', function(e) {
                 that.updateCompareUrl(this);
                 that.determineCompareVisibility();
             });
 
-            this.domCache.filterContainer.on('input change', function() {
+            this.domCache.filterContainer.on('change', function() {
                 that.getCheckedFilterTerms();
                 that.filterFrameworks();
             });
