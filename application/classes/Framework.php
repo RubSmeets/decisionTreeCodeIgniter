@@ -2,7 +2,7 @@
 
 class Framework {
 	private $_dbId;
-    private $_validateObject; // internal variable to differentiate between framework from db or from post
+    private $_action; // internal variable to differentiate between framework from db or from post
     private $_inValidProperty;
         # framework props
     private $_comparison_data_last_update;
@@ -131,9 +131,9 @@ class Framework {
     public $modified_by;
     public $reference; // foreign key to the modified original framework entry (0 if it is the first)
 
-	public function __construct($tmpId, $tmpValidate) {
+	public function __construct($tmpId, $tmpAction) {
 		$this->_dbId = $tmpId;
-        $this->_validateObject = $tmpValidate;
+        $this->_action = $tmpAction;
         $this->_inValidProperty = false;
         $this->_comparison_data_last_update = "";
         $this->framework = "UNDEF";
@@ -269,42 +269,42 @@ class Framework {
         $this->framework = $data;
     }
     public function framework_current_version($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->framework_current_version = $this->isEmpty($data);
         } else {
             $this->framework_current_version = $this->formatEmpty($data);
         }
     }
     public function announced($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->announced = $this->isEmpty($data);
         } else {
             $this->announced = $this->formatEmpty($data);
         }
     }
     public function market($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->market = $this->validateUrl($data);
         } else {
             $this->market = $this->formatEmpty($data);
         }
     }
     public function twitter($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->twitter = $this->validateUrl($data);
         } else {
             $this->twitter = $this->formatEmpty($data);
         }
     }
     public function stackoverflow($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->stackoverflow = $this->validateUrl($data);
         } else {
             $this->stackoverflow = $this->formatEmpty($data);
         }
     }
     public function appshowcase($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->appshowcase = $this->validateUrl($data);
         } else {
             $this->appshowcase = $this->formatEmpty($data);
@@ -314,7 +314,7 @@ class Framework {
         $this->clouddev = $data;
     }
     public function license($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->license = $this->isEmpty($data);
         } else {
             $this->license = $this->formatEmpty($data);
@@ -339,35 +339,35 @@ class Framework {
         $this->remoteupdate = $data;
     }
     public function free($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->free = $data;
         } else {
             $this->free = $this->formatRadioEmpty($data);
         }
     }
     public function opensource($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->opensource = $data;
         } else {
             $this->opensource = $this->formatRadioEmpty($data);
         }
     }
     public function repo($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->repo = $this->validateUrl($data);
         } else {
             $this->repo = $this->formatEmpty($data);
         }
     }
     public function trial($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->trial = $data;
         } else {
             $this->trial = $this->formatRadioEmpty($data);
         }
     }
     public function games($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->games = $data;
         } else {
             $this->games = $this->formatRadioEmpty($data);
@@ -401,392 +401,392 @@ class Framework {
         $this->code_sharing = $data;
     }
     public function documentation_url($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->documentation_url = $this->validateUrl($data);
         } else {
             $this->documentation_url = $this->formatEmpty($data);
         }
     }
     public function book($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->book = $this->validateUrl($data);
         } else {
             $this->book = $this->formatEmpty($data);
         }
     }
     public function video_url($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->video_url = $this->validateUrl($data);
         } else {
             $this->video_url = $this->formatEmpty($data);
         }
     }
     public function tutorial_url($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->tutorial_url = $this->validateUrl($data);
         } else {
             $this->tutorial_url = $this->formatEmpty($data);
         }
     }
     public function url($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->url = $this->validateUrl($data);
         } else {
             $this->url = $this->formatEmpty($data);
         }
     }
     public function webtonative($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->webtonative = $data;
         } else {
             $this->webtonative = $this->formatRadioEmpty($data);
         }
     }
     public function nativejavascript($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->nativejavascript = $data;
         } else {
             $this->nativejavascript = $this->formatRadioEmpty($data);
         }
     }
     public function runtime($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->runtime = $data;
         } else {
             $this->runtime = $this->formatRadioEmpty($data);
         }
     }
     public function javascript_tool($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->javascript_tool = $data;
         } else {
             $this->javascript_tool = $this->formatRadioEmpty($data);
         }
     }
     public function sourcecode($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->sourcecode = $data;
         } else {
             $this->sourcecode = $this->formatRadioEmpty($data);
         }
     }
     public function appfactory($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->appfactory = $data;
         } else {
             $this->appfactory = $this->formatRadioEmpty($data);
         }
     }
     public function mobilewebsite($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->mobilewebsite = $data;
         } else {
             $this->mobilewebsite = $this->formatRadioEmpty($data);
         }
     }
     public function webapp($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->webapp = $data;
         } else {
             $this->webapp = $this->formatRadioEmpty($data);
         }
     }
     public function nativeapp($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->nativeapp = $data;
         } else {
             $this->nativeapp = $this->formatRadioEmpty($data);
         }
     }
     public function hybridapp($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->hybridapp = $data;
         } else {
             $this->hybridapp = $this->formatRadioEmpty($data);
         }
     }
     public function android($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->android = $data;
         } else {
             $this->android = $this->formatRadioEmpty($data);
         }
     }
     public function ios($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->ios = $data;
         } else {
             $this->ios = $this->formatRadioEmpty($data);
         }
     }
     public function blackberry($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->blackberry = $data;
         } else {
             $this->blackberry = $this->formatRadioEmpty($data);
         }
     }
     public function windowsphone($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->windowsphone = $data;
         } else {
             $this->windowsphone = $this->formatRadioEmpty($data);
         }
     }
     public function wup($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->wup = $data;
         } else {
             $this->wup = $this->formatRadioEmpty($data);
         }
     }
     public function androidtv($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->androidtv = $data;
         } else {
             $this->androidtv = $this->formatRadioEmpty($data);
         }
     }
     public function appletv($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->appletv = $data;
         } else {
             $this->appletv = $this->formatRadioEmpty($data);
         }
     }
     public function watchos($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->watchos = $data;
         } else {
             $this->watchos = $this->formatRadioEmpty($data);
         }
     }
     public function bada($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->bada = $data;
         } else {
             $this->bada = $this->formatRadioEmpty($data);
         }
     }
     public function firefoxos($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->firefoxos = $data;
         } else {
             $this->firefoxos = $this->formatRadioEmpty($data);
         }
     }
     public function kindle($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->kindle = $data;
         } else {
             $this->kindle = $this->formatRadioEmpty($data);
         }
     }
     public function webos($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->webos = $data;
         } else {
             $this->webos = $this->formatRadioEmpty($data);
         }
     }
     public function osx($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->osx = $data;
         } else {
             $this->osx = $this->formatRadioEmpty($data);
         }
     }
     public function windows($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->windows = $data;
         } else {
             $this->windows = $this->formatRadioEmpty($data);
         }
     }
     public function windowsmobile($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->windowsmobile = $data;
         } else {
             $this->windowsmobile = $this->formatRadioEmpty($data);
         }
     }
     public function symbian($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->symbian = $data;
         } else {
             $this->symbian = $this->formatRadioEmpty($data);
         }
     }
     public function tizen($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->tizen = $data;
         } else {
             $this->tizen = $this->formatRadioEmpty($data);
         }
     }
     public function maemo($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->maemo = $data;
         } else {
             $this->maemo = $this->formatRadioEmpty($data);
         }
     }
     public function meego($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->meego = $data;
         } else {
             $this->meego = $this->formatRadioEmpty($data);
         }
     }
     public function html($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->html = $data;
         } else {
             $this->html = $this->formatRadioEmpty($data);
         }
     }
     public function csharp($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->csharp = $data;
         } else {
             $this->csharp = $this->formatRadioEmpty($data);
         }
     }
     public function css($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->css = $data;
         } else {
             $this->css = $this->formatRadioEmpty($data);
         }
     }
     public function basic($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->basic = $data;
         } else {
             $this->basic = $this->formatRadioEmpty($data);
         }
     }
     public function cplusplus($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->cplusplus = $data;
         } else {
             $this->cplusplus = $this->formatRadioEmpty($data);
         }
     }
     public function java($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->java = $data;
         } else {
             $this->java = $this->formatRadioEmpty($data);
         }
     }
     public function javame($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->javame = $data;
         } else {
             $this->javame = $this->formatRadioEmpty($data);
         }
     }
     public function js($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->js = $data;
         } else {
             $this->js = $this->formatRadioEmpty($data);
         }
     }
     public function jsx($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->jsx = $data;
         } else {
             $this->jsx = $this->formatRadioEmpty($data);
         }
     }
     public function lua($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->lua = $data;
         } else {
             $this->lua = $this->formatRadioEmpty($data);
         }
     }
     public function objc($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->objc = $data;
         } else {
             $this->objc = $this->formatRadioEmpty($data);
         }
     }
     public function swift($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->swift = $data;
         } else {
             $this->swift = $this->formatRadioEmpty($data);
         }
     }
     public function php($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->php = $data;
         } else {
             $this->php = $this->formatRadioEmpty($data);
         }
     }
     public function python($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->python = $data;
         } else {
             $this->python = $this->formatRadioEmpty($data);
         }
     }
     public function ruby($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->ruby = $data;
         } else {
             $this->ruby = $this->formatRadioEmpty($data);
         }
     }
     public function actionscript($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->actionscript = $data;
         } else {
             $this->actionscript = $this->formatRadioEmpty($data);
         }
     }
     public function uno($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->uno = $data;
         } else {
             $this->uno = $this->formatRadioEmpty($data);
         }
     }
     public function MXML($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->MXML = $data;
         } else {
             $this->MXML = $this->formatRadioEmpty($data);
         }
     }
     public function visualeditor($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->visualeditor = $data;
         } else {
             $this->visualeditor = $this->formatRadioEmpty($data);
         }
     }
     public function xml($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->xml = $data;
         } else {
             $this->xml = $this->formatRadioEmpty($data);
         }
     }
     public function qml($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->qml = $data;
         } else {
             $this->qml = $this->formatRadioEmpty($data);
         }
     }
     public function UXMarkup($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->UXMarkup = $data;
         } else {
             $this->UXMarkup = $this->formatRadioEmpty($data);
@@ -874,7 +874,7 @@ class Framework {
         $this->logo_name = $data;
     }
     public function modified_by($data) {
-        if($this->_validateObject) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
             $this->modified_by = $data;
         }
     }
@@ -903,7 +903,7 @@ class Framework {
     private function validateUrl($urlToBeValidated) {
         if(empty($urlToBeValidated)) {
             return "UNDEF";
-        } elseif(!$this->_validateObject) {
+        } elseif($this->_action === PublicConstants::DONT_VALIDATE_FRAMEWORK) {
             return $urlToBeValidated;   // just return object;
         } else {
             if (filter_var($urlToBeValidated, FILTER_VALIDATE_URL)) { 

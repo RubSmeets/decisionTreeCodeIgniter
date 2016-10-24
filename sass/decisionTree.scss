@@ -31,12 +31,13 @@
     padding-bottom: 10px;
 }
 
-.track-tool-nr .nr {
+.track-tool-nr .label-nr {
     display: inline-block;
     font-size: 20px;
     font-weight: 400;
     height: 40px;
     padding: 10px 6px;
+    background-color: #777;
 }
 // ---------------------------------------------------
 
@@ -190,6 +191,45 @@ a[aria-expanded=true] .glyphicon-chevron-down {
     background-color: steelblue;
 }
 
+//Styling of the feature spans
+.feature-license {
+    -webkit-transition: left 3s, width 3s;
+    -moz-transition: left 3s, width 3s;
+    transition: left 3s, width 3s;
+    
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;    /* Required to make ellipsis work */
+    text-overflow: ellipsis;
+
+    /* Starting transition */    
+    left: 0%;
+    width: 100%;
+
+    color: #fff;
+    width: 100%;
+    cursor: help;
+    display: block;
+    min-width: 67px;
+    padding: 3px 3px 3px 5px;
+    font-size: x-small;
+    background-color: steelblue;
+}
+
+.feature-wrap {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+
+    margin: 3px 0px 3px 0px;
+    overflow: hidden;
+}
+
+.feature-wrap:hover .feature-license {
+    left: -150%;
+    width: 250%;
+}
+
 .selected {
     border: 2px solid lightgreen;
     box-shadow: 0 0 10px lightgreen;
@@ -219,7 +259,12 @@ tbody tr td.descr-label {
     vertical-align: middle;
 }
 
+#githubLoginBtn,
 #googleLoginBtn {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    margin-bottom: 10px;
     max-width: 230px;
     width: 100%;
 }

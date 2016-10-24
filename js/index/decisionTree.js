@@ -11,6 +11,7 @@
         maxCompared: 5,
         minCompared: 2,
         compareLabelText: "Compare",
+        frameworksSessionStoreKey: "frameworkData",
         twitterIcon: "twitter",
         twitterSessionStoreKey: "twitterData",
         twitterSliceTerm: "twitter.com/",
@@ -497,8 +498,157 @@
         }
     }
 
+    var content = {
+        initVariables: function() {
+            this.frameworkData = {};
+        },
+
+        init: function() {
+            this.initVariables();
+            this.loadFrameworkData();
+        },
+
+        loadFrameworkData: function() {
+            this.frameworkData = this.loadLocalData(CONST.frameworksSessionStoreKey);
+            if(this.frameworkData.length === 0) {
+                this.loadRemoteData();
+            };
+            this.updateMarkup(this.frameworkData);
+        },
+
+        loadLocalData: function(sessionKey) {
+            var storedData = sessionData.getData(sessionKey);
+            if(storedData != null) {
+                if(storedData.length !== 0) {
+                    return storedData;
+                }
+            }
+            return [];
+        },
+
+        loadRemoteData: function() {
+            $.ajax({
+                url: CONST.backEndBaseURL + "AJ_getFrameworks",
+                dataType : 'json',
+                success: this.successCallback,
+                error: this.errorCallback
+            });
+        },
+
+        successCallback: function(response) {
+            //update markup and initialize main controller
+            content.updateMarkup(response);
+
+            //store result in sessionStorage
+            sessionData.storeData(CONST.frameworksSessionStoreKey, response);
+        },
+
+        updateMarkup: function(data) {
+            var $container = $('.col-sm-9');
+            var collapseOffset = $('.filter-box').length + 1;
+            var thumb = "";
+            var startLink = "";
+            var endLink = "";
+            var twitter = "";
+            var stackoverflow = "";
+            var repo = "";
+
+            // Update number of tracked tools
+            var formatAmount = content.formatNumber(data.length, 4);
+            for(var i=3; i>=0; i--) {
+                $('#nr' + i).text(formatAmount.substr(3-i, 1));
+            }
+
+            // Insert content
+            data.forEach(function(element, index) {
+                twitter = '<div class="col-xs-6 centered left"><i class="fa fa-twitter" aria-hidden="true"></i><span class="twitter-label">n/a</span></div>';
+                stackoverflow = '<div class="col-xs-6 centered left"><i class="fa fa-stack-overflow" aria-hidden="true"></i><span class="stackoverflow-label">n/a</span></div>';
+                repo = '<div class="col-xs-6 centered right"><i class="fa fa-github" aria-hidden="true"></i><span class="github-label">n/a</span></div>';
+                if(element.url !== "") {
+                    startLink = '<a href="' + element.url + '" target="_blank">';
+                    endLink = '</a>';
+                } else {
+                    startLink = "";
+                    endLink = "";
+                }
+                if(element.twitter !== "") twitter = '<div class="col-xs-6 centered left"><a href="' +  element.twitter + '" target="_blank"><i id="twitter-' + element.twitterName + '" class="fa fa-twitter" aria-hidden="true"></i><span class="twitter-label">0000</span></a></div>';
+                if(element.stackoverflow !== "") stackoverflow = '<div class="col-xs-6 centered left"><a href="' + element.stackoverflow + '" target="_blank"><i id="stackoverflow-' + element.stackoverflowName + '" class="fa fa-stack-overflow" aria-hidden="true"></i><span class="stackoverflow-label">0000</span></a></div>';
+                if(element.repo !== "") repo = '<div class="col-xs-6 centered right"><a href="' + element.repo + '" target="_blank"><i id="github-' + element.repoName + '" class="fa fa-github" aria-hidden="true"></i><span class="github-label">0000</span></a></div>';
+
+                thumb = '<div class="col-md-4 col-xs-6 framework">' +
+                            '<div class="thumbnail">' +
+                                startLink + '<img src="' + element.logo_name + '" alt="">' + endLink +
+                                '<div class="caption">' + 
+                                    '<h4 class="thumb-caption">' + element.framework + '</h4>' +
+                                    element.technology +
+                                    element.status +
+                                    '<div class="row">' +
+                                        twitter +
+                                        repo +
+                                    '</div>' +
+                                    '<div class="row">' +
+                                        stackoverflow +
+                                    '</div>' +
+                                    '<input id="compare-' + element.formattedFramework + '" type="checkbox" value="compare" class="custom-checkbox compare-checkbox"/>' +
+                                    '<label for="compare-' + element.formattedFramework + '" class="checkbox-label compare-label">Compare</label>' +
+                                    '<a class="btn btn-danger btn-xs compare-link hidden" href="html/compare.html" role="button">Go to compare</a>' +
+                                    '<div>' +
+                                        '<h4 class="panel-title">' +
+                                            '<a data-toggle="collapse" aria-expanded="false" href="#collapse' + (index+collapseOffset) + '">' +
+                                                '<div class="panel-heading feature-panel">' +
+                                                    '<span class="dropIcon glyphicon glyphicon-chevron-up"></span>' +
+                                                    '<span class="dropIcon glyphicon glyphicon-chevron-down"></span>' +
+                                                '</div>' +
+                                            '</a>' +
+                                        '</h4>' +
+                                        '<div id="collapse' + (index+collapseOffset) + '" class="panel-collapse collapse">' +
+                                            '<div>' +
+                                                '<div class="row">' +
+                                                    '<div class="col-xs-6">' +
+                                                        '<h4 class="featureTitle">Platform</h4>' +
+                                                        element.platforms +
+                                                    '</div>' +
+                                                    '<div class="col-xs-6">' +
+                                                        '<h4 class="featureTitle">Target</h4>' +
+                                                        element.output +
+                                                    '</div>' +
+                                                '</div>' +
+                                                '<div class="row">' +
+                                                    '<div class="col-xs-6">' +
+                                                        '<h4 class="featureTitle">Development Language</h4>' +
+                                                        element.languages +
+                                                    '</div>' +
+                                                    '<div class="col-xs-6">' +
+                                                        '<h4 class="featureTitle">Terms of a License</h4>' +
+                                                        element.licenses +
+                                                    '</div>' +
+                                                '</div>' +
+                                            '</div>' +
+                                        '</div>' +
+                                    '</div>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>';                         
+
+                $container.append(thumb);
+            });
+
+            main.init();
+        },
+
+        formatNumber: function(num, size) {
+            var s = "0000" + num;
+            return s.substr(s.length-size);
+        },
+
+        errorCallback: function(e) {
+            console.log("initial loading failed");
+        }
+    }
+
     $( document ).ready(function() {
-        main.init();
+        // request frameworks from server or sessionStorage
+        content.init();
     });
 
 })(jQuery, window, document);

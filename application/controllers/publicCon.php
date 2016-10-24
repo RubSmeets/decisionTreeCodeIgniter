@@ -1,6 +1,7 @@
 <?php
 include APPPATH . 'classes/PublicConstants.php';
 include APPPATH . 'classes/FrameworkMarkup.php';
+include APPPATH . 'classes/FormatKey.php';
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -37,6 +38,16 @@ class PublicCon extends CI_Controller {
 	 */
 	public function compare() {
 		$this->load->view('compare');
+	}
+
+	public function AJ_getFrameworks() {
+		// Load database interaction model
+		$this->load->model('FrameworksModel');
+		$frameworks = $this->FrameworksModel->getPreFormattedFrameworks($errmsg);
+
+		// Custom response
+		echo json_encode($frameworks);
+
 	}
 
 	public function AJ_login() {

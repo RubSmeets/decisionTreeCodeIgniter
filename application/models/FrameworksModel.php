@@ -3,9 +3,26 @@
 include APPPATH . 'classes/FrameworkThumb.php';
 include APPPATH . 'classes/FrameworkThumbPrivate.php';
 include APPPATH . 'classes/FrameworkThumbAdmin.php';
+include APPPATH . 'classes/FrameworkFormat.php';
 
 class FrameworksModel extends CI_Model {
 	
+    //Get all frameworks pre-formatted for the index page
+    function getPreFormattedFrameworks(&$errmsg) {
+        $this->db->where('state', PublicConstants::STATE_APPROVED);
+        $query = $this->db->get('frameworks_v2');
+
+        if($query->num_rows() != 0) {
+            $frameworks = array();
+			foreach ($query->result() as $resultData) {
+                $formattedFramework = new FrameworkFormat($resultData);
+                array_push($frameworks, $formattedFramework);
+            }
+            return $frameworks;
+		}
+		$errmsg = "Something went wrong with getting framework thumbs";
+		return PublicConstants::FAILED;
+    }
     //Get all the frameworks and extract relevant data for listView
     function getFrameworkListThumbData(&$errmsg) {
         $this->db->select('framework_id, status, framework, logo_name');
@@ -167,7 +184,7 @@ class FrameworksModel extends CI_Model {
 
         if($query->num_rows() != 0) {
 			foreach ($query->result() as $resultData) {
-                $framework = new Framework($resultData->framework_id, false); //do not validate object
+                $framework = new Framework($resultData->framework_id, PublicConstants::DONT_VALIDATE_FRAMEWORK); //do not validate object
                 foreach($resultData as $key => $value) {
                     $framework->$key($value);
                 }
@@ -244,7 +261,7 @@ class FrameworksModel extends CI_Model {
 
         if($query->num_rows() != 0) {
 			foreach ($query->result() as $resultData) {
-                $framework = new Framework($resultData->framework_id, false); //do not validate object
+                $framework = new Framework($resultData->framework_id, PublicConstants::DONT_VALIDATE_FRAMEWORK); //do not validate object
                 foreach($resultData as $key => $value) {
                     $framework->$key($value);
                 }
@@ -261,7 +278,7 @@ class FrameworksModel extends CI_Model {
 
         if($query->num_rows() != 0) {
 			foreach ($query->result() as $resultData) {
-                $framework = new Framework($resultData->framework_id, false); //do not validate object
+                $framework = new Framework($resultData->framework_id, PublicConstants::DONT_VALIDATE_FRAMEWORK); //do not validate object
                 foreach($resultData as $key => $value) {
                     $framework->$key($value);
                 }

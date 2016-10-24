@@ -12,6 +12,9 @@ final class PublicConstants {
     const USER_BLOCKED = 1;
     const APPROVE_TOOL = 1;
     const DECLINE_TOOL = 0;
+    const VALIDATE_FRAMEWORK = 0;
+    const DONT_VALIDATE_FRAMEWORK = 1;
+    const FORMAT_FRAMEWORK_DATA = 2;
     const IMG_PATH = "img/logos/";
     const AWAIT_APPROVE_PREFIX = "awaitApprove_";
     const OUTDATED_PREFIX = "outdated_";

@@ -110,7 +110,7 @@ class PrivateCon extends CI_Controller {
         $currentEditName = $_POST["currentEditName"];
 
         // convert to framework class (in class do validation)
-        $frameworkObj = new Framework(0, true);
+        $frameworkObj = new Framework(0, PublicConstants::VALIDATE_FRAMEWORK);
         foreach ($framework as $key) {
             $frameworkObj->$key["name"]($key["value"]);
         }
@@ -458,7 +458,7 @@ class PrivateCon extends CI_Controller {
 		}
 
         // convert to framework class (in class do validation)
-        $frameworkObj = new Framework($frameworkId, true);
+        $frameworkObj = new Framework($frameworkId, PublicConstants::VALIDATE_FRAMEWORK);
         foreach ($framework as $key) {
             $frameworkObj->$key["name"]($key["value"]);
         }
