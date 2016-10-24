@@ -150,7 +150,7 @@
 					</div>
 				</div>
 				<button id="btnCollapseAll" type="button" class="btn btn-info">
-					<span class="btn-label">Collapse All</span><span class="glyphicon glyphicon-menu-hamburger pull-left"/>
+					<span class="glyphicon glyphicon-menu-hamburger pull-left"></span><span class="btn-label">Collapse All</span>
 				</button>
 				<div class="panel-group">
 					<div class="panel panel-default">
