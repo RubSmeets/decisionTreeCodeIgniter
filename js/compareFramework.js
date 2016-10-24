@@ -87,7 +87,6 @@
             this.$frameworkTable.find('tbody').on('click', 'tr', function () {
                 var data = that.frameworkTable.row( this ).data();
                 if(typeof data !== 'undefined') {
-                    CF.addRemoveShownFrameworks(data.framework, CONST.add);
                     CF.sendRequest(data.framework);
                     that.$modalContainer.modal('hide');
                 }
@@ -125,8 +124,8 @@
         
         initVariables: function() {
             this.columnTransform = [4,4,4,3,15,2]; // first 3 are 3 column layout and then 4,5,6 column
-            this.currentFrameworks = this.getUrlParams();
-            this.frameworkOrder = this.currentFrameworks.concat("","","","","","");
+            this.currentFrameworks = [];
+            this.frameworkOrder = ["","","","","",""];
         },
 
         cacheElements: function() {
@@ -190,9 +189,10 @@
         },
 
         loadComparisonData: function() {
+            var frameworks = this.getUrlParams();
             var i = 0;
-            for(i=0; i<this.currentFrameworks.length; i++) {
-                this.sendRequest(this.currentFrameworks[i]);
+            for(i=0; i<frameworks.length; i++) {
+                this.sendRequest(frameworks[i]);
             }
         },
         /*
@@ -213,7 +213,7 @@
                 //add element to stored frameworks and find/fill free spot
                 this.currentFrameworks.push(frameworkName);
                 compareIndex = this.frameworkOrder.indexOf("");
-                this.frameworkOrder[compareIndex] = frameworkName
+                this.frameworkOrder[compareIndex] = frameworkName;
             }
             this.figOutAddButton();
             this.nothingLeft();
@@ -239,6 +239,7 @@
 
         succesCallback: function(data, status, jqXHR) {
             console.log("Successful request");
+            CF.addRemoveShownFrameworks(data.framework, CONST.add);
             CF.addMarkupToPage(data);
             CF.bindEventNewItem();
         },
