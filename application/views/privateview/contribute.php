@@ -252,15 +252,32 @@
                                                 <div class="help-block with-errors"></div>
                                             </div>
                                         </div>
-                                        <div class="form-group has-feedback ">
+                                        <div class="form-group no-bottom-margin">
                                             <label for="inputToolLicense" class="col-xs-5 control-label">License</label>
                                             <div class="col-xs-7">
-                                                <input pattern="[^\|]+" data-pattern-error="License may not contain '|' character" class="form-control" id="inputToolLicense" placeholder="e.g. 'MIT-License' or 'proprietary commercial license'" name="license"/>
-                                                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                                                <div class="help-block with-errors"></div>
+                                                <input type="checkbox" id="chbFreeLic" value="free_proprietary_lincense" class="custom-checkbox" name="license"/>
+                                                <label for="chbFreeLic" class="checkbox-label">Free proprietary license</label>
+                                                <input type="checkbox" id="chbIndieLic" value="indie_proprietary_lincense" class="custom-checkbox" name="license"/>
+                                                <label for="chbIndieLic" class="checkbox-label">Indie proprietary license</label>
+                                                <input type="checkbox" id="chbCommercialLic" value="commercial_proprietary_lincense" class="custom-checkbox" name="license"/>
+                                                <label for="chbCommercialLic" class="checkbox-label">Commercial proprietary license</label>
+                                                <input type="checkbox" id="chbEnterpriseLic" value="enterprise_proprietary_lincense" class="custom-checkbox" name="license"/>
+                                                <label for="chbEnterpriseLic" class="checkbox-label">Enterprise proprietary license</label>
                                             </div>
                                         </div>
-                                        <div class="form-group dense-input">
+                                        <div class="form-group has-feedback small-bottom-margin extra-field1" data-fields="1">
+                                            <label class="col-xs-5 control-label"></label>
+                                            <div class="col-xs-7">
+                                                <div class="input-group">
+                                                    <input pattern="[a-z|A-Z|0-9|\-|\.|\(|\)| ]{1,50}" data-pattern-error="License may not contain special characters (except '-','.','()')" class="form-control" id="inputToolLicense" placeholder="e.g. 'MIT-License'" name="license"/>
+                                                    <span class="input-group-btn">
+                                                        <button class="btn btn-success btn-add-new" type="button">Add</button>
+                                                    </span>
+                                                </div>
+                                                <div class="help-block with-errors small-bottom-margin"></div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group dense-input top-margin">
                                             <label class="col-xs-5 control-label">Is the tool free to use?</label>
                                             <div class="col-xs-7">
                                                 <label class="radio-inline">
@@ -351,7 +368,7 @@
                                             </div>
                                         </div>
                                         <div class="form-group dense-input">        
-                                            <label class="col-xs-5 control-label">Provide a logo for the tool<div class="help-block">Logo format should be ".png"<br/>Smaller than 100kB<br/>Max width and height of 230px and 80px</div></label>
+                                            <label class="col-xs-5 control-label">Provide a logo for the tool<div class="help-block">Logo format should be ".png"<br/>Smaller than 100kB<br/>Max width and height of 200px and 80px</div></label>
                                             <div class="col-xs-7">
                                                 <img id="previewLogo" src="<?php echo base_url();?>img/logos/notfound.png" height="80px"/>
                                                 <input type="file" id="logo" />

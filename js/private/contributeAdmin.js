@@ -717,6 +717,30 @@
                 }
             });
 
+            // Form element events
+            $('.btn-add-new').on('click', function() {
+                var form = $(this).parents('form');
+                var formgroup = $(this).parents('.form-group');
+                var input = $(formgroup).find(':input');
+                var name = $(input).prop("name");
+                var fields = Number($(formgroup).data("fields"));
+                fields++;
+                $(formgroup).data("fields", fields);
+                var template = "<div class=\"form-group has-feedback small-bottom-margin extra-field" + fields + "\">" +
+                                    '<label class="col-xs-5 control-label"></label>' +
+                                    '<div class="col-xs-7">' +
+                                        "<input pattern=\"[a-z|A-Z|0-9|\-|\.|\(|\)| ]{1,50}\" data-pattern-error=\"License may not contain special characters (except '-','.','()')\" class=\"form-control\" name=\"" + name + "\"/>" +
+                                        '<span class="glyphicon form-control-feedback" aria-hidden="true"></span>' +
+                                        '<div class="help-block with-errors small-bottom-margin"></div>' +
+                                    '</div>' +
+                                '</div>';
+
+                if(fields < 4) {
+                    $('.extra-field' + (fields-1)).after(template);
+                    $(form).validator('update');    // add new field to form validator
+                }
+            });
+
             // button form nav
             this.domCache.$goNextAddBtn.on('click', function() {
                 that.goNavStep(CONST.moveForward, CONST.buttonNavOption);

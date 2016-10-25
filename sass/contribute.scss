@@ -240,6 +240,12 @@ input[type='checkbox']:checked.custom-checkbox + label:before {/*checked icon*/
     display: block;
     color: #d9534f;
 }
+.small-bottom-margin {
+    margin-bottom: 3px !important;
+}
+.top-margin {
+    margin-top: 20px;
+}
 // ---------------------------------------------------
 
 /* ******************** END FORM STEP 1 ***************** */
