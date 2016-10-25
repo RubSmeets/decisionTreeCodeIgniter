@@ -255,18 +255,20 @@ class FrameworkFormat {
         }
 
         foreach($licensesArray as $value) {
-            if(strpos($value, "|") === false) {
-                $class = "other";
-            } else {
-                $class = strtolower(explode("-", $value, 2)[0]);
-            }
+            if(!empty($value)) {
+                if(strpos($value, "_") === false) {
+                    $class = "other";
+                } else {
+                    $class = strtolower(explode("_", $value, 2)[0]);
+                    $value = $this->_keyFormatter->formatKey("_" . $class);
+                }
 
-            if(strlen($value) > 13) { //for overflow animation
-                $text .= "<div class=\"feature-wrap\" data-toggle=\"tooltip\" data-delay=\"350\" title=\"" . $value . "\"><span class=\"feature-license " . $class . "\">" . $value . "</span></div>";
-            } else {
-                $text .= "<span class=\"feature-license " . $class . "\" data-toggle=\"tooltip\" data-delay=\"350\" title=\"" . $value . "\">" . $value . "</span>";
+                if(strlen($value) > 13) { //for overflow animation
+                    $text .= "<div class=\"feature-wrap\" data-toggle=\"tooltip\" data-delay=\"350\" title=\"" . $value . "\"><span class=\"feature-license " . $class . "\">" . $value . "</span></div>";
+                } else {
+                    $text .= "<span class=\"feature-license " . $class . "\" data-toggle=\"tooltip\" data-delay=\"350\" title=\"" . $value . "\">" . $value . "</span>";
+                }
             }
-            
         }
         return $text;
     }

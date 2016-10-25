@@ -252,7 +252,7 @@
                                                 <div class="help-block with-errors"></div>
                                             </div>
                                         </div>
-                                        <div class="form-group no-bottom-margin">
+                                        <div class="form-group small-bottom-margin">
                                             <label for="inputToolLicense" class="col-xs-5 control-label">License</label>
                                             <div class="col-xs-7">
                                                 <input type="checkbox" id="chbFreeLic" value="free_proprietary_lincense" class="custom-checkbox" name="license"/>
@@ -265,19 +265,15 @@
                                                 <label for="chbEnterpriseLic" class="checkbox-label">Enterprise proprietary license</label>
                                             </div>
                                         </div>
-                                        <div class="form-group has-feedback small-bottom-margin extra-field1" data-fields="1">
+                                        <div class="form-group has-feedback">
                                             <label class="col-xs-5 control-label"></label>
                                             <div class="col-xs-7">
-                                                <div class="input-group">
-                                                    <input pattern="[a-z|A-Z|0-9|\-|\.|\(|\)| ]{1,50}" data-pattern-error="License may not contain special characters (except '-','.','()')" class="form-control" id="inputToolLicense" placeholder="e.g. 'MIT-License'" name="license"/>
-                                                    <span class="input-group-btn">
-                                                        <button class="btn btn-success btn-add-new" type="button">Add</button>
-                                                    </span>
-                                                </div>
-                                                <div class="help-block with-errors small-bottom-margin"></div>
+                                                <input pattern="[a-z|A-Z|0-9|\-|\.|\(|\)|,| ]{1,120}" data-pattern-error="License may not contain special characters (except '-','.','()')" class="form-control" id="inputToolLicense" placeholder="e.g. MIT-License" name="license"/>
+                                                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                                                <div class="help-block with-errors">Seperate multiple entries with ','</div>
                                             </div>
                                         </div>
-                                        <div class="form-group dense-input top-margin">
+                                        <div class="form-group dense-input">
                                             <label class="col-xs-5 control-label">Is the tool free to use?</label>
                                             <div class="col-xs-7">
                                                 <label class="radio-inline">
@@ -1822,6 +1818,16 @@
                                         <div class="form-group">
                                             <input type="url" class="form-control" name="urlRo" readonly/>
                                             <div class="help-block"></div>
+                                        </div>
+                                        <div class="form-group small-bottom-margin">
+                                            <input type="checkbox" value="free_proprietary_lincense" class="custom-checkbox-ro" name="licenseRo"/>
+                                            <label class="checkbox-label-ro">Free proprietary license</label>
+                                            <input type="checkbox" value="indie_proprietary_lincense" class="custom-checkbox-ro" name="licenseRo"/>
+                                            <label class="checkbox-label-ro">Indie proprietary license</label>
+                                            <input type="checkbox" value="commercial_proprietary_lincense" class="custom-checkbox-ro" name="licenseRo"/>
+                                            <label class="checkbox-label-ro">Commercial proprietary license</label>
+                                            <input type="checkbox" value="enterprise_proprietary_lincense" class="custom-checkbox-ro" name="licenseRo"/>
+                                            <label class="checkbox-label-ro">Enterprise proprietary license</label>
                                         </div>
                                         <div class="form-group">
                                             <input class="form-control" name="licenseRo" readonly/>

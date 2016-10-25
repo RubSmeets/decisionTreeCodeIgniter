@@ -717,30 +717,6 @@
                 }
             });
 
-            // Form element events
-            $('.btn-add-new').on('click', function() {
-                var form = $(this).parents('form');
-                var formgroup = $(this).parents('.form-group');
-                var input = $(formgroup).find(':input');
-                var name = $(input).prop("name");
-                var fields = Number($(formgroup).data("fields"));
-                fields++;
-                $(formgroup).data("fields", fields);
-                var template = "<div class=\"form-group has-feedback small-bottom-margin extra-field" + fields + "\">" +
-                                    '<label class="col-xs-5 control-label"></label>' +
-                                    '<div class="col-xs-7">' +
-                                        "<input pattern=\"[a-z|A-Z|0-9|\-|\.|\(|\)| ]{1,50}\" data-pattern-error=\"License may not contain special characters (except '-','.','()')\" class=\"form-control\" name=\"" + name + "\"/>" +
-                                        '<span class="glyphicon form-control-feedback" aria-hidden="true"></span>' +
-                                        '<div class="help-block with-errors small-bottom-margin"></div>' +
-                                    '</div>' +
-                                '</div>';
-
-                if(fields < 4) {
-                    $('.extra-field' + (fields-1)).after(template);
-                    $(form).validator('update');    // add new field to form validator
-                }
-            });
-
             // button form nav
             this.domCache.$goNextAddBtn.on('click', function() {
                 that.goNavStep(CONST.moveForward, CONST.buttonNavOption);
@@ -1019,7 +995,20 @@
                             $($el).filter(":radio[value='" + frameworkData[key] + "']").prop('checked', true);
                         } else if($el.is(':checkbox')) {
                             $el.prop('checked', false);
-                            $($el).filter(":checkbox[value='" + frameworkData[key] + "']").prop('checked', true);
+                            if(frameworkData[key].indexOf("|") !== -1) {
+                                var str = "";
+                                var temp = frameworkData[key].split("|");
+                                temp.forEach(function(element) {
+                                    if(element.indexOf("_") !== -1) $($el).filter(":checkbox[value='" + element + "']").prop('checked', true);
+                                    else if(element !== "") str += element + ", ";
+                                });
+                                if(str !== "") {
+                                    str = str.slice(0, -2); // trim last ", " from string
+                                    $($el[$el.length-1]).val(str); // the input[type:text] field is always the last one in the array
+                                }
+                            } else {
+                                $($el).filter(":checkbox[value='" + frameworkData[key] + "']").prop('checked', true);
+                            }
                         } else {
                             // text field
                             $($el).val(frameworkData[key]);
@@ -1053,11 +1042,22 @@
                             }
                         } else if($el.is(':checkbox')) {
                             $el.prop('checked', false);
-                            $($el).filter(":checkbox[value='" + frameworkData[key] + "']").prop('checked', true);
-                            if(frameworkData[key] !== frameworkDataAdj[key]) {
-                                $($el).next('label').addClass('highlight-diff');
+                            if(frameworkData[key].indexOf("|") !== -1) {
+                                var str = "";
+                                var temp = frameworkData[key].split("|");
+                                temp.forEach(function(element) {
+                                    if(element.indexOf("_") !== -1) {
+                                        $($el).filter(":checkbox[value='" + element + "']").prop('checked', true);
+                                    } else if(element !== "") str += element + ", ";
+                                });
+                                if(str !== "") {
+                                    str = str.slice(0, -2); // trim last ", " from string
+                                    $($el[$el.length-1]).val(str); // the input[type:text] field is always the last one in the array
+                                }
                             } else {
-                                $($el).next('label').removeClass('highlight-diff');
+                                $($el).filter(":checkbox[value='" + frameworkData[key] + "']").prop('checked', true);
+                                if(frameworkData[key] !== frameworkDataAdj[key]) $($el).next('label').addClass('highlight-diff');
+                                else $($el).next('label').removeClass('highlight-diff');
                             }
                         } else {
                             // text field

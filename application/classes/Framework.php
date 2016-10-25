@@ -315,7 +315,11 @@ class Framework {
     }
     public function license($data) {
         if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
-            $this->license = $this->isEmpty($data);
+            if($this->license === "UNDEF") {
+                if(!empty($data)) { $this->license = $this->validateText($data); }
+            } else {
+                if(!empty($data)) { $this->license .= '|' . $this->validateText($data); }
+            }
         } else {
             $this->license = $this->formatEmpty($data);
         }
@@ -912,6 +916,38 @@ class Framework {
                 $this->_inValidProperty = true;
                 return "INVALID URL";
             }
+        }
+    }
+
+    private function validateText($textToBeValidated) {
+        if(empty($textToBeValidated)) {
+            return "";
+        } elseif($this->_action === PublicConstants::DONT_VALIDATE_FRAMEWORK) {
+            return $textToBeValidated;   // just return object;
+        } else {
+            $result = "";
+            if(strpos($textToBeValidated, ",") !== false) { 
+                $temp = explode(",", $textToBeValidated);
+                foreach ($temp as $value) {
+                    $result .= $this->applyTextFilter($value) . "|";
+                }
+                // strip last "|" from string
+                $result = rtrim($result, "|");
+            } elseif(strpos($textToBeValidated, "_") !== false) {
+                $result = $this->applyTextFilter($textToBeValidated);
+            } else {
+                $result = $this->applyTextFilter($textToBeValidated) . "|";
+            }
+        }
+        return $result;
+    }
+
+    private function applyTextFilter($data) {
+        if (filter_var($data, FILTER_VALIDATE_REGEXP, array("options" => array("regexp"=>"/[a-z|A-Z|0-9|\-|\.|\(|\)| ]{1,50}/")))) { 
+            return trim($data);
+        } else {
+            $this->_inValidProperty = true;
+            return false;
         }
     }
 

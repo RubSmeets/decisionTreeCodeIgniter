@@ -19,9 +19,10 @@ class FormatKey {
         "active" => "Active",
         "discontinued" => "Discontinued",
 
-        "freel" =>  "Proprietary free license",
-        "comml" =>  "Proprietary commercial license",
-        "enterprisel" =>  "Proprietary enterprise license",
+        "_free" =>  "Proprietary free license",
+        "_indie" => "Proprietary indie license",
+        "_commercial" =>  "Proprietary commercial license",
+        "_enterprise" =>  "Proprietary enterprise license",
         "trial" =>  "Trial version",
 
         "nativejavascript" =>  "Native JS",

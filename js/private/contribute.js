@@ -536,7 +536,20 @@
                             $($el).filter(":radio[value='" + frameworkData[key] + "']").prop('checked', true);
                         } else if($el.is(':checkbox')) {
 							$el.prop('checked', false);
-                            $($el).filter(":checkbox[value='" + frameworkData[key] + "']").prop('checked', true);
+                            if(frameworkData[key].indexOf("|") !== -1) {
+                                var str = "";
+                                var temp = frameworkData[key].split("|");
+                                temp.forEach(function(element) {
+                                    if(element.indexOf("_") !== -1) $($el).filter(":checkbox[value='" + element + "']").prop('checked', true);
+                                    else if(element !== "") str += element + ", ";
+                                });
+                                if(str !== "") {
+                                    str = str.slice(0, -2); // trim last ", " from string
+                                    $($el[$el.length-1]).val(str); // the input[type:text] field is always the last one in the array
+                                }
+                            } else {
+                                $($el).filter(":checkbox[value='" + frameworkData[key] + "']").prop('checked', true);
+                            }
                         } else {
                             // text field
                             $($el).val(frameworkData[key]);

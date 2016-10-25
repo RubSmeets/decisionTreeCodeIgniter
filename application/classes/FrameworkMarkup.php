@@ -39,7 +39,7 @@ class FrameworkMarkup {
 
 	private function createCompareHeader() {
         $url = $this->frameworkData->url;
-        $img = $this->frameworkData->logo_img;
+        $img = $this->frameworkData->logo_name;
         $frameworkName = $this->frameworkData->framework;
         $lastUpdate = $this->frameworkData->comparison_data_last_update;
         $linkMarkSt = "";
@@ -140,7 +140,7 @@ HEADER;
             if(strpos($this->frameworkData->license, "|")) {
                 $toolSpecMarkup = "<ul class=\"feature-item\">";
                 $nestedValues = explode("|", $this->frameworkData->license);
-                foreach($nestedValues as $value) $toolSpecMarkup .= "<li>" . $value . "</li>";
+                foreach($nestedValues as $value) if(!empty($value)) $toolSpecMarkup .= "<li>" . $value . "</li>";
                 $toolSpecMarkup .= "</ul>";
             } else {
                 $toolSpecMarkup = "<div class=\"feature-item\"><span>" . $this->frameworkData->license . "</span></div>";
