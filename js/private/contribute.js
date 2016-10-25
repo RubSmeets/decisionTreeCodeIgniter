@@ -446,7 +446,11 @@
         },
 
         errorCallback: function(jqXHR, status, errorThrown) {
-            console.log("Something went wrong with request");
+            main.showModal(("Action not completed. server not responding..."), CONST.alertServerFailed);
+            // show first form
+            main.hideAllForms();
+            main.addState = 1;
+            main.showNextForm();
         },
 
         succesCallback: function(response, status, jqXHR) {
