@@ -31,8 +31,10 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 *.css.map
 
 # ignore backups
-*_org*.html
-*_org*.json
+*_org*.*
+
+#ignore images
+img/logos/
 
 # ignore minified files
 minified/
