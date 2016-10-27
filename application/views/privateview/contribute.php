@@ -434,7 +434,7 @@
                                         <div class="form-group has-feedback ">
                                             <label for="inputResRepo" class="col-xs-5 control-label">Github repository</label>
                                             <div class="col-xs-7">
-                                                <input type="url" class="form-control" id="inputResRepo" placeholder="e.g. https://github.com/apache/cordova-android" name="stackoverflow"/>
+                                                <input type="url" class="form-control" id="inputResRepo" placeholder="e.g. https://github.com/apache/cordova-android" name="repo"/>
                                                 <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
                                                 <div class="help-block with-errors">Specify if available</div>
                                             </div>
@@ -1831,7 +1831,7 @@
                                         </div>
                                         <div class="form-group">
                                             <input class="form-control" name="licenseRo" readonly/>
-                                            <div class="help-block"></div>
+                                            <div class="help-block">Seperate multiple entries with ','</div>
                                         </div>
                                         <div class="form-group dense-input">
                                             <label class="radio-inline ">
@@ -1941,7 +1941,7 @@
                                             <div class="help-block"></div>
                                         </div>
                                         <div class="form-group">
-                                            <input type="url" class="form-control" name="stackoverflowRo" readonly/>
+                                            <input type="url" class="form-control" name="repoRo" readonly/>
                                             <div class="help-block">Specify if available</div>
                                         </div>
                                         <h3>Developer support features</h3>

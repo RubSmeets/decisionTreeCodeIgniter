@@ -811,7 +811,11 @@
             if(navOption === CONST.buttonNavOption) {
                 if(this.addState === CONST.formSteps && step > 0) {
                     // we are submitting
-                    this.submitData();
+                    if(this.domCache.$adminEditHeader.is(":visible")) {
+                        that.submitReview(CONST.approve);
+                    } else {
+                        this.submitData();
+                    }
                     return;
                 } else {
                     this.addState += step;
@@ -831,7 +835,8 @@
                 this.domCache.$goBackAddBtn.hide();
             }
             if(this.addState >= CONST.formSteps) {
-                this.domCache.$goNextAddBtn.text('Submit');
+                if(this.domCache.$adminEditHeader.is(":visible")) this.domCache.$goNextAddBtn.text('Approve');
+                else this.domCache.$goNextAddBtn.text('Submit');
                 if(this.validForms.indexOf(0) !== -1) this.domCache.$goNextAddBtn.prop('disabled', true);
                 else this.domCache.$goNextAddBtn.prop('disabled', false);
             } else {

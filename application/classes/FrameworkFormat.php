@@ -47,7 +47,7 @@ class FrameworkFormat {
         $this->framework_current_version = $data->framework_current_version;
 
         $this->twitter = $this->formatEmpty($data->twitter);
-        if(!empty($this->twitter)) { $this->twitterName = substr($this->twitter, strpos($this->twitter, "twitter.com/")+12); }
+        if(!empty($this->twitter)) { $this->twitterName = strtolower(substr($this->twitter, strpos($this->twitter, "twitter.com/")+12)); }
         $this->stackoverflow = $this->formatEmpty($data->stackoverflow);
         if(!empty($this->stackoverflow)) { 
             $tmpStr = substr($this->stackoverflow, strpos($this->stackoverflow, "tagged/")+7);
@@ -58,7 +58,7 @@ class FrameworkFormat {
         $this->repo = $this->formatEmpty($data->repo);
         if(!empty($this->repo)) { 
             $tmpStr = substr($this->repo, strpos($this->repo, "github.com/")+11);
-            $this->repoName = explode("/",$tmpStr, 2)[0]; 
+            $this->repoName = strtolower(explode("/",$tmpStr, 2)[0]); 
         }
 
         $tmpStr = $this->formatEmpty($data->license);
