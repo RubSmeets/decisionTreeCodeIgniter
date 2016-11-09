@@ -166,7 +166,7 @@ class FrameworkFormat {
             "storage" => $data->storage,
             "vibration" => $data->vibration
         );
-        $this->hardware = $this->formatFeatures($temp);
+        $this->hardware = $this->formatFeatures($temp, "feature-hardware");
 
         
 
@@ -231,13 +231,14 @@ class FrameworkFormat {
         return "<span class=\"info-label " . strtolower($status) . "\">" . $status . "</span>";
     }
 
-    private function formatFeatures($data) {
+    private function formatFeatures($data, $class = "feature") {
         $text = "";
+        
 
         foreach ($data as $key => $value) {
             $feature = $this->formatRadioCheckboxToText($value, $key);
             if(!empty($feature)) {
-                $text .= "<span class=\"feature " . $feature[0] . "\" data-toggle=\"tooltip\" data-delay=\"350\" title=\"" . $feature[1] . " is " . $this->_keyFormatter->formatKey("_" . $value) . "\">" . $feature[1] . "</span>";
+                $text .= "<span class=\"" . $class . " " . $feature[0] . "\" data-toggle=\"tooltip\" data-delay=\"350\" title=\"" . $feature[1] . " is " . $this->_keyFormatter->formatKey("_" . $value) . "\">" . $feature[1] . "</span>";
             }
         }
         return $text;

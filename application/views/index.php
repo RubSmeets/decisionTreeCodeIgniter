@@ -266,16 +266,68 @@
     		</div>
     	</div>
     </div>
-    <div class="panel-group filter-box">
+	<div class="panel-group filter-box">
     	<div class="panel panel-default">
     		<h4 class="panel-title">
     			<a data-toggle="collapse" aria-expanded="false" href="#collapse5">
+    				<div class="panel-heading">
+    					Hardware Features
+    				</div>
+    			</a>
+    		</h4>
+    		<div id="collapse5" class="panel-collapse collapse">
+    			<div class="panel-body">
+    				<fieldset class="fieldset accordion-content" role="tab-panel" style="display: block;" aria-hidden="false">
+    					<p>Which hardware features must be supported?</p>
+    					<input id="accelerometer" type="checkbox" value="accelerometer" class="custom-checkbox"/>
+						<label for="accelerometer" class="checkbox-label">Accelerometer</label>
+						<input id="device" type="checkbox" value="device" class="custom-checkbox"/>
+						<label for="device" class="checkbox-label">Device</label>
+						<input id="file" type="checkbox" value="file" class="custom-checkbox"/>
+						<label for="file" class="checkbox-label">File</label>
+						<input id="bluetooth" type="checkbox" value="bluetooth" class="custom-checkbox"/>
+						<label for="bluetooth" class="checkbox-label">Bluetooth</label>
+						<input id="camera" type="checkbox" value="camera" class="custom-checkbox"/>
+						<label for="camera" class="checkbox-label">Camera</label>
+						<input id="capture" type="checkbox" value="capture" class="custom-checkbox"/>
+						<label for="capture" class="checkbox-label">Capture</label>
+						<input id="geolocation" type="checkbox" value="geolocation" class="custom-checkbox"/>
+						<label for="geolocation" class="checkbox-label">Geolocation</label>
+						<input id="gestures_multitouch" type="checkbox" value="gestures_multitouch" class="custom-checkbox"/>
+						<label for="gestures_multitouch" class="checkbox-label">Multitouch gestures</label>
+						<input id="compass" type="checkbox" value="compass" class="custom-checkbox"/>
+						<label for="compass" class="checkbox-label">Compass</label>
+						<input id="connection" type="checkbox" value="connection" class="custom-checkbox"/>
+						<label for="connection" class="checkbox-label">Connection</label>
+						<input id="contacts" type="checkbox" value="contacts" class="custom-checkbox"/>
+						<label for="contacts" class="checkbox-label">Contacts</label>
+						<input id="messages_telephone" type="checkbox" value="messages_telephone" class="custom-checkbox"/>
+						<label for="messages_telephone" class="checkbox-label">Telephone messages</label>
+						<input id="nativeevents" type="checkbox" value="nativeevents" class="custom-checkbox"/>
+						<label for="nativeevents" class="checkbox-label">Native events</label>
+						<input id="nfc" type="checkbox" value="nfc" class="custom-checkbox"/>
+						<label for="nfc" class="checkbox-label">NFC</label>
+						<input id="notification" type="checkbox" value="notification" class="custom-checkbox"/>
+						<label for="notification" class="checkbox-label">Notification</label>
+						<input id="storage" type="checkbox" value="storage" class="custom-checkbox"/>
+						<label for="storage" class="checkbox-label">Storage</label>
+						<input id="vibration" type="checkbox" value="vibration" class="custom-checkbox"/>
+						<label for="vibration" class="checkbox-label">Vibration</label>
+					</fieldset>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+    <div class="panel-group filter-box">
+    	<div class="panel panel-default">
+    		<h4 class="panel-title">
+    			<a data-toggle="collapse" aria-expanded="false" href="#collapse6">
     				<div class="panel-heading">
     					License
     				</div>
     			</a>
     		</h4>
-    		<div id="collapse5" class="panel-collapse collapse">
+    		<div id="collapse6" class="panel-collapse collapse">
     			<div class="panel-body">
     				<fieldset class="fieldset accordion-content" role="tab-panel" style="display: block;" aria-hidden="false">
     					<p>What license is required?</p>

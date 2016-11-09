@@ -192,6 +192,16 @@ a[aria-expanded=true] .glyphicon-chevron-down {
     background-color: steelblue;
 }
 
+.feature-hardware {
+    color: #fff;
+    cursor: help;
+    display: inline-block;
+    margin: 2px 2px 2px 2px;
+    padding: 3px 3px 3px 5px;
+    font-size: x-small;
+    background-color: steelblue;
+}
+
 //Styling of the feature spans
 .feature-license {
     -webkit-transition: left 3s, width 3s;

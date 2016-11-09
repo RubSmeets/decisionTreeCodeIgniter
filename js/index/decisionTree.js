@@ -623,6 +623,12 @@
                                                         element.licenses +
                                                     '</div>' +
                                                 '</div>' +
+                                                '<div class="row">' +
+                                                    '<div class="col-xs-12">' +
+                                                        '<h4 class="featureTitle">Hardware Features</h4>' +
+                                                        element.hardware
+                                                    '</div>' +    
+                                                '</div>' +
                                             '</div>' +
                                         '</div>' +
                                     '</div>' +
