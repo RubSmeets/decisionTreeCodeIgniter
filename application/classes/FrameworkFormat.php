@@ -124,6 +124,7 @@ class FrameworkFormat {
             "swift" => $data->swift,
             "php" => $data->php,
             "python" => $data->python,
+            "objpascal" => $data->objpascal,
             "ruby" => $data->ruby,
             "actionscript" => $data->actionscript,
             "uno" => $data->uno,
@@ -203,7 +204,7 @@ class FrameworkFormat {
                 $text = "";
                 break;
             default:
-                $text = array(($str . " " . $data), $this->_keyFormatter->formatKey($str));
+                $text = array(($data . " " . $str), $this->_keyFormatter->formatKey($str));
                 break;
         }
         return $text;
@@ -248,10 +249,10 @@ class FrameworkFormat {
 
         // add free and open source
         if(!empty($this->_free)) {
-            $text .= "<span class=\"feature " . $this->_free[0] . "\">" . $this->_free[1] . "</span>";
+            $text .= "<span class=\"feature " . $this->_free[0] . "\" data-toggle=\"tooltip\" data-delay=\"350\" title=\"The tool is " . $this->_free[0] . "\">" . $this->_free[1] . "</span>";
         }
         if(!empty($this->_opensource)) {
-            $text .= "<span class=\"feature " . $this->_opensource[0] . "\">" . $this->_opensource[1] . "</span>";
+            $text .= "<span class=\"feature " . $this->_opensource[0] . "\" data-toggle=\"tooltip\" data-delay=\"350\" title=\"The tool is " . $this->_opensource[0] . "\">" . $this->_opensource[1] . "</span>";
         }
 
         foreach($licensesArray as $value) {

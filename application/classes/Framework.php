@@ -90,6 +90,7 @@ class Framework {
     public $swift;
     public $php;
     public $python;
+    public $objpascal;
     public $ruby;
     public $actionscript;
     public $uno;
@@ -213,6 +214,7 @@ class Framework {
         $this->swift = "UNDEF";
         $this->php = "UNDEF";
         $this->python = "UNDEF";
+        $this->objpascal = "UNDEF";
         $this->ruby = "UNDEF";
         $this->actionscript = "UNDEF";
         $this->uno = "UNDEF";
@@ -738,6 +740,13 @@ class Framework {
             $this->python = $data;
         } else {
             $this->python = $this->formatRadioEmpty($data);
+        }
+    }
+    public function objpascal($data) {
+        if($this->_action === PublicConstants::VALIDATE_FRAMEWORK) {
+            $this->objpascal = $data;
+        } else {
+            $this->objpascal = $this->formatRadioEmpty($data);
         }
     }
     public function ruby($data) {

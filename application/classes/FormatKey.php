@@ -73,6 +73,7 @@ class FormatKey {
         "qml" => "QML",
         "MXML" => "MXML",
         "python" => "Python",
+        "objpascal" => "Object Pascal",
         "swift" => "Swift",
         "objc" => "Objective C",
         "javame" => "Java ME",

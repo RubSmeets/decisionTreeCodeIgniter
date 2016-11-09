@@ -1138,6 +1138,23 @@
                                             </div>
                                         </div>
                                         <div class="form-group dense-input">
+                                            <label class="col-xs-5 control-label">Object Pascal</label>
+                                            <div class="col-xs-7">
+                                                <label class="radio-inline">
+                                                    <input type="radio" id="objpascalTrue" value="true" name="objpascal"> Yes
+                                                </label>
+                                                <label class="radio-inline">
+                                                    <input type="radio" id="objpascalFalse" value="false" checked name="objpascal"> No
+                                                </label>
+                                                <label class="radio-inline">
+                                                    <input type="radio" id="objpascalPartially" value="partially" name="objpascal"> Partially
+                                                </label>
+                                                <label class="radio-inline">
+                                                    <input type="radio" id="objpascalSoon" value="soon" name="objpascal"> Soon
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group dense-input">
                                             <label class="col-xs-5 control-label">Ruby</label>
                                             <div class="col-xs-7">
                                                 <label class="radio-inline">
@@ -2520,6 +2537,20 @@
                                             </label>
                                             <label class="radio-inline">
                                                 <input type="radio"  value="soon" name="pythonRo"><span> Soon</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-group dense-input">                                           
+                                            <label class="radio-inline">
+                                                <input type="radio" value="true" name="objpascalRo"> Yes
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" value="false" name="objpascalRo"> No
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" value="partially" name="objpascalRo"> Partially
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" value="soon" name="objpascalRo"> Soon
                                             </label>
                                         </div>
                                         <div class="form-group dense-input">

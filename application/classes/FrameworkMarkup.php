@@ -121,7 +121,7 @@ HEADER;
         $headerOrder["toolPlaCon"] = $toolSpecMarkup;
         /* Supported languages */
         $toolSpecMarkup = "<div class=\"feature-item\">";
-        $languages = ["html","csharp","css","basic","cplusplus","java","javame","js","jsx","lua","objc","swift","php","python","ruby","actionscript","MXML","visualeditor","xml","qml"];
+        $languages = ["html","csharp","css","basic","cplusplus","java","javame","js","jsx","lua","objc","swift","php","python","objpascal","ruby","actionscript","MXML","visualeditor","xml","qml"];
         foreach ($languages as $item) {
             if ($this->frameworkData->$item !== "UNDEF" && $this->frameworkData->$item !== "false") $toolSpecMarkup .= "<span>" . $this->keyFormatter->formatKey($item) . "</span>, ";
         }
