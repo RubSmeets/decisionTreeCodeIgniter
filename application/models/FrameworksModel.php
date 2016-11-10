@@ -10,6 +10,7 @@ class FrameworksModel extends CI_Model {
     //Get all frameworks pre-formatted for the index page
     function getPreFormattedFrameworks(&$errmsg) {
         $this->db->where('state', PublicConstants::STATE_APPROVED);
+        $this->db->order_by('framework', 'ASC');
         $query = $this->db->get('frameworks_v2');
 
         if($query->num_rows() != 0) {
@@ -26,6 +27,7 @@ class FrameworksModel extends CI_Model {
     //Get all the frameworks and extract relevant data for listView
     function getFrameworkListThumbData(&$errmsg) {
         $this->db->select('framework_id, status, framework, logo_name');
+        $this->db->where('state', PublicConstants::STATE_APPROVED);
         $query = $this->db->get('frameworks_v2');
 		
         //Open console window in folder application/logs and type: tail -100 log-file to see debug info
@@ -348,22 +350,27 @@ class FrameworksModel extends CI_Model {
 
     //Remove a framework that is being edited
     function removeFrameworkByNameAndId($frameworkName, $frameworkId, $userId, &$errmsg) {
-        $logoName = "";
+        $logoNameCurr = "";
 
-        $this->db->select('logo_name');
-        $this->db->where('framework_id', $frameworkId);
-        $this->db->limit(1);    //only return one framework
-        $query = $this->db->get('frameworks_v2');
-
+        // Get logo_name of framework that we want to delete
+        $this->db->select('f1.logo_name AS curr_logo, f2.logo_name AS ref_logo');
+        $this->db->from('frameworks_v2 AS f1');
+        $this->db->join('frameworks_v2 AS f2', 'f2.framework_id = f1.reference', 'inner');
+        $this->db->where('f1.framework_id', $frameworkId);
+        $query = $this->db->get();
+        
         if($query->num_rows() != 0) {
 			foreach ($query->result() as $resultData) {
-                $logoName = $resultData->logo_name;
+                if (strcmp($resultData->curr_logo, $resultData->ref_logo) !== 0) {
+                    $logoNameCurr = $resultData->curr_logo;
+                }
             }
 		} else {
             $errmsg = "Framework not found";
             return PublicConstants::FAILED;
         }
         
+        // Delete the framework
         $this->db->where('framework', $frameworkName);
         $this->db->where('framework_id', $frameworkId);
         $this->db->where('modified_by', $userId);
@@ -371,7 +378,7 @@ class FrameworksModel extends CI_Model {
         $query = $this->db->delete('frameworks_v2');
 
         if(!$query) { $errmsg = "No deletion of framework: ".$frameworkName; return PublicConstants::FAILED; }
-		else return $logoName;
+		else return $logoNameCurr;
     }
 
 }
