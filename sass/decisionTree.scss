@@ -132,7 +132,14 @@ div.filter-box div.panel-body {
     border-radius: 5px;
     text-align: center;
     font-size: small;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.info-label-wrap {
     margin: 0px 10px 5px;
+    overflow: hidden;
 }
 
 .info-label.active {

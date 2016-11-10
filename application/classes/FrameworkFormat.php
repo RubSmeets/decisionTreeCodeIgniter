@@ -224,11 +224,11 @@ class FrameworkFormat {
         $text = rtrim($text, " + ");
 
         if(empty($class)) { return "<span class=\"info-label\">Undefined</span>"; }
-        else { return "<span class=\"info-label " . $class . "\">" . $text . "</span>"; }
+        else { return "<div class=\"info-label-wrap\"><span class=\"info-label " . $class . "\">" . $text . "</span></div>"; }
     }
 
     private function formatStatus($status) {
-        return "<span class=\"info-label " . strtolower($status) . "\">" . $status . "</span>";
+        return "<div class=\"info-label-wrap\"><span class=\"info-label " . strtolower($status) . "\">" . $status . "</span></div>";
     }
 
     private function formatFeatures($data, $class = "feature") {
