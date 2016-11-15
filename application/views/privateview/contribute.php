@@ -5,22 +5,22 @@
         <meta charset="utf-8"> 
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"/>
+        <?php echo link_tag('vendor/bootstrap/css/bootstrap.min.css'); ?>
         <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.css">
-        <?php echo link_tag('fonts/font-awesome/css/font-awesome.min.css'); ?>
+        <?php echo link_tag('vendor/font-awesome/css/font-awesome.min.css'); ?>
         <?php echo link_tag('css/contribute.css'); ?>
         <?php if(isset($admin)) { if($admin == 1) {?>
         <?php echo link_tag('css/contributeAdmin.css'); ?>
         <?php }} ?>
 
         <!-- Remote scripts -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <script src="<?php echo base_url();?>vendor/jquery/jquery.min.js"></script>
+        <script src="<?php echo base_url();?>vendor/bootstrap/js/bootstrap.min.js"></script>
         <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.js"></script>
         <script src="https://apis.google.com/js/api:client.js"></script>
 
         <!-- Local scripts -->
-        <script type="text/javascript" src="<?php echo base_url();?>js/extern/validator.min.js" ></script><!-- form plugin -->
+        <script type="text/javascript" src="<?php echo base_url();?>vendor/bootstrap-validator/js/validator.min.js" ></script><!-- form plugin -->
         <?php if(isset($admin)) { if($admin == 1) {?>
             <script type="text/javascript" src="<?php echo base_url();?>js/private/contributeAdmin.js" ></script>
         <?php } else {?>

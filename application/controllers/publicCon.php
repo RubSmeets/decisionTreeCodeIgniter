@@ -39,6 +39,9 @@ class PublicCon extends CI_Controller {
 	public function compare() {
 		$this->load->view('compare');
 	}
+	public function searchtool() {
+		$this->load->view('searchTool');
+	}
 
 	public function AJ_getFrameworks() {
 		// Load database interaction model

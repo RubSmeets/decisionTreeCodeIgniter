@@ -31,6 +31,11 @@ class PrivateCon extends CI_Controller {
         $this->load->view('index', $data);
     }
 
+    public function searchtool() {
+        $data = array('email' => $this->session->userdata('email'));
+        $this->load->view('searchTool', $data);
+    }
+
     public function contribute() {
         $data = array('email' => $this->session->userdata('email'), 'admin' => $this->session->userdata('admin'));
         $this->load->view('privateview/contribute', $data);
@@ -106,8 +111,15 @@ class PrivateCon extends CI_Controller {
     public function AJ_addFramework() {
         $errmsg = "";
         $retval = PublicConstants::SUCCESS;
-        $framework = $_POST["framework"];
-        $currentEditName = $_POST["currentEditName"];
+        if(isset($_POST["framework"]) && isset($_POST["currentEditName"])) {
+        	$framework = $_POST["framework"];
+            $currentEditName = $_POST["currentEditName"];
+    	} else {
+			$errmsg = "No correct framework data specified";
+			$retval = PublicConstants::FAILED;
+			$this->echoResponse($errmsg, $retval);
+			return;
+		}
 
         // convert to framework class (in class do validation)
         $frameworkObj = new Framework(0, PublicConstants::VALIDATE_FRAMEWORK);
@@ -156,6 +168,14 @@ class PrivateCon extends CI_Controller {
                 return;
             }
 		} else {
+            // check if the logo is set and if there is a reference available
+            if($frameworkObj->reference !== 0) {
+                if($frameworkObj->logo_name === "notfound.png") {
+                    // Get logo_name of referenced framework 
+                    $retval = $this->FrameworksModel->getFrameworkLogoById($frameworkObj->reference, PublicConstants::STATE_APPROVED, $errmsg);
+                    if(is_array($retval)) $frameworkObj->logo_name = $retval["logo_name"];
+                }
+            }
             // add framework to database with correct settings (contributor, approved settings)
             $retval = $this->FrameworksModel->storeFramework($frameworkObj, $errmsg);
             if($retval != PublicConstants::SUCCESS) {
@@ -309,7 +329,9 @@ class PrivateCon extends CI_Controller {
 			return;
 		}
         // Delete logo if found
-        $this->deleteLogo($retval);
+        if(!empty($retval)) {
+            $this->deleteLogo($retval);
+        }
 
         // provide feedback to user
         $retval = PublicConstants::SUCCESS;
@@ -415,6 +437,36 @@ class PrivateCon extends CI_Controller {
 		echo json_encode($data);
     }
 
+    public function AJ_getAllProcessedContributions() {
+        $errmsg = "";
+		$retval = PublicConstants::SUCCESS;
+
+        // Check if user exists and is not blocked
+        $this->load->library('session');
+        $this->load->model('UserModel');
+        // check if user exists
+        $userEmail = $this->session->email;
+        $userObj = $this->UserModel->getUserByEmail($userEmail, $errmsg);
+        if(is_a($userObj, 'User')) {
+            if($userObj->isBlocked != 0) {
+                $errmsg = "retrieving thumb data for user failed.";
+                $retval = PublicConstants::FAILED;
+                $this->echoResponse($errmsg, $retval);
+                return;
+            }
+        }
+
+        // Load database interaction model
+		$this->load->model('FrameworksModel');
+		$frameworks = $this->FrameworksModel->getProcessedFrameworkListThumbData($userObj->getDbID(),$errmsg);
+
+		// Custom response for the jQuery datatables
+		$data = array(
+			"frameworks" => $frameworks
+		);
+		echo json_encode($data);
+    }
+
     public function AJ_getAdminFramework() {
 		$errmsg = "";
 		$retval = PublicConstants::SUCCESS;
@@ -486,12 +538,13 @@ class PrivateCon extends CI_Controller {
         }
         
 		$this->load->model('FrameworksModel');
-		if($action == PublicConstants::APPROVE_TOOL) {
-            // Get exisiting framework logo entry
-            $result = $this->FrameworksModel->getFrameworkLogoById($frameworkId, PublicConstants::STATE_AWAIT_APPROVAL, $errmsg);
+        // Get exisiting framework logo entry
+        $result = $this->FrameworksModel->getFrameworkLogoById($frameworkId, PublicConstants::STATE_AWAIT_APPROVAL, $errmsg);
+        // Update exisiting framework entry with new data and approve
+        $frameworkObj->logo_name = $result["logo_name"];
 
-			// Update exisiting framework entry with new data and approve
-            $frameworkObj->logo_name = $result["logo_name"];
+		if($action == PublicConstants::APPROVE_TOOL) {
+            // Approve exisiting contribution
             $retval = $this->FrameworksModel->approveFramework($frameworkId, $frameworkObj, $errmsg);
             if($retval != PublicConstants::SUCCESS) {
                 // Database error
@@ -550,7 +603,7 @@ class PrivateCon extends CI_Controller {
                         return;
                     }
                     // delete old logo
-                    $this->deleteLogo($retval["logo_name"]);
+                    //$this->deleteLogo($retval["logo_name"]);
 
                     $logoName = $retval["id"] . ".png";
                     $logoNameCB = $retval["id"] . "_" . filemtime($_FILES['logo']['tmp_name']) . ".png"; // cache busted logo name
@@ -616,7 +669,7 @@ class PrivateCon extends CI_Controller {
                         return;
                     }
                     // delete old logo
-                    $this->deleteLogo($retval["logo_name"]);
+                    //$this->deleteLogo($retval["logo_name"]);
 
                     $logoName = $retval["id"] . ".png";
                     $logoNameCB = $retval["id"] . "_" . filemtime($_FILES['logo']['tmp_name']) . ".png"; // cache busted logo name

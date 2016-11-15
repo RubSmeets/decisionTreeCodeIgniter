@@ -144,6 +144,7 @@ class FrameworksModel extends CI_Model {
     //Get all the data from one specific framework with {name}
     function getFrameworkByName($frameworkName, &$errmsg) {
         $this->db->where('framework', $frameworkName);
+        $this->db->where('state', PublicConstants::STATE_APPROVED);
         $this->db->limit(1);    //only return one framework
         $query = $this->db->get('frameworks_v2');
 		
