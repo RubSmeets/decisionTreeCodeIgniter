@@ -383,6 +383,14 @@
                                             </div>
                                         </div>
                                         <div class="form-group has-feedback ">
+                                            <label for="inputResTutorial" class="col-xs-5 control-label">Getting started tutorial</label>
+                                            <div class="col-xs-7">
+                                                <input type="url" class="form-control" id="inputResTutorial" placeholder="e.g. http://phonegap.com/getstarted/" name="tutorial_url"/>
+                                                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                                                <div class="help-block with-errors"></div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group has-feedback ">
                                             <label for="inputResBooks" class="col-xs-5 control-label">Available book(s)</label>
                                             <div class="col-xs-7">
                                                 <input type="url" class="form-control" id="inputResBooks" placeholder="e.g. http://phonegap.com/book" name="book"/>
@@ -1930,6 +1938,10 @@
                                         <h3>Framework resources</h3>
                                         <div class="form-group">
                                             <input type="url" class="form-control" name="documentation_urlRo" readonly/>
+                                            <div class="help-block"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="url" class="form-control" name="tutorial_urlRo" readonly/>
                                             <div class="help-block"></div>
                                         </div>
                                         <div class="form-group">
