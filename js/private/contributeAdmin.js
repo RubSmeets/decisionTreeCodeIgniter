@@ -654,6 +654,7 @@
                     case "contributeManage":
                         that.initContributionTable();
                         that.showContributionManagement(CONST.contributionInitialState, false);
+                        DataTablePendingContributions.reloadTable();
                         break;
                     case "add":
                         that.showForm();
