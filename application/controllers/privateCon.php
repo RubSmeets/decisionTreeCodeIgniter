@@ -62,8 +62,8 @@ class PrivateCon extends CI_Controller {
 
         $errmsg = base_url() . "PublicCon/";
         $retval = PublicConstants::SUCCESS;
+        //$retval = PublicConstants::FAILED; for testing purposes SHOULD BE REMOVED 
         $this->echoResponse($errmsg, $retval);
-        //redirect(site_url('public_homepage'),'location');
     }
 
     public function AJ_frameworkExists() {

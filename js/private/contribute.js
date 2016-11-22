@@ -53,7 +53,8 @@
             this.frameworkTable = $frameworkTable.DataTable({
                 ajax: {
                     url: CONST.backEndPrivateURL + 'AJ_getThumbFrameworks',
-                    dataSrc: "frameworks"
+                    dataSrc: "frameworks",
+                    error: main.errorCallback
                 },
                 "columnDefs": [
                     { "visible": false, "targets": 1 }  // hide second column
@@ -141,7 +142,8 @@
             this.frameworkTable = $frameworkTable.DataTable({
                 ajax: {
                     url: CONST.backEndPrivateURL + 'AJ_getUserThumbFrameworks',
-                    dataSrc: "frameworks"
+                    dataSrc: "frameworks",
+                    error: main.errorCallback
                 },
                 "columnDefs": [
                     { "visible": false, "targets": 1 }  // hide second column
@@ -357,7 +359,7 @@
                                 main.uniqueName = false;
                             }
                         }).fail(function(jqXHR, textStatus) {
-                            that.errorCallback();
+                            that.errorCallback(jqXHR, textStatus, null);
                         });
                     }
                 }
@@ -446,11 +448,18 @@
         },
 
         errorCallback: function(jqXHR, status, errorThrown) {
-            main.showModal(("Action not completed. server not responding..."), CONST.alertServerFailed);
-            // show first form
-            main.hideAllForms();
-            main.addState = 1;
-            main.showNextForm();
+            if(jqXHR.responseText !== "") {
+                if(jqXHR.responseText.indexOf("css/index.css") !== -1) {
+                    // Do page redirect to index
+                    window.location.replace(CONST.backEndBaseURL);
+                }
+            } else {
+                main.showModal(("Action not completed. server not responding..."), CONST.alertServerFailed);
+                // show first form
+                main.hideAllForms();
+                main.addState = 1;
+                main.showNextForm();
+            }
         },
 
         succesCallback: function(response, status, jqXHR) {

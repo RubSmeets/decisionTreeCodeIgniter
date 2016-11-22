@@ -240,7 +240,8 @@
             this.usersTable = $usersTable.DataTable({
                 ajax: {
                     url: CONST.backEndPrivateURL + 'AJ_getThumbUsers',
-                    dataSrc: "users"
+                    dataSrc: "users",
+                    error: main.errorCallback
                 },
                 columnDefs: [
                     {className: "dt-center", targets: [2,3]}
@@ -330,7 +331,8 @@
             this.usersTable = $usersTable.DataTable({
                 ajax: {
                     url: CONST.backEndPrivateURL + 'AJ_getThumbBlockedUsers',
-                    dataSrc: "users"
+                    dataSrc: "users",
+                    error: main.errorCallback
                 },
                 columnDefs: [
                     {className: "dt-center", targets: [2,3]}
@@ -418,7 +420,8 @@
             this.userContributionTable = $userContributionTable.DataTable({
                 ajax: { 
                     url: CONST.backEndPrivateURL + 'AJ_getUserContributions?email=0',
-                    dataSrc: "frameworks" 
+                    dataSrc: "frameworks",
+                    error: main.errorCallback
                 },
                 "columnDefs": [
                     { "visible": false, "targets": 1 }  // hide second column
@@ -502,7 +505,8 @@
             this.contributionTable = $contributionTable.DataTable({
                 ajax: {
                     url: CONST.backEndPrivateURL + 'AJ_getAllPendingContributions',
-                    dataSrc: "frameworks"
+                    dataSrc: "frameworks",
+                    error: main.errorCallback
                 },
                 columnDefs: [
                     {className: "dt-center", targets: 4}
@@ -765,7 +769,7 @@
                                 main.uniqueName = false;
                             }
                         }).fail(function(jqXHR, textStatus) {
-                            that.errorCallback();
+                            that.errorCallback(jqXHR, textStatus, null);
                         });
                     }
                 }
@@ -874,11 +878,18 @@
         },
 
         errorCallback: function(jqXHR, status, errorThrown) {
-            main.showModal(("Action not completed. server not responding..."), CONST.alertServerFailed);
-            // show first form
-            main.hideAllForms();
-            main.addState = 1;
-            main.showNextForm();
+            if(jqXHR.responseText !== "") {
+                if(jqXHR.responseText.indexOf("css/index.css") !== -1) {
+                    // Do page redirect to index
+                    window.location.replace(CONST.backEndBaseURL);
+                }
+            } else {
+                main.showModal(("Action not completed. server not responding..."), CONST.alertServerFailed);
+                // show first form
+                main.hideAllForms();
+                main.addState = 1;
+                main.showNextForm();
+            }
         },
 
         succesCallback: function(response, status, jqXHR) {
@@ -1513,8 +1524,8 @@
             if(response.srvResponseCode === CONST.successCode) {
                 // Log out with google
                 socialLogin.signOutGoogle();
-                // redirect to public part
-                window.location = response.srvMessage;
+                // redirect to public part (and clear history)
+                window.location.replace(response.srvMessage);
             }
         }
     }
