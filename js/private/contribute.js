@@ -21,7 +21,9 @@
         editFormEditState: 1,
         formatState: [
             "Awaiting Approval",
-		    "Approved"
+		    "Approved",
+            "Outdated",
+            "Declined"
         ],
 		backEndImageURL: "http://localhost/crossmos_projects/decisionTree2/img/logos/",
         backEndBaseURL: "http://localhost/crossmos_projects/decisionTree2/publicCon/",
@@ -208,6 +210,138 @@
 
     }
 
+    /* Datatable Contributions functionality */
+    var DataTableProcessedContributions = {
+        initVariables: function() {
+            this.processedContributionTableInitComplete = 1;
+            this.processedContributionTable = null;
+            this.domCache = {};
+        },
+
+        cacheElements: function() {
+            this.domCache.$processedContributionTable = $("#processedContributionTable");
+            this.domCache.$filterFieldContainer = $('#processedContributionTable_filter');
+            this.domCache.$filterField = $('#processedContributionTable_filter').find(':input').focus();
+        },
+
+        init: function($processedContributionTable) {
+            if(typeof this.processedContributionTableInitComplete === 'undefined') {
+                this.initVariables();
+                this.initTable($processedContributionTable);
+                this.cacheElements();
+                this.cleanMarkup();
+                this.bindEvents();
+            }
+        },
+
+        initTable: function($processedContributionTable) {
+            this.processedContributionTable = $processedContributionTable.DataTable({
+                ajax: {
+                    url: CONST.backEndPrivateURL + 'AJ_getAllProcessedContributions',
+                    dataSrc: "frameworks",
+                    error: main.errorCallback
+                },
+                columnDefs: [
+                    {className: "dt-center", targets: 4}
+                ],
+                columns: [
+                    {
+                        width: "10%",
+                        "type": "html",
+                        render: function (data, type, row) {
+                            if (type ==='display') {
+                                var thumbs = "";
+                                thumbs = '<span class="thumb-framework"><img src="' + row.thumb_img + '" alt=""/></span>';
+                                return thumbs;
+                            } else return '';
+                        }
+                    },
+                    {title: 'Tool Name', data: 'framework'},
+                    {title: 'Contribution Date', data: 'time'},
+                    {
+                        title: 'Status',
+                        type: "html",
+                        render: function (data, type, row) {
+                            if (type ==='display') {
+                                var state = "";
+                                state = '<span class="thumb-processed ' + CONST.formatState[row.status] + '">' + CONST.formatState[row.status] + '</span>';
+                                return state;
+                            } else return '';
+                        }
+                    },
+                    {
+                        title: 'Remarks',
+                        type: "html",
+                        render: function (data, type, row) {
+                            if (type ==='display') {
+                                var remark = "";
+                                if(row.remark === "") {
+                                    remark = '<span class="thumb-processed readonly"><i class="fa fa-2x fa-comment-o" aria-hidden="true"></i></span>';
+                                } else {
+                                    remark = '<span class="thumb-processed"><a class="fa fa-2x fa-comment-o" tabindex="0" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="top" data-content="' + row.remark + '" title="Admin feedback"></a></span>';
+                                }
+                                return remark;
+                            } else return '';
+                        }
+                    }
+                ],
+                language: {
+                    search: "<i class='glyphicon glyphicon-search edit-search-feedback'></i>",
+                    searchPlaceholder: "Search by framework name...",
+                    zeroRecords: "No Frameworks found. Please try another search term."
+                },
+                "initComplete": this.dataLoadComplete,
+                "order": [[ 2, "desc" ]],
+                "sAutoWidth": false,
+                "scrollY": "344px",
+                "scrollCollapse": true,
+                "paging": false,
+                "bInfo": false, // hide showing entries
+            });
+        },
+
+        cleanMarkup: function() {
+            this.domCache.$filterFieldContainer.removeClass('dataTables_filter');
+            this.domCache.$filterFieldContainer.find("input").addClass("edit-search");
+            this.domCache.$processedContributionTable.addClass("table table-hover"); //add bootstrap class
+            this.domCache.$processedContributionTable.css("width","100%");
+        },
+
+        bindEvents: function() {
+            var that = this;
+
+            // Row item click event
+            this.domCache.$processedContributionTable.find('tbody').on('click', 'td', function () {
+                var framework = that.processedContributionTable.row( this ).data();
+                if(typeof framework !== 'undefined') {
+                    // Add markup for a selected item
+                    that.processedContributionTable.$('tr.selected').removeClass('selected');
+                    $(this).parent().addClass('selected');
+                    // ------
+                    var idx = that.processedContributionTable.cell( this ).index().column;
+                    if(idx < 4) { // Do nothing when clicked in remark column
+                        main.loadProcessedFormData(framework);
+                    }
+                }
+            });
+
+            this.domCache.$filterField.on('focus', function() {
+                $(this).select();
+            });
+        },
+
+        dataLoadComplete: function(settings, json) {
+            // Css hack to make the header the correct size
+            $('#processedContributionTable_wrapper .dataTables_scrollHeadInner').css("width","100%");
+            $('#processedContributionTable_wrapper .dataTable').css("width","100%");
+            main.initPopOver();
+        },
+
+        reloadTable: function() {
+            this.processedContributionTable.ajax.reload(this.dataLoadComplete);
+        }
+    }
+
     /* Main contribute functionality */
     var main = {
         initVariables: function() {
@@ -250,14 +384,18 @@
             this.initVariables();
             this.cacheElements();
             this.bindEvents();
+            this.initTooltip();
 
             DataTable.init($('#searchFrameworksTable')); // init before cache to ensure that markup is generated
             DataTableUser.init($('#searchUserFrameworksTable'));
-            this.initTooltip();
+            DataTableProcessedContributions.init($('#processedContributionTable'));
         },
         // Mandatory Javascript init of bootstrap tooltip component
         initTooltip: function() {
             $('[data-toggle="tooltip"]').tooltip();
+        },
+        initPopOver: function() {
+            $('[data-toggle="popover"]').popover();
         },
 
         bindEvents: function() {
@@ -378,6 +516,11 @@
 
                     e.preventDefault(); // to stop the form from being submitted
                 }
+            });
+
+            // Refresh handlers
+            $('#refreshProcessedContributionTable').on('click', function() {
+                DataTableProcessedContributions.reloadTable();
             });
         },
 
@@ -519,6 +662,22 @@
                 url: CONST.backEndPrivateURL + "AJ_getFramework",
                 dataType: "json",
                 data: {name: data.framework, state: data.internalState},
+
+                error: this.errorCallback,
+                success: this.loadFormDataCallback
+            });
+        },
+
+        loadProcessedFormData: function(data) {
+            // cache name for editing purposes (set id to zero to allow only editing)
+            this.editFrameworkName = data.framework;
+            this.editFrameworkId = 0;
+
+            $.ajax({
+                method: "GET",
+                url: CONST.backEndPrivateURL + "AJ_getProcessedFramework",
+                dataType: "json",
+                data: {id: data.framework_id},
 
                 error: this.errorCallback,
                 success: this.loadFormDataCallback

@@ -17,6 +17,7 @@
         alertServerFailed: 1,
         alertServerUnresponsive: 2,
         alertDelete: 3,
+        alertFeedback: 4,
         contributionInitialState: 0,
         contributionReviewState: 1,
         blockUser: 1,
@@ -27,7 +28,9 @@
         editFormEditState: 1,
         formatState: [
             "Awaiting Approval",
-		    "Approved"
+		    "Approved",
+            "Outdated",
+            "Declined"
         ],
         backEndImageURL: "http://localhost/crossmos_projects/decisionTree2/img/logos/",
         backEndBaseURL: "http://localhost/crossmos_projects/decisionTree2/publicCon/",
@@ -59,7 +62,8 @@
             this.frameworkTable = $frameworkTable.DataTable({
                 ajax: {
                     url: CONST.backEndPrivateURL + 'AJ_getThumbFrameworks',
-                    dataSrc: "frameworks"
+                    dataSrc: "frameworks",
+                    error: main.errorCallback
                 },
                 "columnDefs": [
                     { "visible": false, "targets": 1 }  // hide second column
@@ -147,7 +151,8 @@
             this.frameworkTable = $frameworkTable.DataTable({
                 ajax: {
                     url: CONST.backEndPrivateURL + 'AJ_getUserThumbFrameworks',
-                    dataSrc: "frameworks"
+                    dataSrc: "frameworks",
+                    error: main.errorCallback
                 },
                 "columnDefs": [
                     { "visible": false, "targets": 1 }  // hide second column
@@ -210,6 +215,138 @@
             this.frameworkTable.ajax.reload();
         }
 
+    }
+
+    /* Datatable Contributions functionality */
+    var DataTableProcessedContributions = {
+        initVariables: function() {
+            this.processedContributionTableInitComplete = 1;
+            this.processedContributionTable = null;
+            this.domCache = {};
+        },
+
+        cacheElements: function() {
+            this.domCache.$processedContributionTable = $("#processedContributionTable");
+            this.domCache.$filterFieldContainer = $('#processedContributionTable_filter');
+            this.domCache.$filterField = $('#processedContributionTable_filter').find(':input').focus();
+        },
+
+        init: function($processedContributionTable) {
+            if(typeof this.processedContributionTableInitComplete === 'undefined') {
+                this.initVariables();
+                this.initTable($processedContributionTable);
+                this.cacheElements();
+                this.cleanMarkup();
+                this.bindEvents();
+            }
+        },
+
+        initTable: function($processedContributionTable) {
+            this.processedContributionTable = $processedContributionTable.DataTable({
+                ajax: {
+                    url: CONST.backEndPrivateURL + 'AJ_getAllProcessedContributions',
+                    dataSrc: "frameworks",
+                    error: main.errorCallback
+                },
+                columnDefs: [
+                    {className: "dt-center", targets: 4}
+                ],
+                columns: [
+                    {
+                        width: "10%",
+                        "type": "html",
+                        render: function (data, type, row) {
+                            if (type ==='display') {
+                                var thumbs = "";
+                                thumbs = '<span class="thumb-framework"><img src="' + row.thumb_img + '" alt=""/></span>';
+                                return thumbs;
+                            } else return '';
+                        }
+                    },
+                    {title: 'Tool Name', data: 'framework'},
+                    {title: 'Contribution Date', data: 'time'},
+                    {
+                        title: 'Status',
+                        type: "html",
+                        render: function (data, type, row) {
+                            if (type ==='display') {
+                                var state = "";
+                                state = '<span class="thumb-processed ' + CONST.formatState[row.status] + '">' + CONST.formatState[row.status] + '</span>';
+                                return state;
+                            } else return '';
+                        }
+                    },
+                    {
+                        title: 'Remarks',
+                        type: "html",
+                        render: function (data, type, row) {
+                            if (type ==='display') {
+                                var remark = "";
+                                if(row.remark === "") {
+                                    remark = '<span class="thumb-processed readonly"><i class="fa fa-2x fa-comment-o" aria-hidden="true"></i></span>';
+                                } else {
+                                    remark = '<span class="thumb-processed"><a class="fa fa-2x fa-comment-o" tabindex="0" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="top" data-content="' + row.remark + '" title="Admin feedback"></a></span>';
+                                }
+                                return remark;
+                            } else return '';
+                        }
+                    }
+                ],
+                language: {
+                    search: "<i class='glyphicon glyphicon-search edit-search-feedback'></i>",
+                    searchPlaceholder: "Search by framework name...",
+                    zeroRecords: "No Frameworks found. Please try another search term."
+                },
+                "initComplete": this.dataLoadComplete,
+                "order": [[ 2, "desc" ]],
+                "sAutoWidth": false,
+                "scrollY": "344px",
+                "scrollCollapse": true,
+                "paging": false,
+                "bInfo": false, // hide showing entries
+            });
+        },
+
+        cleanMarkup: function() {
+            this.domCache.$filterFieldContainer.removeClass('dataTables_filter');
+            this.domCache.$filterFieldContainer.find("input").addClass("edit-search");
+            this.domCache.$processedContributionTable.addClass("table table-hover"); //add bootstrap class
+            this.domCache.$processedContributionTable.css("width","100%");
+        },
+
+        bindEvents: function() {
+            var that = this;
+
+            // Row item click event
+            this.domCache.$processedContributionTable.find('tbody').on('click', 'td', function () {
+                var framework = that.processedContributionTable.row( this ).data();
+                if(typeof framework !== 'undefined') {
+                    // Add markup for a selected item
+                    that.processedContributionTable.$('tr.selected').removeClass('selected');
+                    $(this).parent().addClass('selected');
+                    // ------
+                    var idx = that.processedContributionTable.cell( this ).index().column;
+                    if(idx < 4) { // Do nothing when clicked in remark column
+                        main.loadProcessedFormData(framework);
+                    }
+                }
+            });
+
+            this.domCache.$filterField.on('focus', function() {
+                $(this).select();
+            });
+        },
+
+        dataLoadComplete: function(settings, json) {
+            // Css hack to make the header the correct size
+            $('#processedContributionTable_wrapper .dataTables_scrollHeadInner').css("width","100%");
+            $('#processedContributionTable_wrapper .dataTable').css("width","100%");
+            main.initPopOver();
+        },
+
+        reloadTable: function() {
+            this.processedContributionTable.ajax.reload(this.dataLoadComplete);
+        }
     }
 
     /* DatatableActive users functionality */
@@ -618,22 +755,26 @@
             this.domCache.$adminEditHeader = $('#adminEditHeaderWrapper');
             this.domCache.$formStepsRo = $('form.refered-form');
             this.domCache.$adminReviewTitle = $('.adminEdit-header');
+            this.domCache.$modalAdminFeedback = $('#modalAdminFeedbackWrapper');
         },
 
         init: function() {
             this.initVariables();
             this.cacheElements();
             this.bindEvents();
+            this.initTooltip();
 
             DataTable.init($('#searchFrameworksTable')); // init before cache to ensure that markup is generated
             DataTableUser.init($('#searchUserFrameworksTable'));
+            DataTableProcessedContributions.init($('#processedContributionTable'));
             DataTableContributions.init($("#userContributionTable"));
-
-            this.initTooltip();
         },
         // Mandatory Javascript init of bootstrap tooltip component
         initTooltip: function() {
             $('[data-toggle="tooltip"]').tooltip();
+        },
+        initPopOver: function() {
+            $('[data-toggle="popover"]').popover();
         },
 
         initUserTables: function() {
@@ -677,6 +818,15 @@
                     that.removeFrameworkData();
                 }
             });
+            $('#modalFeedbackSubmit').on('click', function() {
+                var inputEl = $(this).siblings('.admin-feedback-input');
+                var data = {
+                    name: $(inputEl).prop('name'),
+                    value: $(inputEl).val()
+                }
+                that.cacheAdditionalSubmitData(data);
+                that.submitReview(CONST.decline);
+            });
 
             // Admin approve header buttons
             $('#cancelReview').on('click', function() {
@@ -686,7 +836,8 @@
                 that.submitReview(CONST.approve);
             });
             $('#declineEntry').on('click', function() {
-                that.submitReview(CONST.decline);
+                var msg = "You are about to permanently decline one of a user's contribution. Please provide feedback for the user as to why the framework was rejected.";
+                that.showModal(msg, CONST.alertFeedback);
             });
 
             // Form management events
@@ -791,6 +942,9 @@
             });
 
             // Refresh handlers
+            $('#refreshProcessedContributionTable').on('click', function() {
+                DataTableProcessedContributions.reloadTable();
+            });
             this.domCache.$refreshActiveUsers.on('click', function() {
                 DataTableActiveUser.reloadTable();
             });
@@ -848,6 +1002,10 @@
                 this.domCache.$goNextAddBtn.prop('disabled', false);
                 this.domCache.$goNextAddBtn.text('Next \u00bb');
             } 
+        },
+        // Add additional fields to submit data cache (add to first form element in cache)
+        cacheAdditionalSubmitData: function(entry) {
+            this.formSubmitData['frmStep1'].push(entry);
         },
 
         cacheSubmitData: function(form) {
@@ -986,6 +1144,22 @@
                 url: CONST.backEndPrivateURL + "AJ_getFramework",
                 dataType: "json",
                 data: {name: data.framework, state: data.internalState},
+
+                error: this.errorCallback,
+                success: this.loadFormDataCallback
+            });
+        },
+
+        loadProcessedFormData: function(data) {
+            // cache name for editing purposes (set id to zero to allow only editing)
+            this.editFrameworkName = data.framework;
+            this.editFrameworkId = 0;
+
+            $.ajax({
+                method: "GET",
+                url: CONST.backEndPrivateURL + "AJ_getProcessedFramework",
+                dataType: "json",
+                data: {id: data.framework_id},
 
                 error: this.errorCallback,
                 success: this.loadFormDataCallback
@@ -1407,21 +1581,34 @@
         showModal: function(message, alertFunction) {
             this.alertFunction = alertFunction;
             this.domCache.$modalUserFeedbackMsg.text(message);
-            if(alertFunction === CONST.alertDelete) {
-                this.domCache.$modalErrorIcon.addClass('hide');
-                this.domCache.$modalSuccessIcon.addClass('hide');
-                this.domCache.$modalWarningIcon.removeClass('hide');
-                this.domCache.$modalUserInput.show();
-            } else if(alertFunction === CONST.alertServerFailed) {
-                this.domCache.$modalErrorIcon.removeClass('hide');
-                this.domCache.$modalSuccessIcon.addClass('hide');
-                this.domCache.$modalWarningIcon.addClass('hide');
-                this.domCache.$modalUserInput.hide();
-            } else {
-                this.domCache.$modalErrorIcon.addClass('hide');
-                this.domCache.$modalSuccessIcon.removeClass('hide');
-                this.domCache.$modalWarningIcon.addClass('hide');
-                this.domCache.$modalUserInput.hide();
+            switch(alertFunction) {
+                case CONST.alertDelete:
+                    this.domCache.$modalErrorIcon.addClass('hide');
+                    this.domCache.$modalSuccessIcon.addClass('hide');
+                    this.domCache.$modalWarningIcon.removeClass('hide');
+                    this.domCache.$modalUserInput.show();
+                    this.domCache.$modalAdminFeedback.hide();
+                    break;
+                case CONST.alertServerFailed:
+                    this.domCache.$modalErrorIcon.removeClass('hide');
+                    this.domCache.$modalSuccessIcon.addClass('hide');
+                    this.domCache.$modalWarningIcon.addClass('hide');
+                    this.domCache.$modalUserInput.hide();
+                    this.domCache.$modalAdminFeedback.hide();
+                    break;
+                case CONST.alertFeedback:
+                    this.domCache.$modalErrorIcon.addClass('hide');
+                    this.domCache.$modalSuccessIcon.addClass('hide');
+                    this.domCache.$modalWarningIcon.removeClass('hide');
+                    this.domCache.$modalUserInput.hide();
+                    this.domCache.$modalAdminFeedback.show();
+                    break
+                default:
+                    this.domCache.$modalErrorIcon.addClass('hide');
+                    this.domCache.$modalSuccessIcon.removeClass('hide');
+                    this.domCache.$modalWarningIcon.addClass('hide');
+                    this.domCache.$modalUserInput.hide();
+                    this.domCache.$modalAdminFeedback.hide();
             }
             this.domCache.$alertModal.modal('show');
         },

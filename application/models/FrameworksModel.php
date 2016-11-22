@@ -4,6 +4,7 @@ include APPPATH . 'classes/FrameworkThumb.php';
 include APPPATH . 'classes/FrameworkThumbPrivate.php';
 include APPPATH . 'classes/FrameworkThumbAdmin.php';
 include APPPATH . 'classes/FrameworkFormat.php';
+include APPPATH . 'classes/FrameworkThumbProcessed.php';
 
 class FrameworksModel extends CI_Model {
 	
@@ -100,6 +101,31 @@ class FrameworksModel extends CI_Model {
             return $frameworks;
 		}
 		$errmsg = "Something went wrong with getting private framework thumbs";
+		return PublicConstants::FAILED;
+    }
+    //Get framework thumb data for datatable that shows a users processed contributions
+    function getProcessedFrameworkListThumbData($userId, &$errmsg) {
+        $this->db->select('framework_id, framework, logo_name, state, comparison_data_last_update, admin_remark');
+        $this->db->where('state !=', PublicConstants::STATE_AWAIT_APPROVAL);
+        $this->db->where('modified_by', $userId);
+        $query = $this->db->get('frameworks_v2');
+
+        if($query->num_rows() != 0) {
+            $frameworks = array();
+			foreach ($query->result() as $resultData) {
+                $frameworkThumbProcessed = new FrameworkThumbProcessed (
+                    $resultData->framework_id,
+                    $resultData->framework,
+                    ("../" . PublicConstants::IMG_PATH . $resultData->logo_name),
+                    $resultData->state,
+                    $resultData->comparison_data_last_update,
+                    $resultData->admin_remark               
+                );
+                array_push($frameworks, $frameworkThumbProcessed);
+            }
+            return $frameworks;
+		}
+		$errmsg = "Something went wrong with getting processed framework thumbs for user";
 		return PublicConstants::FAILED;
     }
     //Get framework logo by name 
@@ -295,6 +321,25 @@ class FrameworksModel extends CI_Model {
         return PublicConstants::FAILED;
     }
 
+    //Get a processed framework for resubmission (edit)
+    function getProcessedFrameworkById($frameworkId, &$errmsg) {
+        $this->db->where('framework_id', $frameworkId);
+        $query = $this->db->get('frameworks_v2');
+
+        if($query->num_rows() != 0) {
+			foreach ($query->result() as $resultData) {
+                $framework = new Framework($resultData->framework_id, PublicConstants::DONT_VALIDATE_FRAMEWORK); //do not validate object
+                foreach($resultData as $key => $value) {
+                    $framework->$key($value);
+                }
+                return $framework;
+            }
+		} else {
+            $errmsg = "Framework not found";
+            return PublicConstants::FAILED;
+        }
+    }
+
     //Store a new framework in the database
     function storeFramework($frameworkObj, &$errmsg) {
         $query = $this->db->insert('frameworks_v2', $frameworkObj);
@@ -340,12 +385,13 @@ class FrameworksModel extends CI_Model {
     }
 
     //Decline a contribution 
-    function declineFramework($frameworkId, &$errmsg) {
+    function declineFramework($frameworkId, $admin_remark, &$errmsg) {
         $this->db->set('state', PublicConstants::STATE_DECLINED);
+        $this->db->set('admin_remark', $admin_remark);
         $this->db->where('framework_id', $frameworkId);
         $query = $this->db->update('frameworks_v2');
 		
-        if(!$query) { $errmsg = "No update of framework: ".$frameworkObj->framework; return PublicConstants::FAILED; }
+        if(!$query) { $errmsg = "No update of framework: ".$frameworkId; return PublicConstants::FAILED; }
 		else return PublicConstants::SUCCESS;
     }
 

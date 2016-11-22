@@ -131,6 +131,7 @@ class Framework {
     private $state;
     public $modified_by;
     public $reference; // foreign key to the modified original framework entry (0 if it is the first)
+    public $admin_remark; // When approved or declined the admin can add a remark to the entry to inform the user why the framework was declined.
 
 	public function __construct($tmpId, $tmpAction) {
 		$this->_dbId = $tmpId;
@@ -253,6 +254,7 @@ class Framework {
         $this->state = 0;
         $this->modified_by = 0;
         $this->reference = 0;
+        $this->admin_remark = "";
 	}
 
 	public function __destruct() {
@@ -893,6 +895,9 @@ class Framework {
     }
     public function reference($data) {
         $this->reference = $data;
+    }
+    public function admin_remark($data) {
+        $this->admin_remark = $data;
     }
 
     /* Dummy setters for private props */

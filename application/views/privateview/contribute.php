@@ -53,6 +53,11 @@
                                 <button id="modalYes" class="btn btn-success btn-lg">Yes</button>
                                 <button id="modalNo" class="btn btn-default btn-lg" data-toggle="modal" data-target="#alertModal">No</button>
                             </div>
+                            <div class="col-xs-12 centered" id="modalAdminFeedbackWrapper" hidden>
+                                <textarea class="form-control admin-feedback-input" rows="3" name="admin_remark"></textarea>
+                                <button id="modalFeedbackSubmit" class="btn btn-success btn-lg">Yes</button>
+                                <button id="modalFeedbackAbort" class="btn btn-default btn-lg" data-toggle="modal" data-target="#alertModal">No</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -107,6 +112,13 @@
                                         <strong><i class="fa fa-hand-o-up" aria-hidden="true"></i> Select - </strong>Make changes to your pending contributions
                                     </div>
                                     <table id="searchUserFrameworksTable"></table>
+                                </div>
+                                <div class="col-xs-12">
+                                    <div class="alert alert-success">
+                                        <strong><i class="fa fa-hand-o-up" aria-hidden="true"></i> Select - </strong>View your processed contributions
+                                        <i id="refreshProcessedContributionTable" class="fa fa-refresh pull-right" aria-hidden="true"> Refresh</i>
+                                    </div>
+                                    <table id="processedContributionTable"></table>
                                 </div>
                             </div>
                             <div id="editHeaderWrapper" hidden>

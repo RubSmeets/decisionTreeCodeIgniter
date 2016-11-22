@@ -28,9 +28,13 @@
 .user-feedback {
     vertical-align: middle;
 }
+.admin-feedback-input {
+    margin-bottom: 10px;
+}
 // ---------------------------------------------------
 
 // Edit framework search table ---------------------
+#processedContributionTable_filter label,
 #searchUserFrameworksTable_filter label,
 #searchFrameworksTable_filter label {
     display: block;
@@ -53,10 +57,12 @@
 table.dataTable.no-footer {
     border: none;
 }
+#processedContributionTable_wrapper tr,
 #searchUserFrameworksTable_wrapper tr,
 #searchFrameworksTable_wrapper tr {
     cursor: pointer;
 }
+#processedContributionTable_wrapper .dataTables_empty,
 #searchUserFrameworksTable_wrapper .dataTables_empty,
 #searchFrameworksTable_wrapper .dataTables_empty {
     background-color: #555;
@@ -97,11 +103,16 @@ input.edit-search {
     text-align: center;
     pointer-events: none;
 }
+.dataTables_scroll {
+    border: 1px solid #e6e6e6;
+}
+#processedContributionTable,
 #searchUserFrameworksTable,
 #searchFrameworksTable {
     border: 1px solid #e6e6e6;
     border-top: none;
 }
+#processedContributionTable_wrapper,
 #searchUserFrameworksTable_wrapper,
 #searchFrameworksTable_wrapper {
     margin-bottom: 20px;
@@ -109,6 +120,7 @@ input.edit-search {
 // ---------------------------------------------------
 
 // Edit framework search table item ------------------
+#processedContributionTable .thumb-framework,
 #searchUserFrameworksTable .thumb-framework,
 #searchFrameworksTable .thumb-framework {
     height: 40px;
@@ -122,12 +134,14 @@ input.edit-search {
     float: left;
 }
 
+#processedContributionTable .thumb-framework img,
 #searchUserFrameworksTable .thumb-framework img,
 #searchFrameworksTable .thumb-framework img {
     height: 34px;
     max-width: 34px;
 }
 
+#processedContributionTable .thumb-title,
 #searchUserFrameworksTable .thumb-title,
 #searchFrameworksTable .thumb-title {
     display: block;
@@ -135,6 +149,7 @@ input.edit-search {
     font-weight: 800;
 }
 
+#processedContributionTable .thumb-state.approved,
 #searchUserFrameworksTable .thumb-state.approved,
 #searchFrameworksTable .thumb-state.approved {
     color: #9BB831;
@@ -151,9 +166,32 @@ input.edit-search {
 #searchUserFrameworksTable .thumb-remove {
     color: #d9534f;
 }
+#processedContributionTable .thumb-time,
 #searchFrameworksTable .thumb-contributor,
 #searchUserFrameworksTable .thumb-time {
     color: gray;
+}
+
+.thumb-processed {
+    &.Outdated {
+        color: gray;
+    }
+    &.Approved {
+        color: #9BB831;
+    }
+    &.Declined {
+        color: #d9534f;
+    }
+    &.readonly {
+        color: lightgray;
+    }
+    a {
+        text-decoration: none;
+        width: 40px;
+        height: 30px;
+        line-height: 30px;
+        cursor: pointer;
+    }
 }
 // ---------------------------------------------------
 
@@ -262,3 +300,7 @@ input[type='checkbox']:checked.custom-checkbox + label:before {/*checked icon*/
     max-width: 250px;
 }
 /* ******************** END FORM STEP 3/4/5 ***************** */
+
+#refreshProcessedContributionTable {
+    cursor: pointer;
+}

@@ -291,6 +291,48 @@ class PrivateCon extends CI_Controller {
         $this->echoResponse($framework, $retval);
 	}
 
+    public function AJ_getProcessedFramework() {
+		$errmsg = "";
+		$retval = PublicConstants::SUCCESS;
+
+		if(isset($_GET["id"])) {
+        	$frameworkId = $_GET["id"];
+    	} else {
+			$errmsg = "No correct framework data specified";
+			$retval = PublicConstants::FAILED;
+			$this->echoResponse($errmsg, $retval);
+			return;
+		}
+
+        // Check if user exists and is not blocked
+        $this->load->library('session');
+        $this->load->model('UserModel');
+        // check if user exists
+        $userEmail = $this->session->email;
+        $userObj = $this->UserModel->getUserByEmail($userEmail, $errmsg);
+        if(is_a($userObj, 'User')) {
+            if($userObj->isBlocked != 0) {
+                $errmsg = "retrieving data for user failed.";
+                $retval = PublicConstants::FAILED;
+                $this->echoResponse($errmsg, $retval);
+                return;
+            }
+        }
+
+		// Load database interaction model
+		$this->load->model('FrameworksModel');
+		$framework = $this->FrameworksModel->getProcessedFrameworkById($frameworkId, $errmsg);
+
+		if(!is_a($framework, 'Framework')) {
+            $errmsg = "retrieving framework for user failed.";
+            $retval = PublicConstants::FAILED;
+            $this->echoResponse($errmsg, $retval);
+            return;
+		}
+
+        $this->echoResponse($framework, $retval);
+	}
+
     public function AJ_removeFrameworkEdit() {
         $errmsg = "";
 		$retval = PublicConstants::SUCCESS;
@@ -553,7 +595,7 @@ class PrivateCon extends CI_Controller {
             }
 		} else {
             // Decline existing contribution
-            $retval = $this->FrameworksModel->declineFramework($frameworkId, $errmsg);
+            $retval = $this->FrameworksModel->declineFramework($frameworkId, $frameworkObj->admin_remark, $errmsg);
             if($retval != PublicConstants::SUCCESS) {
                 // Database error
                 $this->echoResponse($errmsg, $retval);
