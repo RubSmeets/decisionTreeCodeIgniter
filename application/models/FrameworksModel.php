@@ -368,14 +368,20 @@ class FrameworksModel extends CI_Model {
     }
     //Approve a contribution 
     function approveFramework($frameworkId, $frameworkObj, &$errmsg) {
+        $modifiedDate = $this->getModificationDate($frameworkId);
+
         $this->db->set($frameworkObj);
+        $this->db->set('comparison_data_last_update', $modifiedDate);
         $this->db->set('state', PublicConstants::STATE_APPROVED);
         $this->db->where('framework_id', $frameworkId);
         $query = $this->db->update('frameworks_v2');
 
         // Set the refered framework state to outdated
         if($frameworkObj->reference != 0) {
+            $modifiedDate = $this->getModificationDate($frameworkObj->reference);
+
             $this->db->set('state', PublicConstants::STATE_OUTDATED);
+            $this->db->set('comparison_data_last_update', $modifiedDate);
             $this->db->where('framework_id', $frameworkObj->reference);
             $query = $this->db->update('frameworks_v2');
         }
@@ -386,7 +392,10 @@ class FrameworksModel extends CI_Model {
 
     //Decline a contribution 
     function declineFramework($frameworkId, $admin_remark, &$errmsg) {
+        $modifiedDate = $this->getModificationDate($frameworkId);
+
         $this->db->set('state', PublicConstants::STATE_DECLINED);
+        $this->db->set('comparison_data_last_update', $modifiedDate);
         $this->db->set('admin_remark', $admin_remark);
         $this->db->where('framework_id', $frameworkId);
         $query = $this->db->update('frameworks_v2');
@@ -426,6 +435,22 @@ class FrameworksModel extends CI_Model {
 
         if(!$query) { $errmsg = "No deletion of framework: ".$frameworkName; return PublicConstants::FAILED; }
 		else return $logoNameCurr;
+    }
+
+    private function getModificationDate($frameworkId) {
+        // Get the contribution date to ensure it is not overwritten during 
+        $this->db->select('comparison_data_last_update');
+        $this->db->where('framework_id', $frameworkId);
+        $query = $this->db->get('frameworks_v2');
+
+        if($query->num_rows() != 0) {
+			foreach ($query->result() as $resultData) {
+                return $resultData->comparison_data_last_update;
+            }
+		} else {
+            $errmsg = "Date not found";
+            return PublicConstants::FAILED;
+        }
     }
 
 }
