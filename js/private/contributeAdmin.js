@@ -381,11 +381,27 @@
                     error: main.errorCallback
                 },
                 columnDefs: [
-                    {className: "dt-center", targets: [2,3]}
+                    {className: "dt-center", targets: [3,4]}
                 ],
                 columns: [
                     {title: 'Email Address', data: 'email'},
                     {title: 'Last Active', data: 'lastActive'},
+                    {
+                        title: 'Contributions',
+                        type: "html",
+                        data: 'contributionCount',
+                        render: {
+                            display: function (data, type, row) {
+                                if (type ==='display') {
+                                    return  '<span class="small-header">Approved: ' + data.approvedCount + "</span>" +
+                                            '<span class="small-header">Awaiting: ' + data.awaitCount + "</span>" +
+                                            '<span class="small-header">Declined: ' + data.declinedCount + "</span>" +
+                                            '<span class="small-header">OutDated: ' + data.outDatedCount + "</span>";
+                                } else return '';
+                            },
+                            sort: "total"
+                        }
+                    },
                     {title: 'Visited', data: 'visitCount'},
                     {
                         title: 'Block',
@@ -472,11 +488,27 @@
                     error: main.errorCallback
                 },
                 columnDefs: [
-                    {className: "dt-center", targets: [2,3]}
+                    {className: "dt-center", targets: [3,4]}
                 ],
                 columns: [
                     {title: 'Email Address', data: 'email'},
                     {title: 'Last Active', data: 'lastActive'},
+                    {
+                        title: 'Contributions',
+                        type: "html",
+                        data: 'contributionCount',
+                        render: {
+                            display: function (data, type, row) {
+                                if (type ==='display') {
+                                    return  '<span class="small-header">Approved: ' + data.approvedCount + "</span>" +
+                                            '<span class="small-header">Awaiting: ' + data.awaitCount + "</span>" +
+                                            '<span class="small-header">Declined: ' + data.declinedCount + "</span>" +
+                                            '<span class="small-header">OutDated: ' + data.outDatedCount + "</span>";
+                                } else return '';
+                            },
+                            sort: "total"
+                        }
+                    },
                     {title: 'Visited', data: 'visitCount'},
                     {
                         title: 'Unblock',

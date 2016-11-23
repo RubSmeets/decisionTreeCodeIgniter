@@ -32,10 +32,16 @@ class UserModel extends CI_Model {
 
 	// Get user thumb data for active users
 	function getActiveUsersThumbs(&$errmsg) {
-		$this->db->select('id, user_email, visit_count, date');
-		$this->db->where('admin', 0);
-        $this->db->where('blocked', PublicConstants::USER_NOT_BLOCKED);
-		$query = $this->db->get('users');
+		$this->db->select('id, user_email, visit_count, date,
+			(SELECT COUNT(*) FROM frameworks_v2 WHERE frameworks_v2.modified_by = users.id AND frameworks_v2.state = ' . PublicConstants::STATE_DECLINED . ') AS declinedCount,
+			(SELECT COUNT(*) FROM frameworks_v2 WHERE frameworks_v2.modified_by = users.id AND frameworks_v2.state = ' . PublicConstants::STATE_APPROVED . ') AS approvedCount,
+			(SELECT COUNT(*) FROM frameworks_v2 WHERE frameworks_v2.modified_by = users.id AND frameworks_v2.state = ' . PublicConstants::STATE_AWAIT_APPROVAL . ') AS awaitCount,
+			(SELECT COUNT(*) FROM frameworks_v2 WHERE frameworks_v2.modified_by = users.id AND frameworks_v2.state = ' . PublicConstants::STATE_OUTDATED . ') AS outDatedCount', FALSE);
+		$this->db->from('users');
+		$this->db->where('users.admin', 0);
+		$this->db->where('users.blocked', PublicConstants::USER_NOT_BLOCKED);
+		$this->db->group_by('users.id');
+        $query = $this->db->get();
 
         if($query->num_rows() != 0) {
             $users = array();
@@ -44,7 +50,13 @@ class UserModel extends CI_Model {
 					$resultData->id,
                     $resultData->user_email,
 					$resultData->date,
-                    $resultData->visit_count
+                    $resultData->visit_count,
+					array(
+						'awaitCount' => $resultData->awaitCount,
+						'approvedCount' => $resultData->approvedCount,
+						'declinedCount' => $resultData->declinedCount,
+						'outDatedCount' => $resultData->outDatedCount
+					)
                 );
                 array_push($users, $userThumb);
             }
@@ -56,10 +68,16 @@ class UserModel extends CI_Model {
 
 	// Get user thumb data for blocked users
 	function getBlockedUsersThumbs(&$errmsg) {
-		$this->db->select('id, user_email, visit_count, date');
-		$this->db->where('admin', 0);
-        $this->db->where('blocked', PublicConstants::USER_BLOCKED);
-		$query = $this->db->get('users');
+		$this->db->select('id, user_email, visit_count, date, 
+			(SELECT COUNT(*) FROM frameworks_v2 WHERE frameworks_v2.modified_by = users.id AND frameworks_v2.state = ' . PublicConstants::STATE_DECLINED . ') AS declinedCount,
+			(SELECT COUNT(*) FROM frameworks_v2 WHERE frameworks_v2.modified_by = users.id AND frameworks_v2.state = ' . PublicConstants::STATE_APPROVED . ') AS approvedCount,
+			(SELECT COUNT(*) FROM frameworks_v2 WHERE frameworks_v2.modified_by = users.id AND frameworks_v2.state = ' . PublicConstants::STATE_AWAIT_APPROVAL . ') AS awaitCount,
+			(SELECT COUNT(*) FROM frameworks_v2 WHERE frameworks_v2.modified_by = users.id AND frameworks_v2.state = ' . PublicConstants::STATE_OUTDATED . ') AS outDatedCount', FALSE);
+		$this->db->from('users');
+		$this->db->where('users.admin', 0);
+		$this->db->where('users.blocked', PublicConstants::USER_BLOCKED);
+		$this->db->group_by('users.id');
+        $query = $this->db->get();
 
         if($query->num_rows() != 0) {
             $users = array();
@@ -68,7 +86,13 @@ class UserModel extends CI_Model {
 					$resultData->id,
                     $resultData->user_email,
 					$resultData->date,
-                    $resultData->visit_count
+                    $resultData->visit_count,
+					array(
+						'awaitCount' => $resultData->awaitCount,
+						'approvedCount' => $resultData->approvedCount,
+						'declinedCount' => $resultData->declinedCount,
+						'outDatedCount' => $resultData->outDatedCount
+					)
                 );
                 array_push($users, $userThumb);
             }

@@ -4,13 +4,17 @@ class UserThumb {
 	private $_dbId;
     public $email;
     public $lastActive;
-    public $visitCount;    
+    public $visitCount;
+	public $contributionCount; 
 
-	public function __construct($tmpId, $tmpEmail, $tmpLastActive, $tmpVisitCount) {
+	public function __construct($tmpId, $tmpEmail, $tmpLastActive, $tmpVisitCount, $tmpContributionCount) {
 		$this->_dbId = $tmpId;
 		$this->email = $tmpEmail;
 		$this->lastActive = $tmpLastActive;
 		$this->visitCount = $tmpVisitCount;
+		$this->contributionCount = $tmpContributionCount;
+		// total contributions used for filtering
+		$this->contributionCount["total"] = $this->contributionCount["awaitCount"] + $this->contributionCount["approvedCount"] + $this->contributionCount["outDatedCount"];
 	}
 
 	public function __destruct() {
