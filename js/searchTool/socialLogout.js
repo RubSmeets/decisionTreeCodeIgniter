@@ -1,21 +1,32 @@
+/*
+ * Javascript file that handles the social logout from google. (only loaded when user is logged in)
+ * 
+ * Function described here handle the interaction with the Google Client API and Code igniter backend for logging out a user. After successful logout
+ * the user is redirect to the same page on the public section (logged out) 
+ * 
+ * resources:
+ *      - https://developers.google.com/api-client-library/javascript/features/authentication
+ *      - https://developers.google.com/api-client-library/javascript/reference/referencedocs#googleauthsignout
+ */
 (function($, window, document, undefined) {
     'use strict';
 
     var CONST = {
-        successCode: 0,
+        successCode: 0, // Success-code returned from code igniter server
         backEndPrivateURL: "http://localhost/crossmos_projects/decisionTree2/privateCon/"
     }
-
-    var socialLogin = {
+    /* Social logout functionality */
+    var socialLogout = {
+        /* Initialize variables */
         initVariables: function() {
             this.domCache = {};
             this.auth2 = null;
         },
-
+        /* Cache frequently used DOM elements */
         cacheElements: function() {
             this.domCache.$socialSignOutBtn = $("#socialSignOut");
         },
-
+        /* Initialize social login and logout functionality */
         init: function() {
             var that = this;
             
@@ -31,16 +42,16 @@
                 that.bindEvents();
             });
         },
-
+        /* bind DOM element events */
         bindEvents: function() {
             var that = this;
-
+            // Handle signout button click
             this.domCache.$socialSignOutBtn.on('click', function() {
                 that.socialSignOut();
                 that.signOutGoogle();
             });
         },
-
+        /* Sign out the user on the PHP (code igniter) backend */
         socialSignOut: function() {
             // Send the code to the server
             $.ajax({
@@ -50,6 +61,7 @@
                 success: socialLogin.serverSignoutCallback
             });
         },
+        /* Sign out the user on google for this application */
         //NOTE that sign out will not work if you are running from localhost.
         signOutGoogle: function() {
             var that = this;
@@ -59,17 +71,17 @@
                 });
             }
         },
-
+        /* After successful sign out redirect user to public page */
         serverSignoutCallback: function(response) {
             if(response.srvResponseCode === CONST.successCode) {
-                // redirect to private part
+                // redirect to public part
                 window.location = response.srvMessage;
             }
         }
     }
-
+    /* Wait for document ready before Initializing log out functionality */
     $( document ).ready(function() {
-        socialLogin.init();
+        socialLogout.init();
     });
 
 })(jQuery, window, document);

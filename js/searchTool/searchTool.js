@@ -1,60 +1,67 @@
 /*
+ * The main Javascript file of the search tool page that contains the following functionality:
+ *      - Asynchronous loading and rendering of framework data from PHP (code igniter) backend
+ *      - Retrieving popularity data from twitter, github and stack overflow
+ *      - Storing retrieved data in HTML5 sessionStorage
+ *      - Perform client-side filter of frameworks by framework name and Features
+ *      - Select up to 5 frameworks for detailed comparison and navigate to detailed page
+ * 
  * Resources:
  * - http://www.sitecrafting.com/blog/jquery-caching-convention/ (best practice jquery naming convention)
- * - 
+ * - https://codingbox.io/10-jquery-performance-tips-tricks-872f170387cc#.2m0dqkvq8 (10 tips and tricks to improve jQuery performance)
  */
 (function($, window, document, undefined) {
     'use strict';
 
     var CONST = {
-        successCode: 0,
-        maxCompared: 5,
-        minCompared: 2,
-        compareLabelText: "Compare",
-        frameworksSessionStoreKey: "frameworkData",
-        twitterIcon: "twitter",
-        twitterSessionStoreKey: "twitterData",
-        twitterSliceTerm: "twitter.com/",
-        twitterPrefix:"twitter",
+        successCode: 0,                                 // Success-code returned from code igniter server
+        maxCompared: 5,                                 // Max Number of frameworks that can be compared
+        minCompared: 2,                                 // Min number of frameworks that should be selected before comparison
+        compareLabelText: "Compare",                    // Compare button text
+        frameworksSessionStoreKey: "frameworkData",     // HTML5-sessionStorage key for framework data
+        twitterIcon: "twitter",                         // name of twitter icon
+        twitterSessionStoreKey: "twitterData",          // HTML5-sessionStorage key for twitter following data
+        twitterSliceTerm: "twitter.com/",               // String slice term used to split the twitter url
+        twitterPrefix:"twitter",                        // Twitter link css-class prefix
         // API not supported by twitter - http://stackoverflow.com/questions/17409227/follower-count-number-in-twitter
-        twitterAPI: "https://cdn.syndication.twimg.com/widgets/followbutton/info.json?screen_names=",
-        githubIcon: "github",
-        githubSessionStoreKey: "githubData",
-        githubPrefix: "github",
-        githubSliceTerm: "github.com/",
+        twitterAPI: "https://cdn.syndication.twimg.com/widgets/followbutton/info.json?screen_names=", // Unofficial twitter API to retrieve followers
+        githubIcon: "github",                           // name of github icon
+        githubSessionStoreKey: "githubData",            // HTML5-sessionStorage key for github star data
+        githubPrefix: "github",                         // Github link css-class prefix
+        githubSliceTerm: "github.com/",                 // String slice term used to split the github url
         // Un-authenticated githubAPI requests are limited to 60/hour. --> authenticated is 5000/hour requires configuration
-        githubAPI: "https://api.github.com/repos/",
-        stackOverflowIcon: "stack-overflow",
-        stackOverflowSessionStoreKey: "stackoverflowData",
-        stackOverflowPrefix: "stackoverflow",
-        stackOverflowSliceTerm: "tagged/",
-        maxStackOverflowRequest: 25,
-        backEndBaseURL: "http://localhost/crossmos_projects/decisionTree2/publicCon/"
+        githubAPI: "https://api.github.com/repos/",     // Github API to get repo star data 
+        stackOverflowIcon: "stack-overflow",            // name of stack overflow icon
+        stackOverflowSessionStoreKey: "stackoverflowData", // HTML5-sessionStorage key for stack overflow data
+        stackOverflowPrefix: "stackoverflow",           // Stack overflow link css-class prefix
+        stackOverflowSliceTerm: "tagged/",              // String slice term used to split the stack overflow url
+        maxStackOverflowRequest: 25,                    // Max number of stack overflow API request per/second
+        backEndBaseURL: "http://localhost/crossmos_projects/decisionTree2/publicCon/"   // Public backend base URL of code igniter backend
     }
 
     /* Filter-textbox element functions */
     var filterForm = {
-        
+        /* Function for initializing object variables */
         initVariables: function() {
             this.filterText = "";
             this.domCache = {};
         },
-
+        /* jQuery caching of frequently used DOM elements */
         cacheElements: function() {
-            this.domCache.filterField = $("input#filter");
+            this.domCache.filterField = $("input#filter");      // search text input field
         },
-
+        /* Initialize text-filter functionality */
         init: function() {
             this.initVariables();
             this.cacheElements();
             this.bindEvents();
         },
-
+        /* Bind DOM element events */
         bindEvents: function() {
             var that = this;
             this.domCache.filterField.on('input', function() {
                 that.filterText = $(this).val();
-                main.filterFrameworks();
+                main.filterFrameworks();    // Apply filter
             });
 
             this.domCache.filterField.on('focus', function() {
@@ -62,14 +69,14 @@
             });
 
         },
-
+        /* Function for comparing framework name with filter-text */
         CheckFrameworkName: function(filterText, framework) {
             var frameworkName;
             var textCompare;
             this.filterText = filterText;
 
-            frameworkName = (($(framework).find(".thumb-caption"))[0].innerHTML).toLowerCase();    // get text from div
-            textCompare = frameworkName.indexOf(filterText.toLowerCase());
+            frameworkName = (($(framework).find(".thumb-caption"))[0].innerHTML).toLowerCase();     // get text from div
+            textCompare = frameworkName.indexOf(filterText.toLowerCase());                          // check if name contains filter-text
             
             if( textCompare === -1 ) return false;
             else return true;
@@ -81,13 +88,14 @@
     }
     /* Mobile framework comparison tool functionality */
     var main = {
+        /* Function for initializing object variables */
         initVariables: function() {
             this.amountOfFrameworks = $(".framework").length;
             this.filterTerms = [];
             this.comparedItems = [];
             this.domCache = {};
         },
-
+        /* jQuery caching of frequently used DOM elements */
         cacheElements: function() {
             this.domCache.checkboxes = $('[type=checkbox]');
             this.domCache.frameworks = $(".framework");
@@ -97,38 +105,39 @@
             this.domCache.compareCheckboxes = $('[type=checkbox].compare-checkbox');
             this.domCache.$resultAmount = $('.result-amount');
         },
-
+        /* Initialize main functionality */
         init: function() {
             this.initVariables();
             this.cacheElements();
             this.bindEvents();
 
-            filterForm.init();
-            this.initTooltip();
-            this.resetPage();
-            frameworkPopularity.init();
+            filterForm.init();      // Call Initialize function of text filter
+            this.initTooltip();     // init bootstrap tooltip
+            this.resetPage();       // clear selected checkboxes
+            frameworkPopularity.init(); //init the (twitter, stack overflow, github) popularity numbers
         },
-        // Mandatory Javascript init of bootstrap tooltip component
+        /* Mandatory Javascript init of bootstrap tooltip component */
         initTooltip: function() {
             $('[data-toggle="tooltip"]').tooltip();
         },
-
+        /* Bind DOM element events */
         bindEvents: function() {
             var that = this;
+            // On change state checkbox show/hide the clear selection button
             this.domCache.checkboxes.on('change', function() {
                 that.toggleClearButton();
             });
-
+            // On change state compare checkboxes determine visibility of navigation button and update url
             this.domCache.compareCheckboxes.on('change', function(e) {
                 that.updateCompareUrl(this);
                 that.determineCompareVisibility();
             });
-
+            // On change filter checkboxes state, get the filter value of checkbox and apply filters
             this.domCache.filterContainer.on('change', function() {
                 that.getCheckedFilterTerms();
                 that.filterFrameworks();
             });
-
+            // When clear button is pressed, clear all user input (checkboxes, input fields, compare data)
             this.domCache.clearButton.on('click', function() {
                 that.domCache.$resultAmount.text("");
                 that.domCache.checkboxes.each( function() {
@@ -143,7 +152,7 @@
                 $(this).closest("." + $(this).attr("data-hide")).hide();
             });
         },
-
+        /* Retrieve and store filter term from selected checkbox in filterTerms array */
         getCheckedFilterTerms: function() {
             this.filterTerms = [];
             var that = this;
@@ -154,7 +163,7 @@
                 }
             });
         },
-
+        /* Apply CSS 'selected' class to feature spans that contain the checkbox filter term */
         CheckFrameworkFeature: function(filterTerms, framework) {
             var foundFeatures = 0;
             var i = 0;
@@ -171,7 +180,7 @@
             if (filterTerms.length === foundFeatures) return true;
             else return false;
         },
-        // Do a combined filter of checkboxes and form search
+        /* Do a combined filter of checkboxes and form search */
         filterFrameworks: function() {
             var that = this;
             // Clear selected class
@@ -190,7 +199,7 @@
             this.updateResultAmountTag();
             this.nothingLeft();
         },
-        // update compare url
+        /* update compare url to include the selected framework */
         updateCompareUrl: function(compareCheckbox) {
             var $frameworkLabel = $(compareCheckbox).siblings('.thumb-caption');
             var frameworkName = $($frameworkLabel[0]).text();
@@ -201,6 +210,7 @@
             var i = 0;
 
             if($(compareCheckbox).is(':checked')) {
+                // check if there are more than the MAX amount of allowed frameworks compared
                 if(this.comparedItems.length === (CONST.maxCompared)) {
                     $("body").overhang({
                         type: "error",
@@ -226,7 +236,7 @@
             $compareButtons.prop('href', href);
             $mainCompareBtn.prop('href', href);
         },
-        
+        /* Function that hides/shows the compare button when the compare checkboxes are changed */
         determineCompareVisibility: function() {
             var $compareButtons = $('.compare-link');
             var $checkboxCompareLabels = $(".compare-label");
@@ -253,8 +263,7 @@
             $compareButtons.addClass("hidden");
             $checkboxCompareLabels.text(CONST.compareLabelText);  // Could be done better...
         },
-
-        // Enable and disable button
+        /* Enable and disable clear button */
         toggleClearButton: function() {
             if( this.domCache.checkboxes.is(":checked") ) {
               this.domCache.clearButton.prop('disabled', false);
@@ -262,7 +271,7 @@
               this.domCache.clearButton.prop('disabled', true);
             }
         },
-        // Show the user how many results are shown after filtering
+        /* Show the user how many results are shown after filtering (bootstrap button tag) */
         updateResultAmountTag: function() {
             var visible = this.amountOfFrameworks - $('.framework.hid').length;
             if(visible !== this.amountOfFrameworks) {
@@ -271,7 +280,7 @@
                 this.domCache.$resultAmount.text("");
             }
         },
-        // Check if there are frameworks left (if not show a message)
+        /* Check if there are frameworks left (if not show a message) */
         nothingLeft: function() {
             if ($('.framework.hid').length === this.domCache.frameworks.length) {
                 this.domCache.msg.show();
@@ -279,35 +288,42 @@
                 this.domCache.msg.hide();
             }
         },
-        // collapse all detail panels
+        /* collapse all detail panels */
         collapseAll: function() {
             var $panels = $('.caption');
             $panels.each(function() {
                 $(this).find('.collapse').collapse("hide");
             });
         },
-        // Back to normal state
+        /* Back to normal state */
         resetFrameworks: function() {
             this.domCache.frameworks.slideDown();
             this.domCache.frameworks.removeClass("hid");
         },
-        // Reset markup of page
+        /* Reset markup of checkboxes and ... */
         resetPage: function() {
             this.domCache.checkboxes.prop("checked", false);
         }
     }
 
+    /* 
+     * Object containing popularity functionality. Retrieves and sets popularity data from
+     * Github, stack overflow, twitter APIs and updates the view with these values.
+     * To preserve bandwidth and limit the amount of requests we store the results in
+     * HTML5 sessionStorage. (some APIs block request for a fixed period of time after
+     * the request amount is exceeded)
+     */
     var frameworkPopularity = {
+        /* Function for initializing object variables */
         initVariables: function() {
             this.twitterData = {data: []};
             this.githubData = {data: []};
             this.stackOverflowData = {data: []};
         },
-
+        /* jQuery caching of frequently used DOM elements */
         cacheElements: function() {
-
         },
-        
+        /* Initialize frameworkPopularity functionality */
         init: function() {
             this.initVariables();
             this.cacheElements();
@@ -315,7 +331,7 @@
             this.loadGithubData();
             this.loadStackOverflowData();
         },
-
+        /* Function that prepares data for Ajax request to an external API */
         loadRemoteData: function(api, iconName, sliceTerm, successCallback, errorCallback) {
             var $icon = $("a .fa-" + iconName);
             var $link = null;
@@ -331,7 +347,7 @@
                 that.makeRequest(requestUrl, successCallback, errorCallback);
             });
         },
-
+        /* Load twitter data from sessionStorage or remote API */
         loadTwitterData: function() {
             this.twitterData.data = this.loadLocalData(CONST.twitterSessionStoreKey);
             if(this.twitterData.data.length === 0) {
@@ -339,7 +355,7 @@
             };
             this.updateMarkup(this.twitterData.data, CONST.twitterPrefix);
         },
-
+        /* Load github data from sessionStorage or remote API */
         loadGithubData: function() {
             this.githubData.data = this.loadLocalData(CONST.githubSessionStoreKey);
             if(this.githubData.data.length === 0) {
@@ -347,7 +363,7 @@
             };
             this.updateMarkup(this.githubData.data, CONST.githubPrefix);
         },
-
+        /* Load stack overflow data from sessionStorage or remote API */
         loadStackOverflowData: function() {
             this.stackOverflowData.data = this.loadLocalData(CONST.stackOverflowSessionStoreKey);
             if(this.stackOverflowData.data.length === 0) {
@@ -355,7 +371,7 @@
             };
             this.updateMarkup(this.stackOverflowData.data, CONST.stackOverflowPrefix);
         },
-
+        /* Load data from sessionStorage that is identified by the localStorageKey */
         loadLocalData: function( localStorageKey ) {
             var storedData = sessionData.getData(localStorageKey);
             if(storedData != null) {
@@ -365,10 +381,10 @@
             }
             return [];
         },
-
+        /* Load Stack overflow data from remote */
         loadRemoteStackOverflowData: function() {
             var $stackOverflowIcon = $("a .fa-" + CONST.stackOverflowIcon);
-            /* trottle API variables */
+            /* trottle API requests of stack overflow (limited to 25/sec) */
             var i = 0;
             var numberOfIcons = $stackOverflowIcon.length;
             var fragments = Math.ceil(numberOfIcons / CONST.maxStackOverflowRequest);
@@ -377,7 +393,7 @@
                 setTimeout(this.StackOverflowTimeOutCallback, (i*1000), (i), numberOfIcons, $stackOverflowIcon, this);
             }
         },
-
+        /* Prepare stack overflow Ajax request data */
         StackOverflowTimeOutCallback: function(i, numberOfIcons, $icons, that) {
             var j = 0;
             var ceiling = 0
@@ -398,7 +414,7 @@
                 that.makeRequest(url, that.stackOverflowSuccessCallBack, that.stackOverflowErrorCallBack);
             }
         },
-
+        /* Perform cross-domain Ajax request to specified URL */
         makeRequest: function(url, successCallback, errorCallback) {
             $.ajax({
                 url: url,
@@ -408,11 +424,11 @@
                 error: errorCallback
             });
         },
-
+        /* Twitter Ajax request error callback */
         twitterErrorCallBack: function() {
             console.log("Failed to make request twitter API");
         },
-
+        /* Twitter Ajax success callback. Stores data in sessionStorage and updates view */
         twitterSuccessCallBack: function(data) {
             if(data[0].hasOwnProperty("name")) {
                 var name = data[0].screen_name;
@@ -423,11 +439,11 @@
                 frameworkPopularity.updateMarkup(data, CONST.twitterPrefix);
             }
         },
-
+        /* Github Ajax request error callback */
         githubErrorCallBack: function() {
             console.log("Failed to make request github API");
         },
-
+        /* Github Ajax success callback. Stores data in sessionStorage and updates view */
         githubSuccessCallBack: function(data) {
             if(data.data.owner.hasOwnProperty("login")) {
                 var name = data.data.owner["login"];
@@ -438,11 +454,11 @@
                 frameworkPopularity.updateMarkup(data, CONST.githubPrefix);
             }
         },
-
+        /* Stack overflow Ajax request error callback */
         stackOverflowErrorCallBack: function() {
             console.log("Failed to make request stackoverflow API");
         },
-
+        /* Stack overflow Ajax success callback. Stores data in sessionStorage and updates view */
         stackOverflowSuccessCallBack: function(data) {
             if(data.items[0].hasOwnProperty("name")) {
                 var strippedName = [];
@@ -455,7 +471,7 @@
                 frameworkPopularity.updateMarkup(data, CONST.stackOverflowPrefix);
             }
         },
-
+        /* Perform actual DOM update of popularity data */
         updateMarkup: function(dataItem, prefix) {
             var i = 0;
             var $label = null;
@@ -466,12 +482,13 @@
         }
 
     }
-
+    /* Functions for interacting with HTML5 sessionStorage */
     var sessionData = {
+        // Store data
         storeData: function( key, value ) {
             sessionStorage.setItem(key, JSON.stringify(value));
         },
-
+        // retrieve data
         getData: function( key ) {
             var value = null;
             if (sessionStorage.getItem(key)) {
@@ -480,10 +497,10 @@
             }
             return value;
         }
-
     }
-
+    /* Utility functions used for formating data */
     var util = {
+        // Number below 10000 are displayed normally while larger numbers are rounded and appended with 'K'
         formatNumber: function( nr ) {
             var formattedNr = "";
             if( nr > 9999 ) {
@@ -497,17 +514,22 @@
             return formattedNr;
         }
     }
-
+    /* 
+     * Functions for loading framework data from code-igniter backend.
+     * Data is stored in sessionStorage to save bandwidth on navigation between pages
+     * DOM is updated with framework data (thumbnails) of each framework entry
+     */
     var content = {
+        /* Function for initializing object variables */
         initVariables: function() {
             this.frameworkData = {};
         },
-
+        /* Initialize the framework contents */
         init: function() {
             this.initVariables();
             this.loadFrameworkData();
         },
-
+        /* Load data on page ready from either sessionStorage or backend */
         loadFrameworkData: function() {
             this.frameworkData = this.loadLocalData(CONST.frameworksSessionStoreKey);
             if(this.frameworkData.length === 0) {
@@ -515,7 +537,7 @@
             };
             this.updateMarkup(this.frameworkData);
         },
-
+        /* Perform load from sessionStorage */
         loadLocalData: function(sessionKey) {
             var storedData = sessionData.getData(sessionKey);
             if(storedData != null) {
@@ -525,7 +547,7 @@
             }
             return [];
         },
-
+        /* Perform AJAX request to code-igniter backend */
         loadRemoteData: function() {
             $.ajax({
                 url: CONST.backEndBaseURL + "AJ_getFrameworks",
@@ -534,7 +556,7 @@
                 error: this.errorCallback
             });
         },
-
+        /* AJAX request success callback handler */
         successCallback: function(response) {
             //update markup and initialize main controller
             content.updateMarkup(response);
@@ -542,7 +564,11 @@
             //store result in sessionStorage
             sessionData.storeData(CONST.frameworksSessionStoreKey, response);
         },
-
+        /* 
+         * Function that creates thumbnails from received frameworkData 
+         * Data is preformatted by backend to improve performance
+         * TODO: should use a JS-templating library to improve readability (handlebars JS)
+         */
         updateMarkup: function(data) {
             var $container = $('.col-sm-9');
             var collapseOffset = $('.filter-box').length + 1;
@@ -638,20 +664,20 @@
 
                 $container.append(thumb);
             });
-
+            // After DOM is updated we can load the main filter functionality
             main.init();
         },
-
+        /* Function that formats number to string containing 4 digits (e.g. 20 --> "0020")  */
         formatNumber: function(num, size) {
             var s = "0000" + num;
             return s.substr(s.length-size);
         },
-
+        /* AJAX error callback */
         errorCallback: function(e) {
             console.log("initial loading failed");
         }
     }
-
+    /* After document is ready we can start loading the content from code-igniter backend */
     $( document ).ready(function() {
         // request frameworks from server or sessionStorage
         content.init();
