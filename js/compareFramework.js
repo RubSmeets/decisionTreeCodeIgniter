@@ -1,27 +1,37 @@
-;(function($, window, document, undefined) {
+/**
+ * The compare frameworks page allows a user to have a side-by-side detailed comparison of each framework features.
+ * The page loads all the necessary framework data and markup from the PHP backend using an AJAX request. The frameworks
+ * that are selected for comparison are either provided on page navigation (added to URL) or by selecting from a
+ * jQuery datatable containing a list of available frameworks.
+ * 
+ * Resources:
+ *  - https://datatables.net/
+ */
+(function($, window, document, undefined) {
     'use strict';
 
     var CONST = {
-        successCode: 0,
-        maxNumbComparisons: 5,
-        add: 0,
-        remove: 1,
+        successCode: 0,         // Success-code returned from code igniter server
+        maxNumbComparisons: 5,  // the max number of frameworks to be compared
+        add: 0,                 // constant that defines when a framework should be added to comparison
+        remove: 1,              // constant that defines when a framework should be removed from comparison
         backEndBaseURL: "http://localhost/crossmos_projects/decisionTree2/publicCon/",
         backEndPrivateURL: "http://localhost/crossmos_projects/decisionTree2/privateCon/"
     }
-    /* Datatable functionality */
+    /* Datatable functionality for displaying available frameworks to compare */
     var DataTable = {
+        /* initialize variables */
         initVariables: function() {
             this.frameworkTable = null;
         },
-
+        /* Cache frequently used DOM elements */
         cacheElements: function() {
             this.$modalContainer = $("#addFrameworkModal");
             this.$frameworkTable = $("#addFrameworksTable");
             this.$filterFieldContainer = $('#addFrameworksTable_filter');
             this.$filterField = $('#addFrameworksTable_filter').find(':input');
         },
-
+        /* initialize the datatable and cleanMarkup */
         init: function($frameworkTable) {
             this.initVariables();
             this.initTable($frameworkTable);
@@ -30,17 +40,21 @@
             this.bindEvents();
             this.hideCurrentFrameworks(CF.currentFrameworks);
         },
-
+        /* Datatable initialization */
         initTable: function($frameworkTable) {
             this.frameworkTable = $frameworkTable.DataTable({
+                // specifies where datatable should retrieve data
                 ajax: {
                     url: CONST.backEndBaseURL + 'AJ_getThumbFrameworks',
                     dataSrc: "frameworks"
                 },
+                // provide column configuration
                 "columnDefs": [
                     { "visible": false, "targets": 1 }  // hide second column
                 ],
+                // specifiy which columns there are and what data should be displayed and HOW it should be displayed
                 columns: [
+                    // First column (contains thumbnail)
                     {
                         data: 'framework',
                         "type": "html",
@@ -55,13 +69,16 @@
                             } else return '';
                         }
                     },
+                    // Second column (invisible)
                     {data:'framework'}  //Must provide second column in order for search to work...
                 ],
+                // Overwrite default configurations of datatable
                 language: {
-                    search: "<i class='glyphicon glyphicon-search modal-search-feedback'></i>",
+                    search: "<i class='glyphicon glyphicon-search modal-search-feedback'></i>", // search input markup
                     searchPlaceholder: "Search by framework name...",
-                    zeroRecords: "No Frameworks found. Please try another search term."
+                    zeroRecords: "No Frameworks found. Please try another search term." // text displayed when no records match search term
                 },
+                // Overwrite default markup of datatable
                 "sAutoWidth": false,
                 "iDisplayStart ": 6,
                 "iDisplayLength": 6,
@@ -69,21 +86,21 @@
                 "bInfo": false, // hide showing entries
             });
         },
-
+        /* After initialization we manually overwrite some markup of datatable */
         cleanMarkup: function() {
             this.$filterFieldContainer.removeClass('dataTables_filter');
             this.$filterFieldContainer.find("input").addClass("modal-search");
             this.$frameworkTable.addClass("table table-hover"); //add bootstrap class
             this.$frameworkTable.css("width","100%");
         },
-
+        /* Bind events to DOM elements */
         bindEvents: function() {
             var that = this;
             this.$modalContainer.on('shown.bs.modal', function (){
                 // On modal overlay shown focus the search field
                 that.$filterField.focus();
             });
-
+            // Handle when a row is clicked in Datatable
             this.$frameworkTable.find('tbody').on('click', 'tr', function () {
                 var data = that.frameworkTable.row( this ).data();
                 if(typeof data !== 'undefined') {
@@ -91,12 +108,12 @@
                     that.$modalContainer.modal('hide');
                 }
             });
-
+            // Select current input when search field gains focus
             this.$filterField.on('focus', function() {
                 $(this).select();
             });
         },
-
+        /* Performs a selective filter that hides the currently compared frameworks from the datatable list of available frameworks */
         hideCurrentFrameworks: function(currentFrameworks) {
             var i=0;
             var regexNames = "";
@@ -109,25 +126,25 @@
                 this.frameworkTable
                     .columns(1) //The index of column to search
                     .search('^(?:(?!(' + regexNames + ')).)*$\r?\n?', true, false) //The RegExp search all string that not cointains values
-                    .draw();
+                    .draw();    //Force a redraw of table
             } else {
                 this.frameworkTable
                     .search( '' )   // Clear all searches
                     .columns().search( '' )
-                    .draw();
+                    .draw();    //Force redraw of table
             }
         }
     }
 
-    /* Compare framework page functions */
+    /* Compare framework page main functions */
     var CF = {
-        
+        /* initialize variables */
         initVariables: function() {
             this.columnTransform = [4,4,4,3,15,2]; // first 3 are 3 column layout and then 4,5,6 column
             this.currentFrameworks = [];
             this.frameworkOrder = ["","","","","",""];
         },
-
+        /* Cache frequently used DOM elements */
         cacheElements: function() {
             this.$frameworkTable = $('#addFrameworksTable');
             this.$frameworkHeaderContainer = $('#frameworkheader-container');
@@ -150,23 +167,25 @@
             this.$msg = $('#msg');
             this.$collapseButton = $('#btnCollapseAll');
         },
-
+        /* initialize the main functionality of compare page */
         init: function() {
             this.initVariables();
             this.cacheElements();
             this.bindEvents();
             this.initTooltip();
+            //this.setAffix();  // TODO: make the header appear fixed when scrolling down
 
-            this.loadComparisonData();
-            this.nothingLeft();
-            this.figOutAddButton();
+            this.loadComparisonData();  // Load framework data of frameworks listed in URL
+            this.nothingLeft();         // Determine if there are currently any comparisons being performed and show/hide headers and message
+            this.figOutAddButton();     // Determine if the add framework button should work or not
 
             DataTable.init(this.$frameworkTable);
 
             console.log( "all init and Bindings complete!" );
         },
-
+        /* Bind DOM element events */
         bindEvents: function() {
+            // Toogle collapse button text and collapse of panels when clicked
             this.$collapseButton.on('click', function() {
                 var panels = $(this).siblings('.panel-group');
                 var btnLabel = $(this).children('.btn-label');
@@ -183,11 +202,23 @@
                 });
             });
         },
-        // Mandatory Javascript init of bootstrap tooltip component
+        /* Mandatory Javascript init of bootstrap tooltip component */
         initTooltip: function() {
             $('[data-toggle="tooltip"]').tooltip();
         },
-
+        /**
+         * setAffix on header
+         * TODO: currently not working properly
+         */
+        setAffix: function() {
+            // Offset for the compare header
+            $('#compare-header').affix({            
+                offset: {
+                    top: 360
+                }
+            });
+        },
+        /* Load comparison data from PHP backend */
         loadComparisonData: function() {
             var frameworks = this.getUrlParams();
             var i = 0;
@@ -196,10 +227,10 @@
             }
         },
         /*
-         * 0 for add and 1 for removal
+         * 0 for add and 1 for removal (see CONST)
          * !NOTE: frameworkOrder is needed to ensure that the background
          * color is always unique. We store the position of the framework
-         * in the comparison table. 
+         * in an array. 
          */
         addRemoveShownFrameworks: function(frameworkName, addRemove) {
             var compareIndex = 0;
@@ -220,7 +251,7 @@
             DataTable.hideCurrentFrameworks(this.currentFrameworks);
             this.updateUrlParams();
         },
-
+        /* Perform AJAX request */
         sendRequest: function(data) {
             $.ajax({
                 method: "GET",
@@ -232,18 +263,18 @@
                 success: this.succesCallback
             });
         },
-
+        /* The error callback of the AJAX request */
         errorCallback: function(jqXHR, status, errorThrown) {
             console.log("Something went wrong with request");
         },
-
+        /* The success callback after AJAX request */
         succesCallback: function(data, status, jqXHR) {
             console.log("Successful request");
             CF.addRemoveShownFrameworks(data.framework, CONST.add);
             CF.addMarkupToPage(data);
             CF.bindEventNewItem();
         },
-
+        /* Change bootstrap column widths depending on amount of shown frameworks in comparison (see columnTransform matrix) */
         recalculateColumns: function() {
             var $columns = $('.col-md-9 > div');
             var columnWidth = columnWidth = 'col-md-' + this.columnTransform[this.currentFrameworks.length-1];
@@ -252,7 +283,7 @@
             });
             return columnWidth;
         },
-
+        /* Function that toggles between enable/disable of the addFramework button. Should be disabled once there are 5 frameworks visible in comparison */
         figOutAddButton: function() {
             if(this.currentFrameworks.length > (CONST.maxNumbComparisons-1)) {
                 this.$addFrameworkButton.addClass('disabled');
@@ -262,7 +293,7 @@
                 this.$addFrameworkButton.removeProp('disabled');
             }
         },
-
+        /* Update the URL parameters to provide feedback and history support on page navigation and page refresh. The frameworks that are specified in the URL are loaded and shown in comparison */
         updateUrlParams: function() {
             // get current url
             var i = 0;
@@ -283,7 +314,15 @@
                 window.history.pushState({path:newUrl},'',newUrl);
             }
         },
-
+        /**
+         * BAD!!! The AJAX request returns pre-formatted data and markup that can be directly added to a container in HTML. However
+         * the first table contains dynamic content that is not correctly displayed in spans. A table should be used instead to
+         * deal with the misalignment of content. For now this is solved by applying the flex-item class to each div and span.
+         * 
+         * Furthermore: using HTML in JS is not good practice. Here we could use a templating library like (handlebars JS)
+         * resources
+         *  - http://handlebarsjs.com/
+         */
         addMarkupToPage: function(data) {
             var frameworkPos = this.frameworkOrder.indexOf(data.framework);
             var columnWidth = this.recalculateColumns();
@@ -320,7 +359,11 @@
             contents = '<div class="' + columnWidth + ' no-padding centered body' + (frameworkPos+1) + ' ' + frameworkClass + '">' + data.resources + '</div>';
             this.$frameworkResourcesContainer.append(contents);
         },
-
+        /**
+         * After a framework is added to comparison we can choose to remove it from the comparison-view. In order to do this
+         * we need to attach a click handler to a glyphicon element in the newly added header. This function takes care of
+         * adding the handler.
+         */
         bindEventNewItem: function() {
             var that = this;
             // First remove all click handlers and then re-attach to include new ones
@@ -338,7 +381,7 @@
                 that.recalculateColumns();
             });
         },
-
+        /* Function for retrieving the framework names from the URL parameter */
         getUrlParams: function () {
             var i = 0
             var vars = [], hash = [];
@@ -355,15 +398,15 @@
             }
             return vars;
         },
-
+        /* Hide all feature panels */
         hidePanels: function() {
             $('.compare-body').hide();
         },
-
+        /* Show all feature panels */
         showPanels: function() {
             $('.compare-body').show();
         },
-        // Check if there are frameworks being compared (if not show a message)
+        // Check if there are frameworks being compared (if not show a message) and hide all feature panels
         nothingLeft: function() {
             if (this.currentFrameworks.length === 0) {
                 this.hidePanels();
@@ -375,13 +418,16 @@
         }
 
     }
-
-
+    /**
+     * Wait for the document ready event before initializing the main functionality
+     */
     $( document ).ready(function() {
         console.log( "Document ready!" );
         CF.init();
     });
-
+    /**
+     * Reload the page on navigation
+     */
     window.addEventListener("popstate", function(e) {
         window.location.reload();
     });
