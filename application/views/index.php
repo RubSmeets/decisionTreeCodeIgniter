@@ -29,6 +29,9 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+    <!-- jQuery -->
+    <script src="<?php echo base_url();?>vendor/jquery/jquery.min.js"></script>
+
 </head>
 
 <body id="page-top">
@@ -40,20 +43,21 @@
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                     <span class="sr-only">Toggle navigation</span> Menu <i class="fa fa-bars"></i>
                 </button>
-                <a class="navbar-brand page-scroll" href="#page-top">Start Bootstrap</a>
+                <a class="navbar-brand page-scroll" href="#page-top">Decision Tool</a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a class="page-scroll" href="<?php echo base_url();?>privateCon/searchtool">Search Tool</a>
+                        <?php if(!isset($email)) { ?>
+                        <a href="<?php echo base_url();?>PublicCon/searchtool">Search Tool</a>
+                        <?php } else { ?>
+                        <a href="<?php echo base_url();?>PrivateCon/searchtool">Search Tool</a>
+                        <?php } ?>
                     </li>
                     <li>
-                        <a class="page-scroll" href="#services"></a>
-                    </li>
-                    <li>
-                        <a class="page-scroll" href="#about">About</a>
+                        <a class="page-scroll" href="#contact">About</a>
                     </li>
                 </ul>
             </div>
@@ -65,22 +69,32 @@
     <header>
         <div class="header-content">
             <div class="header-content-inner">
-                <h1 id="homeHeading">Your Favorite Source of Free Bootstrap Themes</h1>
+                <h1 id="homeHeading">Mobile Cross-platform development decision tool</h1>
                 <hr>
-                <p>Start Bootstrap can help you build better websites using the Bootstrap CSS framework! Just download your template and start going, no strings attached!</p>
-                <a href="#about" class="btn btn-primary btn-xl page-scroll">Find Out More</a>
+                <p>Use our decision wizard tool to find out which cross-platform mobile development tools are best suited for your next mobile project. Not interested in the wizard? Simply browse the list of tracked cross-platform tools and find out which features they have to offer.</p>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-4 col-lg-offset-1 col-md-offset-2 col-md-4 text-center">
+                            <?php if(!isset($email)) { ?>
+                            <a class="btn btn-cover" href="<?php echo base_url();?>PublicCon/searchtool">
+                            <?php } else { ?>
+                            <a class="btn btn-cover" href="<?php echo base_url();?>PrivateCon/searchtool">
+                            <?php } ?>
+                                <i class="fa fa-search fa-5x"></i>
+                                <p>Just let me browse...</p>
+                            </a>
+                        </div>
+                        <div class="col-lg-4 col-md-4 text-center">
+                            <a class="btn btn-cover" href="<?php echo base_url();?>PublicCon/decisionwizard">
+                                <i class="fa fa-magic fa-5x"></i>
+                                <p class="">Wizard Tool</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
-
-    <aside class="bg-dark">
-        <div class="container text-center">
-            <div class="call-to-action">
-                <h2>Free Download at Start Bootstrap!</h2>
-                <a href="http://startbootstrap.com/template-overviews/creative/" class="btn btn-default btn-xl sr-button">Download Now!</a>
-            </div>
-        </div>
-    </aside>
 
     <section id="contact">
         <div class="container">
@@ -101,9 +115,6 @@
             </div>
         </div>
     </section>
-
-    <!-- jQuery -->
-    <script src="<?php echo base_url();?>vendor/jquery/jquery.min.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
     <script src="<?php echo base_url();?>vendor/bootstrap/js/bootstrap.min.js"></script>
