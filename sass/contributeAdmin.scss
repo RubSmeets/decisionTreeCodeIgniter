@@ -1,10 +1,24 @@
+/*
+ * This file contains the styling of the admin contribution features. The file is only included
+ * when an admin has logged in and navigated to the contribution page. Features that are shared
+ * between an admin and normal user are styled in the contribution.scss file
+ */
+
+/*----------------------------------------------------
+ * Refresh button styling
+ *----------------------------------------------------*/
 #refreshContributionTable,
 #refreshActiveUsers,
 #refreshBlockedUsers {
     cursor: pointer;
 }
+//----------------------------------------------------
 
-// Edit framework search table ---------------------
+/*----------------------------------------------------
+ * Style overwrites of datatables 
+ * - user tables 
+ * - contribution and pending contribution tables
+ *----------------------------------------------------*/
 #contributionTable_filter label,
 #userContributionTable_filter label,
 #activeUsersTable_filter label,
@@ -100,9 +114,11 @@ input.edit-search {
 #blockedUsersTable_wrapper {
     margin-bottom: 20px;
 }
-// ---------------------------------------------------
+//----------------------------------------------------
 
-// Edit framework search table item ------------------
+/*----------------------------------------------------
+ * Styling of a datatable record (one row in table)
+ *----------------------------------------------------*/
 .ban-user:hover,
 .unban-user:hover {
     color: #d9534f;
@@ -118,35 +134,31 @@ input.edit-search {
     margin-right: 10px;
     float: left;
 }
-
-
 #contributionTable .thumb-framework img,
 #userContributionTable .thumb-framework img {
     height: 34px;
     max-width: 34px;
 }
-
 #userContributionTable .thumb-title {
     display: block;
     font-size: 16px;
     font-weight: 800;
 }
-
 #userContributionTable .thumb-state.approved {
     color: #9BB831;
 }
-
 #userContributionTable .thumb-time {
     color: gray;
 }
-
 .small-header {
     display: block;
     font-size: 10px;
 }
-// ---------------------------------------------------
+//----------------------------------------------------
 
-// Edit header ---------------------------------------
+/*----------------------------------------------------
+ * Styling of the admin edit header
+ *----------------------------------------------------*/
 #adminEditHeaderWrapper {
     margin-bottom: 20px;
 }
@@ -157,9 +169,11 @@ h3.adminEdit-header {
     margin-left: 10px;
     margin-top: 15px;
 }
-// ---------------------------------------------------
+//----------------------------------------------------
 
-// styling of checkboxes ------------------------
+/*----------------------------------------------------
+ * styling of checkboxes
+ *----------------------------------------------------*/
 label.checkbox-label-ro {
     display: block;
     padding-left: 5px;
@@ -185,18 +199,22 @@ input[type='checkbox'].custom-checkbox-ro + label:before {/*unchecked icon*/
 input[type='checkbox']:checked.custom-checkbox-ro + label:before {/*checked icon*/
     content: "\e067";
 }
-// ---------------------------------------------------
+//----------------------------------------------------
 
-// Classes to align readonly form inputs with normal inputs (dirty solution)
+/*----------------------------------------------------
+ * Classes to align readonly form inputs with normal inputs (dirty solution)
+ *----------------------------------------------------*/
 .adjust-height-sm {
     min-height: 47px;
 }
 .adjust-height-la {
     min-height: 62px;
 }
-// ---------------------------------------------------
+//----------------------------------------------------
 
-// Styling of form elements --------------------------
+/*----------------------------------------------------
+ * Styling that applies to all form elements
+ *----------------------------------------------------*/
 .highlight-diff {
     background-color: yellow !important;
 }

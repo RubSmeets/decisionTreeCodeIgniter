@@ -1,27 +1,26 @@
+/* Import sass variables and mixins from "_mixins.scss" and "_variables.scss" */
 @import 'variables';
 @import 'mixins';
 
-// Global Components
+/*----------------------------------------------------
+ * Styling of Global Components
+ *----------------------------------------------------*/
 html,
 body {
     height: 100%;
     width: 100%;
 }
-
 body {
     @include serif-font();
 }
-
 hr {
     border-color: $theme-primary;
     border-width: 3px;
     max-width: 50px;
 }
-
 hr.light {
     border-color: white;
 }
-
 a {
     @include transition-all();
     color: $theme-primary;
@@ -30,7 +29,6 @@ a {
         color: darken($theme-primary, 10%);
     }
 }
-
 h1,
 h2,
 h3,
@@ -39,40 +37,35 @@ h5,
 h6 {
     @include sans-serif-font();
 }
-
 p {
     font-size: 16px;
     line-height: 1.5;
     margin-bottom: 20px;
 }
-
 .bg-primary {
     background-color: $theme-primary;
 }
-
 .bg-dark {
     background-color: $gray-darker;
     color: white;
 }
-
 .text-faded {
     color: rgba(white, 0.7);
 }
-
 section {
     padding: 100px 0;
 }
-
 aside {
     padding: 50px 0;
 }
-
 .no-padding {
     padding: 0;
 }
+//----------------------------------------------------
 
-// Navigation
-
+/*----------------------------------------------------
+ * Styling of Navigation bar
+ *----------------------------------------------------*/
 .navbar-default {
     background-color: white;
     border-color: rgba($gray-darker, 0.05);
@@ -118,6 +111,7 @@ aside {
             }
         }
     }
+    // Adjust navbar styling when screen is resized below width of 768px
     @media (min-width: 768px) {
         background-color: transparent;
         border-color: rgba(white, 0.3);
@@ -156,9 +150,11 @@ aside {
         }
     }
 }
+//----------------------------------------------------
 
-// Homepage Header
-
+/*----------------------------------------------------
+ * Styling of Homepage Header
+ *----------------------------------------------------*/
 header {
     position: relative;
     width: 100%;
@@ -192,6 +188,7 @@ header {
             }
         }
     }
+    // Adjust homepage header styling when screen is resized below width of 768px
     @media (min-width: 768px) {
         min-height: 100%;
         .header-content {
@@ -218,13 +215,14 @@ header {
         }
     }
 }
+//----------------------------------------------------
 
-// Sections
-
+/*----------------------------------------------------
+ * Styling of Sections
+ *----------------------------------------------------*/
 .section-heading {
     margin-top: 0;
 }
-
 .service-box {
     max-width: 400px;
     margin: 50px auto 0;
@@ -235,32 +233,30 @@ header {
         margin-bottom: 0;
     }
 }
-
 .call-to-action {
     h2 {
         margin: 0 auto 20px;
     }
 }
+//----------------------------------------------------
 
-// Bootstrap Overrides
+/*----------------------------------------------------
+ * Styling of Bootstrap Overrides
+ *----------------------------------------------------*/
 .text-primary {
     color: $theme-primary;
 }
-
 .no-gutter > [class*='col-'] {
     padding-right:0;
     padding-left:0;
 }
-
 // Button Styles
 .btn-default {
     @include button-variant($gray-darker,white,white);
 }
-
 .btn-primary {
     @include button-variant(white, $theme-primary, $theme-primary);
 }
-
 .btn {
     @include sans-serif-font();
     border: none;
@@ -272,11 +268,9 @@ header {
 	    border-color: $gray-lighter;
 	}
 }
-
 .btn-xl {
     padding: 15px 30px;
 }
-
 .btn-cover {
     min-width: 220px; 
     min-height: 220px;
@@ -292,21 +286,23 @@ header {
         margin-bottom: 0px !important;
     }
 }
+//----------------------------------------------------
 
-// Extras
-// -- Highlight Color Customization
+/*----------------------------------------------------
+ * Extras
+ * -- Highlight Color Customization
+ *----------------------------------------------------*/
 ::-moz-selection {
     color: white;
     text-shadow: none;
     background: $gray-darker;
 }
-
 ::selection {
     color: white;
     text-shadow: none;
     background: $gray-darker;
 }
-
 body {
     webkit-tap-highlight-color: $gray-darker;
 }
+//----------------------------------------------------

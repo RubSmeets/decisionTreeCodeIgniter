@@ -1,8 +1,14 @@
-/* Bootstrap column customizations */
+/*
+ * This file contains the styling of the compareFramework page.
+ */
+
+
+/*----------------------------------------------------
+ * Bootstrap column customizations (6 column layout)
+ *----------------------------------------------------*/
 .centered {
     text-align: center;
 }
-
 .col-md-15 {
     position: relative;
     min-height: 1px;
@@ -15,14 +21,15 @@
         float: left;
     }
 }
-/* -----------------------------------*/
+//----------------------------------------------------
 
-/* Modal table styling */
+/*----------------------------------------------------
+ * Modal table styling 
+ *----------------------------------------------------*/
 #addFrameworksTable_filter label {
     display: block;
     margin: 0px;
 }
-
 .dataTables_wrapper table thead {
     display:none;
 }
@@ -80,9 +87,11 @@ input.modal-search {
     text-align: center;
     pointer-events: none;
 }
-/* -----------------------------------*/
+//----------------------------------------------------
 
-/* Style of addFramework Item */
+/*----------------------------------------------------
+ * Style of addFramework Item inside the datatable
+ *----------------------------------------------------*/
 #addFrameworksTable .thumb-framework {
     height: 40px;
     width: 40px;
@@ -94,48 +103,53 @@ input.modal-search {
     margin-right: 10px;
     float: left;
 }
-
 #addFrameworksTable .thumb-framework img {
     height: 34px;
     max-width: 34px;
 }
-
 #addFrameworksTable .thumb-title {
     display: block;
     font-size: 16px;
     font-weight: 800;
 }
-
 #addFrameworksTable .thumb-status.active {
     color: #9BB831;
 }
-
 #addFrameworksTable .thumb-add {
     top: 14px;
     right: 8px;
     color: #337ab7;
 }
-/* -----------------------------------*/
+//----------------------------------------------------
 
-/* Add framework to compare button */
+/*----------------------------------------------------
+ * Style of "Add framework to comparison" button
+ *----------------------------------------------------*/
 button.add-framework {
     height: 150px;
     width: 150px;
     margin-top: 20px;
     margin-bottom: 20px;
 }
-
 .add-framework .add-framework-icon {
     display: block;
     font-size: 70px;
     margin: 10px;
     padding-left: 10px;
 }
-/* -----------------------------------*/
+//----------------------------------------------------
 
-/* Styling of framework comparison header */
+/*----------------------------------------------------
+ * Styling of framework comparison header
+ *----------------------------------------------------*/
 .compare-header {
     margin-bottom: 30px;
+    &.affix {
+        background-color: white;
+        width: 1170px;
+        height: 190px;
+        z-index: 99;
+    }
 }
 .header-container {
     min-height: 190px;
@@ -196,9 +210,11 @@ button.add-framework {
     color: lightgray;
     font-size: small;
 }
-/* -----------------------------------*/
+//----------------------------------------------------
 
-/* Styling of feature header column */
+/*----------------------------------------------------
+ * Styling of feature header column
+ *----------------------------------------------------*/
 .flex-col {
     display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
     display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
@@ -238,9 +254,11 @@ a[aria-expanded=true] .glyphicon-chevron-down {
     color: #31708f;
     top: 2px;
 }
-/* -----------------------------------*/
+//----------------------------------------------------
 
-/* Styling of feature items and item-column */
+/*----------------------------------------------------
+ * Styling of feature items and item-column (remaining tables)
+ *----------------------------------------------------*/
 .flex-item {
     align-items: stretch;
 }
@@ -278,9 +296,11 @@ i.uncheck {
 .panel-footer span {
     padding-left: 10px;
 }
-/* -----------------------------------*/
+//----------------------------------------------------
 
-/* Styling of collapse all panels button */
+/*----------------------------------------------------
+ * Styling of "collapse all panels" button
+ *----------------------------------------------------*/
 #btnCollapseAll {
     margin-bottom: 10px;
 }

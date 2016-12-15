@@ -14,8 +14,11 @@
     display: -webkit-flex;     /* NEW - Chrome */
     display: flex;
 }
+//----------------------------------------------------
 
-// Modal styling -------------------------------------
+/*----------------------------------------------------
+ * Modal styling
+ *----------------------------------------------------*/
 .alert-icon-success {
     color: #5cb85c;
 }
@@ -31,16 +34,17 @@
 .admin-feedback-input {
     margin-bottom: 10px;
 }
-// ---------------------------------------------------
+//----------------------------------------------------
 
-// Edit framework search table ---------------------
+/*----------------------------------------------------
+ * Edit framework search table styling
+ *----------------------------------------------------*/
 #processedContributionTable_filter label,
 #searchUserFrameworksTable_filter label,
 #searchFrameworksTable_filter label {
     display: block;
     margin: 0px;
 }
-
 #searchUserFrameworksTable_wrapper.dataTables_wrapper table thead,
 #searchFrameworksTable_wrapper.dataTables_wrapper table thead {
     display:none;
@@ -117,9 +121,11 @@ input.edit-search {
 #searchFrameworksTable_wrapper {
     margin-bottom: 20px;
 }
-// ---------------------------------------------------
+//----------------------------------------------------
 
-// Edit framework search table item ------------------
+/*----------------------------------------------------
+ * Edit framework search table item styling
+ *----------------------------------------------------*/
 #processedContributionTable .thumb-framework,
 #searchUserFrameworksTable .thumb-framework,
 #searchFrameworksTable .thumb-framework {
@@ -133,14 +139,12 @@ input.edit-search {
     margin-right: 10px;
     float: left;
 }
-
 #processedContributionTable .thumb-framework img,
 #searchUserFrameworksTable .thumb-framework img,
 #searchFrameworksTable .thumb-framework img {
     height: 34px;
     max-width: 34px;
 }
-
 #processedContributionTable .thumb-title,
 #searchUserFrameworksTable .thumb-title,
 #searchFrameworksTable .thumb-title {
@@ -148,13 +152,11 @@ input.edit-search {
     font-size: 16px;
     font-weight: 800;
 }
-
 #processedContributionTable .thumb-state.approved,
 #searchUserFrameworksTable .thumb-state.approved,
 #searchFrameworksTable .thumb-state.approved {
     color: #9BB831;
 }
-
 #searchUserFrameworksTable .thumb-remove,
 #searchUserFrameworksTable .thumb-add,
 #searchFrameworksTable .thumb-add {
@@ -171,7 +173,6 @@ input.edit-search {
 #searchUserFrameworksTable .thumb-time {
     color: gray;
 }
-
 .thumb-processed {
     &.Outdated {
         color: gray;
@@ -193,9 +194,11 @@ input.edit-search {
         cursor: pointer;
     }
 }
-// ---------------------------------------------------
+//----------------------------------------------------
 
-// Edit header ---------------------------------------
+/*----------------------------------------------------
+ * Edit header styling
+ *----------------------------------------------------*/
 #editHeaderWrapper {
     margin-bottom: 20px;
 }
@@ -206,9 +209,11 @@ h3.edit-header {
     margin-left: 10px;
     margin-top: 15px;
 }
-// ---------------------------------------------------
+//----------------------------------------------------
 
-// Progressbas / navbar ------------------------------
+/*----------------------------------------------------
+ * Progressbas / navbar styling
+ *----------------------------------------------------*/
 .progress-bar {
     cursor: pointer;
 }
@@ -230,8 +235,11 @@ h3.edit-header {
 .faulty-step {
     background-color: #d9534f;
 }
-// ---------------------------------------------------
+//----------------------------------------------------
 
+/*----------------------------------------------------
+ * Form steps global styling
+ *----------------------------------------------------*/
 .container-step1,
 .container-step2,
 .container-step3,
@@ -243,7 +251,6 @@ h3.edit-header {
 /* **********************************************
  * Form step 1 styling
  * ********************************************** */ 
-
 // styling of checkboxes ------------------------
 label.checkbox-label {
     display: block;
@@ -284,11 +291,7 @@ input[type='checkbox']:checked.custom-checkbox + label:before {/*checked icon*/
 .top-margin {
     margin-top: 20px;
 }
-// ---------------------------------------------------
-
 /* ******************** END FORM STEP 1 ***************** */
-
-
 
 /* **********************************************
  * Form step 3/4/5 styling
