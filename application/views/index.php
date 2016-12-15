@@ -67,6 +67,7 @@
     </nav>
 
     <header>
+        <!-- Landing page cover markup. Contains basic description and two navigation options in the form of buttons -->
         <div class="header-content">
             <div class="header-content-inner">
                 <h1 id="homeHeading">Mobile Cross-platform development decision tool</h1>
@@ -95,7 +96,7 @@
             </div>
         </div>
     </header>
-
+    <!-- Section containing contact information about our research group and the project -->
     <section id="contact">
         <div class="container">
             <div class="row">
@@ -116,6 +117,8 @@
         </div>
     </section>
 
+    <!-- JavaScript files are loaded at the end to improve initial load times -->
+    <!-- see: https://robertnyman.com/2008/04/23/where-to-include-javascript-files-in-a-document/ for more information on loading at bottom -->
     <!-- Bootstrap Core JavaScript -->
     <script src="<?php echo base_url();?>vendor/bootstrap/js/bootstrap.min.js"></script>
 

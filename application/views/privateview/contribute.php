@@ -5,6 +5,7 @@
         <meta charset="utf-8"> 
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
+        <!-- Page styling css files -->
         <?php echo link_tag('vendor/bootstrap/css/bootstrap.min.css'); ?>
         <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.css">
         <?php echo link_tag('vendor/font-awesome/css/font-awesome.min.css'); ?>
@@ -29,7 +30,7 @@
     </head>
 
     <body>
-        <!-- MODAL ALERT -->
+        <!-- MODAL ALERT: provides feedback to the user when actions that involve communication with the server are performed -->
         <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -39,15 +40,18 @@
                     </div>
                     <div class="modal-body">
                         <div class="row flex-col">
+                            <!-- User feedback icon -->
                             <div class="col-xs-3 centered">
                                 <i class="fa fa-check-circle fa-5x alert-icon-success" aria-hidden="true"></i>
                                 <i class="fa fa-exclamation-circle fa-5x alert-icon-warning hide" aria-hidden="true"></i>
                                 <i class="fa fa-times-circle fa-5x alert-icon-error hide" aria-hidden="true"></i>
                             </div>
+                            <!-- User feedback text -->
                             <div class="col-xs-9">
                                 <h4 class="user-feedback">Succesfully added a framework</h4>
                             </div>
                         </div>
+                        <!-- !Optional! user actions that could be asked with particular feedback -->
                         <div class="row">
                             <div class="col-xs-12 centered" id="modalUserInputWrapper" hidden>
                                 <button id="modalYes" class="btn btn-success btn-lg">Yes</button>
@@ -69,6 +73,7 @@
                 <h1>Start contributing in 3... 2... 1... GO!</h1>
                 <p>You can use the contribution options below to either add a new cross-platform tool or edit an existing tool. Follow the form steps to complete your contribution and add them to the approval queue. Additionally, you can make changes to your pending contributions by choosing the editing option.</p>
                 <p>
+                    <!-- Logout button -->
                     <a class="btn btn-primary btn-lg" href="<?php echo base_url();?>privateCon/" role="button">Home &raquo;</a>
                     <?php if(isset($email)) { ?><button id="socialSignOut" type="button" class="btn btn-danger btn-lg pull-right" data-toggle="tooltip" data-placement="top" title="Signed in as: <?php print $email ?>">Sign out</button><?php } ?>
                 </p>
@@ -76,6 +81,7 @@
         </div>
         <!-- BODY -->
         <div class="container">
+            <!-- Segmented button for switching between views in the same page -->
             <div class="row">
                 <div class="col-xs-12">
                     <div class="btn-group contribute-options" data-toggle="buttons">
@@ -96,23 +102,29 @@
                     </div>
                 </div>
             </div>
+            <!-- The different views a user can switch between -->
             <div class="row">
                 <div class="col-xs-12">
+                    <!-- The main WRAPPER to hide or show the add/edit form view -->
                     <div id="frameworkForm" class="panel panel-default">
                         <div class="panel-body">
+                            <!-- Datatables used by non admin users AND admin users -->
                             <div id="frameworkTableWrapper" hidden>
+                                <!-- The jquery datatable containing the available frameworks that can be modified -->
                                 <div class="col-sm-6">
                                     <div class="alert alert-info">
                                         <strong><i class="fa fa-hand-o-up" aria-hidden="true"></i> Select - </strong>Make changes to an approved framework
                                     </div>
                                     <table id="searchFrameworksTable"></table>
                                 </div>
+                                <!-- The jquery datatable containing the pending user contributions that can be modified/deleted -->
                                 <div class="col-sm-6">
                                     <div class="alert alert-warning">
                                         <strong><i class="fa fa-hand-o-up" aria-hidden="true"></i> Select - </strong>Make changes to your pending contributions
                                     </div>
                                     <table id="searchUserFrameworksTable"></table>
                                 </div>
+                                <!-- The jquery datatable containing the processed contributions with feedback from admin that can be viewed by user -->
                                 <div class="col-xs-12">
                                     <div class="alert alert-success">
                                         <strong><i class="fa fa-hand-o-up" aria-hidden="true"></i> Select - </strong>View your processed contributions
@@ -121,6 +133,7 @@
                                     <table id="processedContributionTable"></table>
                                 </div>
                             </div>
+                            <!-- Header that contains editing options for a normal user. Update/Remove/Cancel -->
                             <div id="editHeaderWrapper" hidden>
                                 <h3 class="edit-header">You are now editing</h3>
                                 <div class="pull-right">
@@ -129,6 +142,7 @@
                                     <button id="cancelEdit" class="btn btn-warning btn-lg edit-button"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
                                 </div>
                             </div>
+                            <!-- Header that contains editing options for an admin user only. Approve/Decline/Cancel -->
                             <?php if(isset($admin)) { if($admin == 1) {?>
                             <div id="adminEditHeaderWrapper" hidden>
                                 <h3 class="adminEdit-header">Review</h3>
@@ -139,7 +153,9 @@
                                 </div>
                             </div>
                             <?php }} ?>
+                            <!-- The main form WRAPPER to hide or show the actual form -->
                             <div id="formWrapper">
+                                <!-- The progress bar used for navigation and visual feedback as to which form step failed/succeeded in validation -->
                                 <div class="progress add-progress">
                                     <div class="progress-bar bordered active-step progress-step1" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%;" data-my-value="1">
                                         <span class="fa-stack fa-2x">
@@ -172,7 +188,9 @@
                                         </span>
                                     </div>
                                 </div>
+                                <!-- The actual form containing the five form steps and their elements -->
                                 <div id="formCurrent">
+                                    <!-- Form step one -->
                                     <form id="frmStep1" class="form-horizontal container-step1 current-form">
                                         <h3>Add Framework properties</h3>
                                         <div class="form-group has-feedback">
@@ -384,6 +402,7 @@
                                             </div>
                                         </div>
                                     </form>
+                                    <!-- Form step two -->
                                     <form id="frmStep2" data-toggle="validator" role="form" class="form-horizontal container-step2 current-form" hidden>                               
                                         <h3>Add Framework resources</h3>
                                         <div class="form-group has-feedback ">
@@ -531,6 +550,7 @@
                                             </div>
                                         </div>
                                     </form>
+                                    <!-- Form step three -->
                                     <form id="frmStep3" data-toggle="validator" role="form" class="form-horizontal container-step3 current-form" hidden>
                                         <h3>Specify which of the following platforms the tool supports</h3>
                                         <div class="form-group dense-input">
@@ -985,6 +1005,7 @@
                                             </div>
                                         </div>
                                     </form>
+                                    <!-- Form step four -->
                                     <form id="frmStep4" data-toggle="validator" role="form" class="form-horizontal container-step4 current-form" hidden>
                                         <h3>Specify which of the following programming languages the tool uses</h3>
                                         <div class="form-group dense-input">
@@ -1357,6 +1378,7 @@
                                             </div>
                                         </div>
                                     </form>
+                                    <!-- Form step five -->
                                     <form id="frmStep5" data-toggle="validator" role="form" class="form-horizontal container-step5 current-form" hidden>
                                         <h3>Specify which of the following hardware features are supported</h3>
                                         <div class="form-group dense-input">
@@ -1791,9 +1813,11 @@
                                         </div>
                                     </form>
                                 </div>
+                                <!-- The actual READONLY form containing the five form steps and their elements ONLY USED BY ADMIN DURING APPROVAL PROCESS -->
                                 <?php if(isset($admin)) { if($admin == 1) {?>
                                 <!-- ro stands for ReadOnly -->
                                 <div id="formRefered" class="col-xs-4" hidden>
+                                    <!-- Form step one -->
                                     <form id="frmStep1Ro" role="form" class="form-horizontal container-ro-step1 refered-form">
                                         <h3>Original framework properties</h3>
                                         <div class="form-group">
@@ -1946,6 +1970,7 @@
                                             <img id="previewLogoRo" height="80px"/>
                                         </div>
                                     </form>
+                                    <!-- Form step two -->
                                     <form id="frmStep2Ro" role="form" class="form-horizontal container-ro-step2 refered-form" hidden>                               
                                         <h3>Framework resources</h3>
                                         <div class="form-group">
@@ -2042,6 +2067,7 @@
                                             </label>
                                         </div>
                                     </form>
+                                    <!-- Form step three -->
                                     <form id="frmStep3Ro" role="form" class="form-horizontal container-ro-step3 refered-form" hidden>
                                         <h3>Original supported platforms</h3>
                                         <div class="form-group dense-input">
@@ -2421,6 +2447,7 @@
                                             </label>
                                         </div>
                                     </form>
+                                    <!-- Form step four -->
                                     <form id="frmStep4Ro" role="form" class="form-horizontal container-ro-step4 refered-form" hidden>
                                         <h3>Original supported programming languages</h3>
                                         <div class="form-group dense-input">
@@ -2727,6 +2754,7 @@
                                             <div class="help-block">Seperate multiple entries by ','.</div>
                                         </div>
                                     </form>
+                                    <!-- Form step five -->
                                     <form id="frmStep5Ro" role="form" class="form-horizontal container-ro-step5 refered-form" hidden>
                                         <h3>Original hardware features</h3>
                                         <div class="form-group dense-input">
@@ -3099,6 +3127,7 @@
                                     </form>
                                 </div>
                                 <?php }} ?>
+                                <!-- The form navigation buttons used to navigate between form steps and submit the entire form when finished -->
                                 <div class="row">
                                     <div class="col-xs-12">
                                         <button id="goNextStepAdd" class="btn btn-success btn-lg pull-right">Next &raquo;</button>
@@ -3108,11 +3137,15 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Features that are only available to admin users are contained within the PHP tag -->
                     <?php if(isset($admin)) { if($admin == 1) {?>
+                    <!-- user management view -->
                     <div id="userManagement" class="panel panel-default" hidden>
                         <div class="panel-body">
+                            <!-- Datatables that contain user information -->
                             <div class="row">
                                 <div id="userTableWrapper">
+                                    <!-- jQuery datatable that shows the registered user that are not blocked (no admins are shown here) -->
                                     <div class="col-sm-6">
                                         <div class="alert alert-info">
                                             <strong><i class="fa fa-hand-o-up" aria-hidden="true"></i> Select - </strong>Block or select an active user
@@ -3120,6 +3153,7 @@
                                         </div>
                                         <table id="activeUsersTable"></table>
                                     </div>
+                                    <!-- jQuery datatable that shows the registered user that are BLOCKED (no admins are shown here) -->
                                     <div class="col-sm-6">
                                         <div class="alert alert-warning">
                                             <strong><i class="fa fa-hand-o-up" aria-hidden="true"></i> Select - </strong>Unblock or select a blocked user
@@ -3130,6 +3164,7 @@
                                 </div>
                             </div>
                             <div class="row">
+                                <!-- jQuery datatable that shows all the contributions a selected user has made -->
                                 <div id="userContributionWrapper">
                                     <div class="col-xs-12">
                                         <h4>You are viewing all the contributions from user: <h4 id="contributionHeading"></h4></h4>
@@ -3139,9 +3174,11 @@
                             </div>
                         </div>
                     </div>
+                    <!-- contribution management view -->
                     <div id="contributionManagement" class="panel panel-default" hidden>
                         <div class="panel-body">
                             <div class="row">
+                                <!-- jQuery datatable that shows all the contributions that are waiting admin approval -->
                                 <div id="contributionTableWrapper">
                                     <div class="col-xs-12">
                                         <div class="alert alert-info">
@@ -3158,7 +3195,8 @@
                 </div>
             </div>
         </div>
- <!--    
+ <!--   
+    TODO: SOME PROPERTIES OF FRAMEWORKS THAT SHOULD BE ADDED TO THE FORM 
     "learning_curve",
     "perf_overhead",
     "integrate_with_existing_app",
