@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <?php echo link_tag('vendor/bootstrap/css/bootstrap.min.css'); ?>
-	<?php echo link_tag('fonts/font-awesome/css/font-awesome.min.css'); ?>
+	<?php echo link_tag('vendor/font-awesome/css/font-awesome.min.css'); ?>
 	<?php echo link_tag('css/searchTool.css'); ?>
 	<?php if(!isset($email)) { ?><?php echo link_tag('css/bootstrap-social.css'); ?><?php } ?>
 	<?php echo link_tag('vendor/overhang/css/overhang.min.css'); ?>
