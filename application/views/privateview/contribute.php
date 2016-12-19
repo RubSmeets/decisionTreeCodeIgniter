@@ -842,7 +842,7 @@
                                                 </label>
                                             </div>
                                         </div>
-                                        <div class="form-group dense-input">
+                                        <!-- <div class="form-group dense-input">
                                             <label class="col-xs-5 control-label">Other Platforms</label>
                                             <div class="col-xs-7">
                                                 <div class="input-group short-input">
@@ -853,7 +853,7 @@
                                                 </div>
                                                 <div class="help-block">Seperate multiple entries by ','.</div>
                                             </div>
-                                        </div>
+                                        </div> -->
                                         <h3>Available developer features</h3>
                                         <div class="form-group dense-input">
                                             <label class="col-xs-5 control-label">Software Development Kit (SDK)</label>
@@ -1365,7 +1365,7 @@
                                                 </label>
                                             </div>
                                         </div>
-                                            <div class="form-group dense-input">
+                                        <!-- <div class="form-group dense-input">
                                             <label class="col-xs-5 control-label">Other Languages</label>
                                             <div class="col-xs-7">
                                                 <div class="input-group short-input">
@@ -1376,7 +1376,7 @@
                                                 </div>
                                                 <div class="help-block">Seperate multiple entries by ','.</div>
                                             </div>
-                                        </div>
+                                        </div> -->
                                     </form>
                                     <!-- Form step five -->
                                     <form id="frmStep5" data-toggle="validator" role="form" class="form-horizontal container-step5 current-form" hidden>
