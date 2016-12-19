@@ -8,7 +8,7 @@ include APPPATH . 'classes/FrameworkThumbProcessed.php';
 
 class FrameworksModel extends CI_Model {
 	
-    //Get all frameworks pre-formatted for the index page
+    //Get all frameworks pre-formatted for the searchTool page
     function getPreFormattedFrameworks(&$errmsg) {
         $this->db->where('state', PublicConstants::STATE_APPROVED);
         $this->db->order_by('framework', 'ASC');
@@ -339,7 +339,26 @@ class FrameworksModel extends CI_Model {
             return PublicConstants::FAILED;
         }
     }
+    //Get complete history of framework
+    function getFrameworkHistory($frameworkId, &$errmsg) {
+        $this->db->select('f.framework_id, f.framework, f.logo_name, f.comparison_data_last_update, f.modified_by,  @pv:=f.reference AS parent, u.username
+            FROM (SELECT * FROM frameworks_v2 ORDER BY framework_id DESC) f
+            JOIN
+            (SELECT @pv:=' . $frameworkId . ')tmp
+            LEFT JOIN users AS u ON f.modified_by = u.id
+            WHERE f.framework_id=@pv', FALSE);
+        $query = $this->db->get();
 
+        if($query->num_rows() != 0) {
+			foreach ($query->result() as $resultData) {
+                // TODO return objects
+            }
+            return PublicConstants::FAILED;
+        } else {
+            $errmsg = "Framework history could not be loaded by db";
+            return PublicConstants::FAILED;
+        }
+    }
     //Store a new framework in the database
     function storeFramework($frameworkObj, &$errmsg) {
         $query = $this->db->insert('frameworks_v2', $frameworkObj);
