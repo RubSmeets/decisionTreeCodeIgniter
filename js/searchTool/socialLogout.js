@@ -58,7 +58,7 @@
                 method: 'GET',
                 url: CONST.backEndPrivateURL + 'AJ_logout',
                 dataType: "json",
-                success: socialLogin.serverSignoutCallback
+                success: socialLogout.serverSignoutCallback
             });
         },
         /* Sign out the user on google for this application */

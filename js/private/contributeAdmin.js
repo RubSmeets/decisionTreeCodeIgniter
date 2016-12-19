@@ -1867,8 +1867,8 @@
                 method: 'GET',
                 url: CONST.backEndPrivateURL + 'AJ_logout',
                 dataType: "json",
-                success: socialLogin.serverSignoutCallback,
-                error: socialLogin.serverSignoutErrorCallback
+                success: socialLogout.serverSignoutCallback,
+                error: socialLogout.serverSignoutErrorCallback
             });
         },
         /* Sign out the user on google for this application */
@@ -1886,7 +1886,7 @@
         serverSignoutCallback: function(response) {
             if(response.srvResponseCode === CONST.successCode) {
                 // Log out with google
-                socialLogin.signOutGoogle();
+                socialLogout.signOutGoogle();
                 // redirect to public part (and clear history)
                 window.location.replace(response.srvMessage);
             }
