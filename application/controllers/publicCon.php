@@ -5,6 +5,10 @@ include APPPATH . 'classes/FormatKey.php';
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+/**
+ * The public controller handles all the routing and AJAX request from the public pages.
+ * Private pages can also use the public API.
+ */
 class PublicCon extends CI_Controller {
 	const CONST_CLIENT_ID = "814864177982-qhde0ik7hkaandtoaaa0515niinslg94.apps.googleusercontent.com";
 	
@@ -43,6 +47,14 @@ class PublicCon extends CI_Controller {
 		$this->load->view('searchTool');
 	}
 
+	/*****************************************************
+	 * AJAX request entry points 
+	 *****************************************************/
+	
+	/**
+	 * Retrieve preformatted framework data for the searchTool page thumbnails. 
+	 * This request is called on initial load of the searchTool page.
+	 */
 	public function AJ_getFrameworks() {
 		// Load database interaction model
 		$this->load->model('FrameworksModel');
@@ -50,9 +62,18 @@ class PublicCon extends CI_Controller {
 
 		// Custom response
 		echo json_encode($frameworks);
-
 	}
 
+	/**
+	 * Perform second step of google basic authentication.
+	 * The server receives the client id_token from the webbrowser and authenticates
+	 * the user with the google API end-point. After succesful authentication the
+	 * login is logged AND/OR a new user entry is created in the database if the
+	 * email address was not found. Finally the server response with a redirect to 
+	 * the private page.
+	 *
+	 *@param idtoken the Received id_token from the first step of google auth api
+	 */
 	public function AJ_login() {
 		// get parameters
 		$idtoken = $_POST["idtoken"];
@@ -132,10 +153,14 @@ class PublicCon extends CI_Controller {
 		$this->session->set_userdata($userData);
 		
 		// send response redirect to private index page
-		$errmsg = base_url() . "PrivateCon/";
+		$errmsg = base_url() . "PrivateCon/searchtool";
 		$this->echoResponse($errmsg, $retval);
 	}
 
+	/**
+	 * Request that returns a list of all the APPROVED frameworks. the data returned
+	 * is a small subset that is used by a jQuery datatable.
+	 */
 	public function AJ_getThumbFrameworks() {
 		// Load database interaction model
 		$this->load->model('FrameworksModel');
@@ -149,6 +174,12 @@ class PublicCon extends CI_Controller {
 		echo json_encode($data);
 	}
 
+	/**
+	 * Retrieve all the data of one particular framework. The data is preformatted by the server
+	 * and used by the client in the detailed comparison page (compare.php). 
+	 *
+	 *@param keyword The framework name specifying the framework data we want to retrieve
+	 */
 	public function AJ_getFramework() {
 		$errmsg = "";
 		$retval = PublicConstants::SUCCESS;
@@ -173,6 +204,30 @@ class PublicCon extends CI_Controller {
 
 		echo json_encode($resp);
 		//echo $this->echoResponse($errmsg, $retval);
+	}
+
+	/**
+	 * DUMMY TEST REQUEST: used for testing purposes. This request is not used in production and
+	 * is subject to frequent changes
+	 */
+	public function AJ_test() {
+		$errmsg = "";
+		$retval = PublicConstants::SUCCESS;
+
+		if(isset($_GET["id"])) {
+        	$frameworkId = $_GET["id"];
+    	} else {
+			$errmsg = "No framework specified";
+			$retval = PublicConstants::FAILED;
+			$this->echoResponse($errmsg, $retval);
+			return;
+		}
+
+		// Load database interaction model
+		$this->load->model('FrameworksModel');
+		$frameworks = $this->FrameworksModel->getFrameworkHistory($frameworkId, $errmsg);
+
+		echo json_encode($resp);
 	}
 
 	/*

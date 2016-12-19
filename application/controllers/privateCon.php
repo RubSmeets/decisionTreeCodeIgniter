@@ -4,6 +4,11 @@ include APPPATH . 'classes/Framework.php';
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+/**
+ * The private controller contains the routes and AJAX request entry points of the private pages. 
+ * Only logged in user can make calls to this controller. If a loggout or non-registered user tries
+ * to use these API functions, a page redirect is returned.
+ */
 class PrivateCon extends CI_Controller {
 
     /* CONSTRUCTOR ********************************************************/
@@ -12,11 +17,13 @@ class PrivateCon extends CI_Controller {
 
         $this->load->library('session');
         $status = session_status();
+        // Check if there is an active (user) session
         if($status == PHP_SESSION_NONE) {
             //There is no active session
             session_start();
         }
         
+        // Check if the user is logged in and redirect if not true
         if ($this->session->userdata('user_loggedin') != true) {
             $address = base_url() . "PublicCon/";
             redirect($address,'location');
@@ -46,9 +53,15 @@ class PrivateCon extends CI_Controller {
         $this->load->view('compare', $data);
     }
 
-    /*
-     * Async calls
-     * */
+	/*****************************************************
+	 * AJAX request entry points 
+	 *****************************************************/
+    
+    /**
+     * Logout a user. This is done in code-igniter by destroying the session.
+     * NOTE: to make sure the session data is removed, we unset every data member explicitly.
+     *@return redirect to public page
+     */
     public function AJ_logout() {
         $this->session->unset_userdata('userID');
         $this->session->unset_userdata('username');
@@ -66,6 +79,13 @@ class PrivateCon extends CI_Controller {
         $this->echoResponse($errmsg, $retval);
     }
 
+    /**
+     * Request that checks if a particular framework name allready exists in the database. this 
+     * is necassary because the framework name should be unique. 
+     * 
+     * @param name The name we would like check 
+     * @return True or False or ERROR if something went wrong
+     */
     public function AJ_frameworkExists() {
         $errmsg = "";
         $retval = PublicConstants::SUCCESS;
@@ -96,6 +116,7 @@ class PrivateCon extends CI_Controller {
 		$this->load->model('FrameworksModel');
         $existingFramework = $this->FrameworksModel->getFrameworkByName($frameworkName, $errmsg);
 
+        // Perform double check to see if the name exists.
         if(is_object($existingFramework)) {
             $orig = strtolower($existingFramework->framework);
             $test = strtolower($frameworkName);
@@ -108,9 +129,17 @@ class PrivateCon extends CI_Controller {
         $this->echoResponse($errmsg,$retval);
     }
 
+    /**
+     * Request that validates framework data and creates a new framework entry inside the database after succesful
+     * validation.
+     * 
+     * @param all the framework fields (supplied as JSON)
+     * @return MESSAGE if success or ERROR if something went wrong
+     */
     public function AJ_addFramework() {
         $errmsg = "";
         $retval = PublicConstants::SUCCESS;
+        //Check if the REQUERED post parameters are set
         if(isset($_POST["framework"]) && isset($_POST["currentEditName"])) {
         	$framework = $_POST["framework"];
             $currentEditName = $_POST["currentEditName"];
@@ -192,6 +221,14 @@ class PrivateCon extends CI_Controller {
         $this->echoResponse($errmsg,$retval);
     }
 
+    /**
+     * Retrieves a subset of framework data that is used by the edit framework jQuery datatable. 
+     * The data returned is specific to each user. Since a user can only make one edit entry of
+     * each approved framework. Subsequent edits to the same framework (before an edit APPROVAL)
+     * can be done by modifying their existing edit submission.
+     * 
+     * @return The user filtered APPROVED frameworks thumbnail data
+     */
     public function AJ_getThumbFrameworks() {
 		// Load database interaction model
 		$this->load->model('FrameworksModel');
@@ -211,6 +248,7 @@ class PrivateCon extends CI_Controller {
             }
         }
 
+        // Retrieve thumbnail data of approved frameworks filtered for a particular user
 		$frameworks = $this->FrameworksModel->getEditFrameworkListThumbData($userObj->getDbID(),$errmsg);
 
 		// Custom response for the jQuery datatables
@@ -220,6 +258,13 @@ class PrivateCon extends CI_Controller {
 		echo json_encode($data);
 	}
 
+    /**
+     * Retrieves a subset of framework data that is used by the pending framework jQuery datatable. 
+     * The data returned is specific to each user and returns all the frameworks that the user has 
+     * made modifications to.
+     * 
+     * @return The user pending framework data
+     */
     public function AJ_getUserThumbFrameworks() {
 		// Load database interaction model
 		$this->load->model('FrameworksModel');
@@ -239,6 +284,7 @@ class PrivateCon extends CI_Controller {
             }
         }
 
+        // Retrieve thumbnail data of pending contributions of a particular user
 		$frameworks = $this->FrameworksModel->getPrivateEditFrameworkListThumbData($userObj->getDbID(),$errmsg);
 
 		// Custom response for the jQuery datatables
@@ -248,6 +294,14 @@ class PrivateCon extends CI_Controller {
 		echo json_encode($data);
 	}
 
+    /**
+     * Retrieve all the information of one framework specified by the framework name and
+     * the current state of the contribution (APPROVED, DECLINED, OUTDATED, PENDING)
+     * 
+     * @param name Name of framework 
+     * @param state of the framework 
+     * @return success -> msg: framework data, serverCode: success | error -> msg: error msg, serverCode: failed
+     */
     public function AJ_getFramework() {
 		$errmsg = "";
 		$retval = PublicConstants::SUCCESS;
@@ -281,16 +335,24 @@ class PrivateCon extends CI_Controller {
 		$this->load->model('FrameworksModel');
 		$framework = $this->FrameworksModel->getPrivateFrameworkByName($frameworkName, $frameworkState, $userObj->getDbID(), $errmsg);
 
+        // Check if database return valid framework object or a status "error" code
 		if(!is_a($framework, 'Framework')) {
             $errmsg = "retrieving framework for user failed.";
             $retval = PublicConstants::FAILED;
             $this->echoResponse($errmsg, $retval);
             return;
 		}
-
+        // Echo respone in default message format
         $this->echoResponse($framework, $retval);
 	}
 
+    /**
+     * Retrieves all the data of a framework that has been processed by an admin. This
+     * AJAX request is called by selecting a processed contribution in the processed frameworks jQuery dataTable.
+     * 
+     * @param id Database ID of framework 
+     * @return success -> msg: framework data, serverCode: success | error -> msg: error msg, serverCode: failed
+     */
     public function AJ_getProcessedFramework() {
 		$errmsg = "";
 		$retval = PublicConstants::SUCCESS;
@@ -333,10 +395,20 @@ class PrivateCon extends CI_Controller {
         $this->echoResponse($framework, $retval);
 	}
 
+    /**
+     * Allows the user to delete a contribution that is still pending (not processed by an admin). The
+     * framework entry is REMOVED from the database and no backups are kept. If a logo was added, the
+     * logo will be deleted as well!
+     *
+     *@param name name of a framework 
+     *@param identifier database ID of framework 
+     *@return success -> msg: success message, serverCode: success | error -> msg: error msg, serverCode: failed
+     */
     public function AJ_removeFrameworkEdit() {
         $errmsg = "";
 		$retval = PublicConstants::SUCCESS;
 
+        // Check if request parameters are set
 		if(isset($_POST["name"]) && isset($_POST["identifier"])) {
         	$frameworkName = $_POST["name"];
             $frameworkId = $_POST["identifier"];
@@ -381,6 +453,11 @@ class PrivateCon extends CI_Controller {
         $this->echoResponse($errmsg,$retval);
     }
 
+    /**
+     * Retrieve all active user data that is shown in a jQuery dataTable as a row entry.
+     * 
+     *@return thumb data containing user active user information
+     */
     public function AJ_getThumbUsers() {
         $errmsg = "";
 		$retval = PublicConstants::SUCCESS;
@@ -397,6 +474,11 @@ class PrivateCon extends CI_Controller {
 		echo json_encode($data);
     }
 
+    /**
+     * Retrieve all blocked users that are shown in a jQuery dataTable as a row entry.
+     * 
+     *@return thumb data containing all the blocked users information
+     */
     public function AJ_getThumbBlockedUsers() {
         $errmsg = "";
 		$retval = PublicConstants::SUCCESS;
@@ -413,6 +495,13 @@ class PrivateCon extends CI_Controller {
 		echo json_encode($data);
     }
 
+    /**
+     * Method for blocking or unBlocking a specific user.
+     *
+     *@param email the user's email
+     *@param action block or unblock
+     *@return success -> msg: success message, serverCode: success | error -> msg: error msg, serverCode: failed
+     */
     public function AJ_manageUser() {
         $errmsg = "";
 		$retval = PublicConstants::SUCCESS;
@@ -442,6 +531,13 @@ class PrivateCon extends CI_Controller {
         $this->echoResponse($errmsg,$retval);
     }
 
+    /**
+     * Retrieve a list of frameworks (thumb data) that represents all the contributions a specific user has 
+     * made. The list is shown in a jQuery DataTable
+     *
+     *@param email the user's email
+     *@return success -> msg: framework data | error -> msg: error msg, serverCode: failed
+     */
     public function AJ_getUserContributions() {
         $errmsg = "";
 		$retval = PublicConstants::SUCCESS;
@@ -465,6 +561,13 @@ class PrivateCon extends CI_Controller {
 		echo json_encode($data);
     }
 
+    /**
+     * Retrieve a list of frameworks (thumb data) that contains all the pending contributions.  
+     * This means all the contributions that are waiting on approval. The list is shown in a 
+     * jQuery DataTable
+     *
+     *@return success -> msg: framework data | error -> msg: error msg, serverCode: failed
+     */
     public function AJ_getAllPendingContributions() {
         $errmsg = "";
 		$retval = PublicConstants::SUCCESS;
@@ -479,6 +582,13 @@ class PrivateCon extends CI_Controller {
 		echo json_encode($data);
     }
 
+    /**
+     * Retrieve a list of frameworks (thumb data) that contains all the processed contributions.  
+     * This means all the contributions from a user that have been approved. The list is shown in a 
+     * jQuery DataTable
+     *
+     *@return success -> msg: framework data | error -> msg: error msg, serverCode: failed
+     */
     public function AJ_getAllProcessedContributions() {
         $errmsg = "";
 		$retval = PublicConstants::SUCCESS;
@@ -509,6 +619,12 @@ class PrivateCon extends CI_Controller {
 		echo json_encode($data);
     }
 
+    /**
+     * Method for getting a pending framework that is subjected to the approval process. 
+     * 
+     *@param framework_id the database ID of the framework 
+     *@return success -> msg: framework and refered framework as reference to compare against, serverCode: success | error -> msg: error msg, serverCode: failed
+     */
     public function AJ_getAdminFramework() {
 		$errmsg = "";
 		$retval = PublicConstants::SUCCESS;
@@ -536,6 +652,16 @@ class PrivateCon extends CI_Controller {
         $this->echoResponse($frameworks, $retval);
 	}
 
+    /**
+     * Used by admins to approve or decline a contribution of a framework. 
+     * The request parameters contain all the information of the framework, including changes made by
+     * an admin. Therefore the data has to be verified before submitting it to the database.
+     * 
+     *@param toolId framework database ID
+     *@param framework all the framework data
+     *@param action APPROVE or DECLINE
+     *@return success -> msg: success message, serverCode: success | error -> msg: error msg, serverCode: failed
+     */
     public function AJ_submitContribution() {
         $errmsg = "";
 		$retval = PublicConstants::SUCCESS;
@@ -607,6 +733,14 @@ class PrivateCon extends CI_Controller {
         $this->echoResponse($errmsg,$retval);
     }
 
+    /**
+     * Method for uploading an image to the database. The image is first verified to meet the specified criteria (size, format)
+     * After verification the image is renamed and moved to the img/logos/ folder. The name contains the database id and a 
+     * time stamp of submission.
+     * NOTE: the time stamp is done to create a cache buster. This forces the browser to download the new logo.
+     *
+     *@param logo a png logo image of a framework
+     */
     public function AJ_uploadLogo() {
         $errmsg = "";
 		$retval = PublicConstants::FAILED;
@@ -673,6 +807,11 @@ class PrivateCon extends CI_Controller {
         $this->echoResponse($errmsg,$retval);
     }
 
+    /**
+     * Same method as the "AJ_uploadLogo" only this one is used by admins only to overwrite the user contributed logo.
+     *
+     *@param logo a png logo image of a framework
+     */
     public function AJ_adminUploadLogo() {
         $errmsg = "";
 		$retval = PublicConstants::FAILED;
@@ -739,6 +878,9 @@ class PrivateCon extends CI_Controller {
         $this->echoResponse($errmsg,$retval);
     }
 
+    /**
+     * Echos a standard response to webpage. The response contains a message and serverCode.
+     */
     private function echoResponse($errmsg, $retval) {
 		$data = array(
 			'srvResponseCode' => $retval,
@@ -747,11 +889,18 @@ class PrivateCon extends CI_Controller {
 		echo json_encode($data);
 	}
 
+    /**
+     * Format a string to exclude special charaters and convert to lower case
+     * NOTE: currently not used
+     */
     private function formatString($str) {
         $temp = preg_replace('/[^0-9a-zA-Z]+/', '', $str);
         return strtolower($temp);
     }
 
+    /**
+     * Function for deleting a logo (image) in the img/logos/ folder
+     */
     private function deleteLogo($logoName) {
         // Check if logoName equals default logo (if not delete logo)
         if (strpos($logoName, PublicConstants::DEFAULT_LOGO_NAME) === false) {
