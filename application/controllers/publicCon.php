@@ -46,6 +46,9 @@ class PublicCon extends CI_Controller {
 	public function searchtool() {
 		$this->load->view('searchTool');
 	}
+	public function learnmore() {
+		$this->load->view('index');
+	}
 
 	/*****************************************************
 	 * AJAX request entry points 
