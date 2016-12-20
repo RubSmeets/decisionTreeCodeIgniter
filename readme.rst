@@ -79,6 +79,8 @@ during the review process. This way the admin can determine if the contributions
 framework and contributed changes are highlighted on the screen in YELLOW. Admins can then choose to decline or approve a framework with an optional feedback message
 for the contributor. If the framework is approved, the referenced framework is marked as outdated and the new contribution is used in the whole website.
 
+Technologies used on this page are: jquery dataTables, bootstrap for layout and styling, Javascript/jquery for loading/validating/navigation and handling user events,
+sass for overwriting bootstrap styles. The bootstrap-validator plugin for form validation.
 
 NOTE: admins are manually set in the database. Each regular user has a field in the database that specifies if it is an admin or not. The database maintainer or admin
 (project maintainers) can manually set this field in the database to make a regular user the admin of the webpage. There can be multiple admins and there is no other way
